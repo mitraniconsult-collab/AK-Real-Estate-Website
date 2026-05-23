@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AK Real Estate — Имот с по-спокоен вид лукс</title>
+  <meta name="description" content="AK Real Estate — подбрани имоти, дискретни възможности и персонален подход към покупка, продажба и наем." />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --ak-black: #050505;
+      --ak-ink: #0a0a0a;
+      --ak-charcoal: #111111;
+      --ak-graphite: #1b1b1b;
+      --ak-crimson: #b0181c;
+      --ak-crimson-bright: #d21f25;
+      --fg: #f5f1ea;
+      --fg-2: rgba(245,241,234,.72);
+      --fg-3: rgba(245,241,234,.45);
+      --hairline: rgba(245,241,234,.14);
+      --font-display: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+      --font-body: Inter, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--ak-black);
+      color: var(--fg);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .red-square {
+      width: 7px;
+      height: 7px;
+      display: inline-block;
+      background: var(--ak-crimson);
+      flex: 0 0 auto;
+    }
+
+    .shell {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 78% 12%, rgba(176,24,28,.13), transparent 28%),
+        linear-gradient(180deg, #080808 0%, #050505 100%);
+    }
+
+    header {
+      min-height: 82px;
+      padding: 0 clamp(20px, 5vw, 72px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 1px solid var(--hairline);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(5,5,5,.84);
+      backdrop-filter: blur(14px);
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--fg-2);
+    }
+
+    .nav a {
+      padding-bottom: 5px;
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav a:hover {
+      color: var(--fg);
+      border-color: var(--ak-crimson);
+    }
+
+    .nav .cta {
+      padding: 13px 18px;
+      background: var(--ak-crimson);
+      border: 1px solid var(--ak-crimson);
+      color: #fff;
+    }
+
+    .hero {
+      min-height: calc(100vh - 82px);
+      padding: clamp(44px, 7vw, 96px) clamp(20px, 5vw, 72px);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, .72fr);
+      gap: clamp(34px, 6vw, 92px);
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(5,5,5,.98) 0%, rgba(5,5,5,.78) 48%, rgba(5,5,5,.38) 100%),
+        url("https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1800&q=85&auto=format&fit=crop") center/cover;
+      opacity: .78;
+      z-index: 0;
+    }
+
+    .hero > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--fg-2);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: clamp(64px, 10vw, 158px);
+      line-height: .88;
+      letter-spacing: .045em;
+      text-transform: uppercase;
+      max-width: 900px;
+    }
+
+    h1 em {
+      color: var(--ak-crimson-bright);
+      font-style: italic;
+    }
+
+    .hero-copy {
+      margin-top: 30px;
+      max-width: 520px;
+      color: var(--fg-2);
+      font-size: 15px;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    .actions {
+      margin-top: 34px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 22px;
+      border: 1px solid var(--hairline);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      transition: .18s ease;
+    }
+
+    .btn.primary {
+      background: var(--ak-crimson);
+      border-color: var(--ak-crimson);
+      color: #fff;
+    }
+
+    .btn.secondary {
+      color: var(--fg-2);
+      background: rgba(0,0,0,.18);
+    }
+
+    .btn:hover {
+      filter: brightness(1.12);
+      transform: translateY(-1px);
+    }
+
+    .hero-panel {
+      border: 1px solid var(--hairline);
+      background: rgba(17,17,17,.68);
+      backdrop-filter: blur(10px);
+      padding: clamp(24px, 3vw, 42px);
+    }
+
+    .hero-panel h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: clamp(34px, 4vw, 58px);
+      line-height: .95;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .stat-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1px;
+      background: var(--hairline);
+      border: 1px solid var(--hairline);
+    }
+
+    .stat {
+      background: rgba(5,5,5,.86);
+      padding: 18px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--fg-3);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .stat strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 30px;
+      font-weight: 300;
+      letter-spacing: .05em;
+    }
+
+    section {
+      padding: clamp(54px, 7vw, 110px) clamp(20px, 5vw, 72px);
+    }
+
+    .section-head {
+      max-width: 1180px;
+      margin: 0 auto 34px;
+      display: grid;
+      grid-template-columns: 1fr minmax(260px, 420px);
+      gap: 28px;
+      align-items: end;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(46px, 7vw, 104px);
+      font-weight: 300;
+      line-height: .9;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .section-head h2 em {
+      color: var(--ak-crimson-bright);
+      font-style: italic;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--fg-2);
+      font-size: 14px;
+      line-height: 1.75;
+      font-weight: 300;
+    }
+
+    .services {
+      background: #070707;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .service-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--hairline);
+      border: 1px solid var(--hairline);
+    }
+
+    .service {
+      background: var(--ak-charcoal);
+      padding: clamp(24px, 3vw, 38px);
+      min-height: 260px;
+    }
+
+    .service .num {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 300;
+      color: var(--ak-crimson);
+      margin-bottom: 28px;
+    }
+
+    .service h3 {
+      margin: 0 0 16px;
+      font-family: var(--font-display);
+      font-size: 30px;
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .service p {
+      margin: 0;
+      color: var(--fg-2);
+      font-size: 14px;
+      line-height: 1.75;
+      font-weight: 300;
+    }
+
+    .portfolio-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(16px, 2vw, 28px);
+    }
+
+    .card {
+      border: 1px solid var(--hairline);
+      background: rgba(17,17,17,.75);
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      transition: border-color .18s ease, transform .18s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(176,24,28,.8);
+      transform: translateY(-2px);
+    }
+
+    .card-image {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      background: var(--ak-graphite);
+      overflow: hidden;
+    }
+
+    .card-image img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(.92) contrast(1.04);
+    }
+
+    .badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(0,0,0,.66);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(245,241,234,.18);
+      padding: 7px 10px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    .card-content {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .location {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--fg-2);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .26em;
+      text-transform: uppercase;
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .card-meta {
+      color: var(--fg-3);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .card-bottom {
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid var(--hairline);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 14px;
+    }
+
+    .price {
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+
+    .view {
+      color: var(--fg-2);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .portfolio-action {
+      max-width: 1180px;
+      margin: 32px auto 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .contact {
+      border-top: 1px solid var(--hairline);
+      background:
+        linear-gradient(180deg, rgba(176,24,28,.06), transparent 42%),
+        #070707;
+    }
+
+    .contact-box {
+      max-width: 1180px;
+      margin: 0 auto;
+      border: 1px solid var(--hairline);
+      background: rgba(17,17,17,.75);
+      padding: clamp(28px, 5vw, 64px);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+      gap: clamp(28px, 5vw, 70px);
+      align-items: center;
+    }
+
+    .contact h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(46px, 7vw, 98px);
+      font-weight: 300;
+      line-height: .9;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .contact h2 em {
+      color: var(--ak-crimson-bright);
+      font-style: italic;
+    }
+
+    .contact p {
+      margin: 26px 0 0;
+      max-width: 560px;
+      color: var(--fg-2);
+      line-height: 1.75;
+      font-weight: 300;
+      font-size: 14px;
+    }
+
+    .contact-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .contact-item {
+      border-bottom: 1px solid var(--hairline);
+      padding-bottom: 14px;
+    }
+
+    .contact-item span {
+      display: block;
+      color: var(--fg-3);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .contact-item strong {
+      font-weight: 400;
+      font-size: 15px;
+    }
+
+    footer {
+      padding: 24px clamp(20px, 5vw, 72px);
+      border-top: 1px solid var(--hairline);
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      color: var(--fg-3);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    .state {
+      max-width: 1180px;
+      margin: 0 auto;
+      min-height: 240px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed var(--hairline);
+      color: var(--fg-2);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-size: 11px;
+      text-align: center;
+      padding: 28px;
+    }
+
+    @media (max-width: 980px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+        padding-top: 18px;
+        padding-bottom: 18px;
+      }
+
+      .nav {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .hero {
+        min-height: auto;
+        grid-template-columns: 1fr;
+      }
+
+      .section-head,
+      .contact-box {
+        grid-template-columns: 1fr;
+      }
+
+      .service-grid,
+      .portfolio-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      header {
+        padding: 16px;
+      }
+
+      .logo {
+        font-size: 18px;
+        letter-spacing: .14em;
+      }
+
+      .nav {
+        font-size: 10px;
+        letter-spacing: .18em;
+      }
+
+      .nav .cta {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .hero {
+        padding: 42px 16px 54px;
+      }
+
+      h1 {
+        font-size: clamp(54px, 17vw, 82px);
+      }
+
+      .hero-copy {
+        font-size: 14px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      section {
+        padding: 54px 16px;
+      }
+
+      .service-grid,
+      .portfolio-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .service {
+        min-height: auto;
+      }
+
+      .card-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .contact-box {
+        padding: 28px 18px;
+      }
+
+      footer {
+        flex-direction: column;
+        padding: 22px 16px;
+        line-height: 1.7;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <header>
+      <a class="logo" href="/home-new.html">
+        AK <span class="red-square"></span> Real Estate
+      </a>
+
+      <nav class="nav">
+        <a href="/listings">Имоти</a>
+        <a href="#services">Услуги</a>
+        <a href="#contact">Контакт</a>
+        <a class="cta" href="#contact">Заявете достъп</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow"><span class="red-square"></span> От 2014 · извън пазара</div>
+          <h1>По-спокоен вид <em>лукс.</em></h1>
+          <p class="hero-copy">
+            Подбрани имоти, дискретни възможности и внимателно воден процес за клиенти, които търсят повече от квадратни метри.
+          </p>
+          <div class="actions">
+            <a class="btn primary" href="/listings">Разгледайте имоти</a>
+            <a class="btn secondary" href="#services">Нашите услуги</a>
+          </div>
+        </div>
+
+        <aside class="hero-panel">
+          <div class="eyebrow"><span class="red-square"></span> Частно портфолио</div>
+          <h2>Домове, които не се показват на всеки.</h2>
+
+          <div class="stat-grid">
+            <div class="stat">
+              <span>Фокус</span>
+              <strong>Продажба · Наем · Достъп</strong>
+            </div>
+            <div class="stat">
+              <span>Подход</span>
+              <strong>Дискретно и лично</strong>
+            </div>
+            <div class="stat">
+              <span>Портфолио</span>
+              <strong>Активни и off-market имоти</strong>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section id="services" class="services">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow"><span class="red-square"></span> Services</div>
+            <h2>Услуги с <em>мярка.</em></h2>
+          </div>
+          <p>
+            Работим с подбран кръг клиенти и имоти, като запазваме традиционния стандарт: точност, конфиденциалност и ясен процес.
+          </p>
+        </div>
+
+        <div class="service-grid">
+          <article class="service">
+            <div class="num">01</div>
+            <h3>Покупка</h3>
+            <p>Селекция на имоти според реалните нужди на клиента, анализ на стойност и организиране на огледи.</p>
+          </article>
+
+          <article class="service">
+            <div class="num">02</div>
+            <h3>Продажба</h3>
+            <p>Позициониране, представяне и комуникация с потенциални купувачи с фокус върху стойност и дискретност.</p>
+          </article>
+
+          <article class="service">
+            <div class="num">03</div>
+            <h3>Наем</h3>
+            <p>Подбор на подходящи имоти и наематели, с внимание към детайла и дългосрочната устойчивост.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="portfolio">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow"><span class="red-square"></span> Featured Portfolio</div>
+            <h2>Избрани <em>имоти.</em></h2>
+          </div>
+          <p>
+            Последните активни предложения от портфолиото. Всички имоти се управляват от административния панел и се обновяват автоматично.
+          </p>
+        </div>
+
+        <div id="featuredState" class="state">Зареждане на избрани имоти…</div>
+        <div id="featuredGrid" class="portfolio-grid" style="display:none;"></div>
+
+        <div class="portfolio-action">
+          <a class="btn primary" href="/listings">Вижте всички имоти</a>
+        </div>
+      </section>
+
+      <section id="contact" class="contact">
+        <div class="contact-box">
+          <div>
+            <div class="eyebrow"><span class="red-square"></span> Contact</div>
+            <h2>Заявете <em>достъп.</em></h2>
+            <p>
+              За запитвания относно конкретен имот, частно портфолио или консултация, свържете се с нас. Ще получите отговор с внимание към контекста и нуждите ви.
+            </p>
+          </div>
+
+          <div class="contact-list">
+            <div class="contact-item">
+              <span>Email</span>
+              <strong>homesectoronline@gmail.com</strong>
+            </div>
+            <div class="contact-item">
+              <span>Website</span>
+              <strong>akrealestatebg.com</strong>
+            </div>
+            <div class="contact-item">
+              <span>Availability</span>
+              <strong>By appointment</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>AK Real Estate</span>
+      <span>Private portfolio · Bulgaria</span>
+    </footer>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://ylyilqwoiyirodigshgd.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_wxCfqS0aCFRRXf0WgIhGzw_2SGd8tcL";
+
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const featuredGrid = document.getElementById("featuredGrid");
+    const featuredState = document.getElementById("featuredState");
+
+    function formatPrice(n, currency = "EUR", listingType) {
+      if (n == null || isNaN(Number(n))) return "—";
+      const sym = currency === "USD" ? "$" : currency === "EUR" ? "€" : currency === "GBP" ? "£" : currency + " ";
+      const value = Number(n);
+      let formatted;
+      if (value >= 1000000) formatted = sym + (value / 1000000).toFixed(value % 1000000 === 0 ? 0 : 1) + "M";
+      else if (value >= 1000) formatted = sym + value.toLocaleString();
+      else formatted = sym + value;
+      if (listingType === "Rent") formatted += "/mo";
+      return formatted;
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function renderFeatured(listings) {
+      if (!listings.length) {
+        featuredGrid.style.display = "none";
+        featuredState.style.display = "grid";
+        featuredState.textContent = "Все още няма публикувани избрани имоти.";
+        return;
+      }
+
+      featuredState.style.display = "none";
+      featuredGrid.style.display = "grid";
+
+      featuredGrid.innerHTML = listings.map(listing => {
+        const images = Array.isArray(listing.images) ? listing.images : [];
+        const img = images[Number(listing.main_image || 0)] || images[0] || "";
+        const location = listing.area || listing.city || "—";
+
+        return `
+          <a class="card" href="/listing?id=${encodeURIComponent(listing.id)}">
+            <div class="card-image">
+              ${img ? `<img src="${escapeHtml(img)}" alt="">` : ""}
+              <span class="badge">${escapeHtml(listing.status || "Active")}</span>
+            </div>
+
+            <div class="card-content">
+              <div class="location"><span class="red-square"></span>${escapeHtml(location)}</div>
+              <div class="card-title">${escapeHtml(listing.title)}</div>
+              <div class="card-meta">
+                ${escapeHtml(listing.bedrooms || "—")} BR ·
+                ${escapeHtml(listing.bathrooms || "—")} BA ·
+                ${escapeHtml(listing.area_sqm || "—")} m²
+              </div>
+
+              <div class="card-bottom">
+                <div class="price">${formatPrice(listing.price, listing.currency, listing.listing_type)}</div>
+                <div class="view">Виж повече →</div>
+              </div>
+            </div>
+          </a>
+        `;
+      }).join("");
+    }
+
+    async function loadFeatured() {
+      const { data, error } = await client
+        .from("listings")
+        .select("*")
+        .neq("status", "Draft")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Featured listings load error:", error);
+        featuredState.textContent = "Грешка при зареждане на имотите.";
+        return;
+      }
+
+      const all = data || [];
+      const featured = all.filter(x => x.featured).slice(0, 3);
+      const fallback = all.filter(x => x.status === "Active").slice(0, 3);
+
+      renderFeatured(featured.length ? featured : fallback);
+    }
+
+    loadFeatured();
+  </script>
+</body>
+</html>
