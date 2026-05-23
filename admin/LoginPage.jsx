@@ -9,12 +9,36 @@ function LoginPage({ onSubmit }) {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
 
-  const submit = (e) => {
-    e.preventDefault();
-    if (!email || !password) { setError('Email and password are required.'); return; }
-    setError(''); setLoading(true);
-    setTimeout(() => { setLoading(false); onSubmit(email, password); }, 400);
-  };
+  const submit = async (e) => {
+  e.preventDefault();
+
+  if (!email || !password) {
+    setError('Email and password are required.');
+    return;
+  }
+
+  if (!window.akSupabase) {
+    setError('Authentication service is not configured.');
+    return;
+  }
+
+  setError('');
+  setLoading(true);
+
+  const { data, error } = await window.akSupabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  setLoading(false);
+
+  if (error) {
+    setError('Invalid email or password.');
+    return;
+  }
+
+  onSubmit(email, password, data);
+};
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden',
@@ -146,7 +170,7 @@ function LoginPage({ onSubmit }) {
             <RedSquare size={6} />
             <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
               textTransform: 'uppercase', color: 'var(--fg-3)' }}>
-              For demo · any email + password will work
+              Authorized admin credentials required
             </span>
           </div>
         </form>
