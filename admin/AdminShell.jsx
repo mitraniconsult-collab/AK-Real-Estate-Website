@@ -138,6 +138,19 @@ function NavItem({ item, active, onNavigate }) {
 }
 
 function TopBar({ isMobile, onMenu }) {
+  const [search, setSearch] = React.useState('');
+
+  function submitSearch() {
+    const q = search.trim();
+
+    if (!q) {
+      location.hash = '/listings';
+      return;
+    }
+
+    location.hash = `/listings?search=${encodeURIComponent(q)}`;
+  }
+
   return (
     <header style={{
       display: 'flex', alignItems: 'center', gap: 16,
@@ -160,23 +173,48 @@ function TopBar({ isMobile, onMenu }) {
 
       <span style={{ flex: 1 }}></span>
 
-      {/* search */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
         borderBottom: '1px solid var(--hairline-light)',
         padding: '4px 0', minWidth: 220,
       }}>
         <Icon name="search" size={14} style={{ color: 'var(--fg-3)' }} />
-        <input placeholder="Search listings…" style={{
-          background: 'transparent', border: 0, outline: 'none',
-          color: 'var(--fg)', fontSize: 12, fontWeight: 300, flex: 1, padding: '4px 0',
-          fontFamily: 'var(--font-body)',
-        }} />
-        <kbd style={{
-          fontSize: 9, fontWeight: 500, letterSpacing: '0.18em',
-          color: 'var(--fg-3)', border: '1px solid var(--hairline-light)',
-          padding: '2px 6px', borderRadius: 0, fontFamily: 'var(--font-body)',
-        }}>⌘K</kbd>
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') submitSearch();
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+              e.preventDefault();
+              e.currentTarget.focus();
+            }
+          }}
+          placeholder="Search listings…"
+          style={{
+            background: 'transparent', border: 0, outline: 'none',
+            color: 'var(--fg)', fontSize: 12, fontWeight: 300, flex: 1, padding: '4px 0',
+            fontFamily: 'var(--font-body)',
+          }}
+        />
+        <button
+          onClick={submitSearch}
+          title="Search"
+          style={{
+            background: 'transparent',
+            border: 0,
+            color: 'var(--fg-3)',
+            cursor: 'pointer',
+            padding: 0,
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <kbd style={{
+            fontSize: 9, fontWeight: 500, letterSpacing: '0.18em',
+            color: 'var(--fg-3)', border: '1px solid var(--hairline-light)',
+            padding: '2px 6px', borderRadius: 0, fontFamily: 'var(--font-body)',
+          }}>↵</kbd>
+        </button>
       </div>
 
       <span style={{ width: 1, height: 20, background: 'var(--hairline-light)' }}></span>
