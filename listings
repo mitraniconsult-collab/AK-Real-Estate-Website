@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Имоти — AK Real Estate</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --ak-black: #050505;
+      --ak-ink: #0a0a0a;
+      --ak-charcoal: #111111;
+      --ak-graphite: #1b1b1b;
+      --ak-crimson: #b0181c;
+      --fg: #f5f1ea;
+      --fg-2: rgba(245, 241, 234, .72);
+      --fg-3: rgba(245, 241, 234, .45);
+      --hairline: rgba(245, 241, 234, .14);
+      --font-display: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+      --font-body: Inter, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--ak-black);
+      color: var(--fg);
+      font-family: var(--font-body);
+    }
+
+    a { color: inherit; }
+
+    .shell {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 75% 10%, rgba(176,24,28,.12), transparent 30%),
+        linear-gradient(180deg, #080808 0%, #050505 100%);
+    }
+
+    header {
+      min-height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      padding: 0 clamp(20px, 5vw, 72px);
+      border-bottom: 1px solid var(--hairline);
+      position: sticky;
+      top: 0;
+      background: rgba(5,5,5,.84);
+      backdrop-filter: blur(14px);
+      z-index: 5;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      letter-spacing: .18em;
+      font-size: 22px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .red-square {
+      width: 7px;
+      height: 7px;
+      background: var(--ak-crimson);
+      display: inline-block;
+      flex: 0 0 auto;
+    }
+
+    .nav {
+      display: flex;
+      gap: 28px;
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--fg-2);
+    }
+
+    .nav a {
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      padding-bottom: 4px;
+    }
+
+    .nav a:hover {
+      color: var(--fg);
+      border-color: var(--ak-crimson);
+    }
+
+    main {
+      padding: clamp(30px, 5vw, 76px);
+    }
+
+    .hero {
+      max-width: 1180px;
+      margin: 0 auto clamp(36px, 5vw, 72px);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 30px;
+      align-items: end;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--fg-2);
+      font-size: 10px;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: clamp(54px, 8vw, 128px);
+      line-height: .9;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .intro {
+      max-width: 430px;
+      color: var(--fg-2);
+      font-size: 14px;
+      line-height: 1.75;
+      font-weight: 300;
+    }
+
+    .filters {
+      max-width: 1180px;
+      margin: 0 auto 26px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--hairline);
+      background: rgba(17,17,17,.7);
+      padding: 14px;
+    }
+
+    .filter-btn {
+      border: 1px solid var(--hairline);
+      background: transparent;
+      color: var(--fg-2);
+      min-height: 38px;
+      padding: 0 14px;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    .filter-btn.active {
+      background: var(--ak-crimson);
+      border-color: var(--ak-crimson);
+      color: #fff;
+    }
+
+    .search {
+      margin-left: auto;
+      min-width: 240px;
+      border: 1px solid var(--hairline);
+      background: rgba(0,0,0,.22);
+      color: var(--fg);
+      min-height: 38px;
+      padding: 0 14px;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(16px, 2vw, 28px);
+    }
+
+    .card {
+      border: 1px solid var(--hairline);
+      background: rgba(17,17,17,.75);
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      transition: border-color .2s ease, transform .2s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(176,24,28,.75);
+      transform: translateY(-2px);
+    }
+
+    .image {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      background: var(--ak-graphite);
+      overflow: hidden;
+    }
+
+    .image img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(.92) contrast(1.04);
+    }
+
+    .badge {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      background: rgba(0,0,0,.62);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(245,241,234,.18);
+      padding: 7px 10px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--fg);
+    }
+
+    .badge.sold,
+    .badge.rented {
+      background: rgba(176,24,28,.82);
+      border-color: var(--ak-crimson);
+      color: #fff;
+    }
+
+    .content {
+      padding: 18px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .location {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--fg-2);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .26em;
+      text-transform: uppercase;
+    }
+
+    .title {
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .meta {
+      color: var(--fg-3);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .bottom {
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid var(--hairline);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .price {
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+
+    .view {
+      color: var(--fg-2);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .state {
+      max-width: 1180px;
+      margin: 0 auto;
+      min-height: 280px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed var(--hairline);
+      background: rgba(17,17,17,.45);
+      color: var(--fg-2);
+      text-align: center;
+      padding: 40px 20px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+
+    @media (max-width: 980px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+        padding-top: 18px;
+        padding-bottom: 18px;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .search {
+        margin-left: 0;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 640px) {
+      main {
+        padding: 24px 18px 42px;
+      }
+
+      .nav {
+        width: 100%;
+        gap: 16px;
+        flex-wrap: wrap;
+        font-size: 10px;
+      }
+
+      h1 {
+        font-size: clamp(46px, 17vw, 72px);
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filters {
+        align-items: stretch;
+      }
+
+      .filter-btn {
+        flex: 1 1 calc(50% - 6px);
+      }
+
+      .bottom {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <header>
+      <a class="logo" href="/">
+        AK <span class="red-square"></span> Real Estate
+      </a>
+
+      <nav class="nav">
+        <a href="/">Начало</a>
+        <a href="/#services">Услуги</a>
+        <a href="/#contact">Контакт</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow"><span class="red-square"></span> Portfolio</div>
+          <h1>Имоти</h1>
+        </div>
+        <p class="intro">
+          Подбрана селекция от активни, продадени и отдадени имоти. Всеки запис се управлява от административния панел и се обновява автоматично.
+        </p>
+      </section>
+
+      <section class="filters">
+        <button class="filter-btn active" data-filter="All">Всички</button>
+        <button class="filter-btn" data-filter="Active">Активни</button>
+        <button class="filter-btn" data-filter="Sale">Продажба</button>
+        <button class="filter-btn" data-filter="Rent">Наем</button>
+        <button class="filter-btn" data-filter="Sold">Продадени</button>
+        <button class="filter-btn" data-filter="Rented">Отдадени</button>
+
+        <input class="search" id="search" placeholder="Търси по име, град или район…" />
+      </section>
+
+      <section id="state" class="state">Зареждане на имоти…</section>
+      <section id="grid" class="grid" style="display:none;"></section>
+    </main>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const grid = document.getElementById("grid");
+    const state = document.getElementById("state");
+    const search = document.getElementById("search");
+    const filterButtons = Array.from(document.querySelectorAll(".filter-btn"));
+
+    let allListings = [];
+    let activeFilter = "All";
+
+    function formatPrice(n, currency = "EUR", listingType) {
+      if (n == null || isNaN(Number(n))) return "—";
+      const sym = currency === "USD" ? "$" : currency === "EUR" ? "€" : currency === "GBP" ? "£" : currency + " ";
+      const value = Number(n);
+      let formatted;
+      if (value >= 1000000) formatted = sym + (value / 1000000).toFixed(value % 1000000 === 0 ? 0 : 1) + "M";
+      else if (value >= 1000) formatted = sym + value.toLocaleString();
+      else formatted = sym + value;
+      if (listingType === "Rent") formatted += "/mo";
+      return formatted;
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function getBadgeClass(status) {
+      if (status === "Sold") return "badge sold";
+      if (status === "Rented") return "badge rented";
+      return "badge";
+    }
+
+    function matchesFilter(listing) {
+      if (activeFilter === "All") return true;
+      if (activeFilter === "Sale" || activeFilter === "Rent") return listing.listing_type === activeFilter;
+      return listing.status === activeFilter;
+    }
+
+    function matchesSearch(listing) {
+      const q = search.value.trim().toLowerCase();
+      if (!q) return true;
+      const text = [
+        listing.title,
+        listing.city,
+        listing.area,
+        listing.property_type,
+        listing.listing_type
+      ].join(" ").toLowerCase();
+      return text.includes(q);
+    }
+
+    function render() {
+      const visible = allListings.filter(l => matchesFilter(l) && matchesSearch(l));
+
+      if (!visible.length) {
+        grid.style.display = "none";
+        state.style.display = "grid";
+        state.textContent = "Няма намерени имоти.";
+        return;
+      }
+
+      state.style.display = "none";
+      grid.style.display = "grid";
+
+      grid.innerHTML = visible.map(listing => {
+        const images = Array.isArray(listing.images) ? listing.images : [];
+        const img = images[Number(listing.main_image || 0)] || images[0] || "";
+        const location = listing.area || listing.city || "—";
+
+        return `
+          <a class="card" href="/listing.html?id=${encodeURIComponent(listing.id)}">
+            <div class="image">
+              ${img ? `<img src="${escapeHtml(img)}" alt="">` : ""}
+              <span class="${getBadgeClass(listing.status)}">${escapeHtml(listing.status || "Active")}</span>
+            </div>
+
+            <div class="content">
+              <div class="location"><span class="red-square"></span>${escapeHtml(location)}</div>
+              <div class="title">${escapeHtml(listing.title)}</div>
+
+              <div class="meta">
+                ${escapeHtml(listing.bedrooms || "—")} BR ·
+                ${escapeHtml(listing.bathrooms || "—")} BA ·
+                ${escapeHtml(listing.area_sqm || "—")} m²
+              </div>
+
+              <div class="bottom">
+                <div class="price">${formatPrice(listing.price, listing.currency, listing.listing_type)}</div>
+                <div class="view">Виж повече →</div>
+              </div>
+            </div>
+          </a>
+        `;
+      }).join("");
+    }
+
+    async function loadListings() {
+      const { data, error } = await client
+        .from("listings")
+        .select("*")
+        .neq("status", "Draft")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Listings load error:", error);
+        state.textContent = "Грешка при зареждане на имотите.";
+        return;
+      }
+
+      allListings = data || [];
+      render();
+    }
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        activeFilter = btn.dataset.filter;
+        filterButtons.forEach(x => x.classList.remove("active"));
+        btn.classList.add("active");
+        render();
+      });
+    });
+
+    search.addEventListener("input", render);
+
+    loadListings();
+  </script>
+</body>
+</html>
