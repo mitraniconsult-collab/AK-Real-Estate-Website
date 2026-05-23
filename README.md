@@ -1,5 +1,7 @@
 # AK Real Estate — Design System
 
+Initial deployment
+
 A premium luxury identity system for **AK Real Estate**, a high-end private real estate and concierge brand. The system is built around an editorial, cinematic, magazine-grade aesthetic — drawing from architectural lifestyle publications, private members clubs, and premium concierge brands.
 
 > **Sources.** This system was generated from a written creative brief only. No production codebase, Figma, or brand book was provided. The mounted `AK Real Estate/` folder was empty when imported. Every visual decision below is an interpretation of the brief — please flag anything you'd like adjusted to match existing brand work.
