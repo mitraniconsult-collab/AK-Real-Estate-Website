@@ -13,14 +13,20 @@ function useListings() {
 
 // ----- Hash router -----
 function parseHash() {
-  const h = (location.hash || '#/dashboard').replace(/^#\/?/, '');
-  const parts = h.split('/').filter(Boolean);
-  if (parts.length === 0) return { name: 'dashboard' };
-  if (parts[0] === 'dashboard') return { name: 'dashboard' };
-  if (parts[0] === 'listings' && parts.length === 1) return { name: 'listings' };
-  if (parts[0] === 'listings' && parts[1] === 'new') return { name: 'listing-new' };
-  if (parts[0] === 'listings' && parts[2] === 'edit') return { name: 'listing-edit', id: parts[1] };
-  return { name: 'dashboard' };
+  const raw = (location.hash || '#/dashboard').replace(/^#\/?/, '');
+  const [path, queryString = ''] = raw.split('?');
+  const params = new URLSearchParams(queryString);
+  const search = params.get('search') || '';
+
+  const parts = path.split('/').filter(Boolean);
+
+  if (parts.length === 0) return { name: 'dashboard', search };
+  if (parts[0] === 'dashboard') return { name: 'dashboard', search };
+  if (parts[0] === 'listings' && parts.length === 1) return { name: 'listings', search };
+  if (parts[0] === 'listings' && parts[1] === 'new') return { name: 'listing-new', search };
+  if (parts[0] === 'listings' && parts[2] === 'edit') return { name: 'listing-edit', id: parts[1], search };
+
+  return { name: 'dashboard', search };
 }
 
 function useRoute() {
