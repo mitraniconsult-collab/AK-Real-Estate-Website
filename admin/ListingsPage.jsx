@@ -1,9 +1,15 @@
 // ListingsPage — filter bar + table view + actions.
 
 function ListingsPage() {
+  const route = useRoute();
   const listings = useListings();
   const [view, setView] = React.useState('table');     // 'table' | 'cards'
-  const [q, setQ] = React.useState('');
+  const [q, setQ] = React.useState(route.search || '');
+
+React.useEffect(() => {
+  setQ(route.search || '');
+}, [route.search]);
+  
   const [status, setStatus] = React.useState('All');
   const [listingType, setListingType] = React.useState('All');
   const [confirmDel, setConfirmDel] = React.useState(null);
