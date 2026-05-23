@@ -280,39 +280,125 @@
     }
 
     @media (max-width: 920px) {
-      header {
-        height: auto;
-        min-height: 72px;
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 14px;
-        padding-top: 18px;
-        padding-bottom: 18px;
-      }
+  body {
+    overflow-x: hidden;
+  }
 
-      .nav {
-        gap: 16px;
-        flex-wrap: wrap;
-        font-size: 10px;
-      }
+  header {
+    height: auto;
+    min-height: 72px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px 20px;
+  }
 
-      .grid {
-        grid-template-columns: 1fr;
-      }
+  .logo {
+    font-size: 18px;
+    letter-spacing: .14em;
+  }
 
-      .details {
-        position: relative;
-        top: auto;
-      }
+  .nav {
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 10px;
+    letter-spacing: .18em;
+  }
 
-      .meta {
-        grid-template-columns: 1fr;
-      }
+  main {
+    padding: 22px;
+  }
 
-      main {
-        padding: 22px;
-      }
-    }
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .details {
+    position: relative;
+    top: auto;
+    padding: 24px;
+  }
+
+  .main-image {
+    aspect-ratio: 4 / 3;
+  }
+
+  .thumbs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  h1 {
+    font-size: clamp(42px, 13vw, 72px);
+    line-height: .92;
+    word-break: break-word;
+  }
+
+  .price {
+    font-size: 34px;
+  }
+
+  .meta {
+    grid-template-columns: 1fr;
+  }
+
+  .description {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 16px;
+  }
+
+  main {
+    padding: 18px 14px 36px;
+  }
+
+  .logo {
+    font-size: 16px;
+  }
+
+  .nav {
+    width: 100%;
+    gap: 14px;
+  }
+
+  .details {
+    padding: 20px 16px;
+  }
+
+  .eyebrow {
+    font-size: 9px;
+    letter-spacing: .24em;
+  }
+
+  h1 {
+    font-size: clamp(38px, 15vw, 58px);
+  }
+
+  .price {
+    font-size: 30px;
+  }
+
+  .thumbs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .meta div {
+    padding: 14px 12px;
+  }
+}
   </style>
 </head>
 
