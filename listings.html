@@ -597,7 +597,7 @@
         const location = listing.area || listing.city || "—";
 
         return `
-          <a class="card" href="/listing.html?id=${encodeURIComponent(listing.id)}">
+          <a class="card" href="/listing?id=${encodeURIComponent(listing.id)}">
             <div class="image">
               ${img ? `<img src="${escapeHtml(img)}" alt="">` : ""}
               <span class="${getBadgeClass(listing.status)}">${escapeHtml(listing.status || "Active")}</span>
