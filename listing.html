@@ -504,12 +504,12 @@
             </div>
 
             <div class="meta">
-              <div><span>Bedrooms</span><strong>${escapeHtml(listing.bedrooms || "—")}</strong></div>
-              <div><span>Bathrooms</span><strong>${escapeHtml(listing.bathrooms || "—")}</strong></div>
-              <div><span>Area</span><strong>${escapeHtml(listing.area_sqm || "—")} m²</strong></div>
-              <div><span>Type</span><strong>${escapeHtml(listing.property_type || "—")}</strong></div>
-              <div><span>Listing</span><strong>${escapeHtml(listing.listing_type || "—")}</strong></div>
-              <div><span>Status</span><strong>${escapeHtml(listing.status || "—")}</strong></div>
+            <div><span>Спални</span><strong>${escapeHtml(listing.bedrooms || "—")}</strong></div>
+            <div><span>Бани</span><strong>${escapeHtml(listing.bathrooms || "—")}</strong></div>
+            <div><span>Площ</span><strong>${escapeHtml(listing.area_sqm || "—")} m²</strong></div>
+            <div><span>Тип имот</span><strong>${translatePropertyType(listing.property_type)}</strong></div>
+            <div><span>Сделка</span><strong>${translateListingType(listing.listing_type)}</strong></div>
+            <div><span>Статус</span><strong>${translateStatus(listing.status)}</strong></div>
             </div>
 
             ${listing.description ? `<div class="description">${escapeHtml(listing.description)}</div>` : ""}
