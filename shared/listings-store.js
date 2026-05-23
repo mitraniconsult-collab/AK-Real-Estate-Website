@@ -110,89 +110,195 @@
     },
   ];
 
-  function safeLoad() {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
-    } catch (e) {}
-    return null;
-  }
+function toDb(listing) {
+  return {
+    id: listing.id,
+    title: listing.title || '',
+    description: listing.description || '',
 
-  function safeSave(listings) {
-    try {
-      localStorage.setItem(LS_KEY, JSON.stringify(listings));
-      localStorage.setItem(TS_KEY, String(Date.now()));
-    } catch (e) { /* quota / private mode */ }
-  }
+    property_type: listing.propertyType || 'House',
+    listing_type: listing.listingType || 'Sale',
+    status: listing.status || 'Draft',
+    featured: !!listing.featured,
 
-  const Store = {
-    listings: safeLoad() || [...SEED_LISTINGS],
-    subs: new Set(),
+    city: listing.city || '',
+    area: listing.area || '',
+    address: listing.address || '',
 
-    notify() {
-      this.subs.forEach(fn => { try { fn(this.listings); } catch (e) {} });
-    },
+    price: listing.price === '' ? null : Number(listing.price),
+    currency: listing.currency || 'EUR',
 
-    on(fn) {
-      this.subs.add(fn);
-      return () => this.subs.delete(fn);
-    },
+    bedrooms: listing.bedrooms === '' ? null : Number(listing.bedrooms),
+    bathrooms: listing.bathrooms === '' ? null : Number(listing.bathrooms),
+    area_sqm: listing.areaSqm === '' ? null : Number(listing.areaSqm),
+    floor: listing.floor === '' ? null : Number(listing.floor),
+    total_floors: listing.totalFloors === '' ? null : Number(listing.totalFloors),
+    year_built: listing.yearBuilt === '' ? null : Number(listing.yearBuilt),
 
-    _commit() {
-      safeSave(this.listings);
-      this.notify();
-    },
+    parking: !!listing.parking,
+    elevator: !!listing.elevator,
+    furnished: !!listing.furnished,
 
-    upsert(listing) {
-      const i = this.listings.findIndex(l => l.id === listing.id);
-      if (i === -1) this.listings = [listing, ...this.listings];
-      else this.listings = this.listings.map(l => l.id === listing.id ? listing : l);
-      this._commit();
-    },
+    features: listing.features || '',
 
-    remove(id) {
-      this.listings = this.listings.filter(l => l.id !== id);
-      this._commit();
-    },
+    images: Array.isArray(listing.images) ? listing.images : [],
+    main_image: Number(listing.mainImage || 0),
 
-    setStatus(id, status) {
-      const l = this.listings.find(x => x.id === id);
-      if (!l) return;
-      this.upsert({ ...l, status });
-    },
-
-    toggleFeatured(id) {
-      const l = this.listings.find(x => x.id === id);
-      if (!l) return;
-      this.upsert({ ...l, featured: !l.featured });
-    },
-
-    newId() {
-      const nums = this.listings.map(l => Number((l.id || 'L-0').split('-')[1] || 0)).filter(n => !isNaN(n));
-      const next = (Math.max(0, ...nums) + 1).toString().padStart(3, '0');
-      return 'L-' + next;
-    },
-
-    reset() {
-      this.listings = [...SEED_LISTINGS];
-      this._commit();
-    },
-
-    // ----- Selectors for public site -----
-    publicListings() {
-      // Active + Sold + Rented are publicly visible; Sold/Rented get a badge.
-      // Drafts are admin-only.
-      return this.listings.filter(l => l.status !== 'Draft');
-    },
-
-    featured() {
-      return this.publicListings().filter(l => l.featured);
-    },
+    created_at: listing.createdAt || new Date().toISOString().slice(0, 10),
   };
+}
 
-  // Cross-tab sync: when another tab writes to localStorage, refresh here.
+function fromDb(row) {
+  return {
+    id: row.id,
+    title: row.title || '',
+    description: row.description || '',
+
+    propertyType: row.property_type || 'House',
+    listingType: row.listing_type || 'Sale',
+    status: row.status || 'Draft',
+    featured: !!row.featured,
+
+    city: row.city || '',
+    area: row.area || '',
+    address: row.address || '',
+
+    price: row.price ?? '',
+    currency: row.currency || 'EUR',
+
+    bedrooms: row.bedrooms ?? '',
+    bathrooms: row.bathrooms ?? '',
+    areaSqm: row.area_sqm ?? '',
+    floor: row.floor ?? '',
+    totalFloors: row.total_floors ?? '',
+    yearBuilt: row.year_built ?? '',
+
+    parking: !!row.parking,
+    elevator: !!row.elevator,
+    furnished: !!row.furnished,
+
+    features: row.features || '',
+
+    images: Array.isArray(row.images) ? row.images : [],
+    mainImage: row.main_image ?? 0,
+
+    createdAt: row.created_at || '',
+  };
+}
+
+const Store = {
+  listings: [...SEED_LISTINGS],
+  subs: new Set(),
+  ready: false,
+
+  notify() {
+    this.subs.forEach(fn => { try { fn(this.listings); } catch (e) {} });
+  },
+
+  on(fn) {
+    this.subs.add(fn);
+    fn(this.listings);
+    return () => this.subs.delete(fn);
+  },
+
+  async load() {
+    if (!window.akSupabase) {
+      console.warn('Supabase is not configured. Using seed listings.');
+      this.listings = [...SEED_LISTINGS];
+      this.ready = true;
+      this.notify();
+      return;
+    }
+
+    const { data, error } = await window.akSupabase
+      .from('listings')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Listings load error:', error);
+      this.listings = [...SEED_LISTINGS];
+    } else {
+      this.listings = (data || []).map(fromDb);
+    }
+
+    this.ready = true;
+    this.notify();
+  },
+
+  async upsert(listing) {
+    if (!window.akSupabase) return;
+
+    const row = toDb(listing);
+
+    const { error } = await window.akSupabase
+      .from('listings')
+      .upsert(row, { onConflict: 'id' });
+
+    if (error) {
+      console.error('Listing save error:', error);
+      alert(error.message || 'Listing save failed.');
+      return;
+    }
+
+    const i = this.listings.findIndex(l => l.id === listing.id);
+    if (i === -1) this.listings = [listing, ...this.listings];
+    else this.listings = this.listings.map(l => l.id === listing.id ? listing : l);
+
+    this.notify();
+  },
+
+  async remove(id) {
+    if (!window.akSupabase) return;
+
+    const { error } = await window.akSupabase
+      .from('listings')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Listing delete error:', error);
+      alert(error.message || 'Listing delete failed.');
+      return;
+    }
+
+    this.listings = this.listings.filter(l => l.id !== id);
+    this.notify();
+  },
+
+  async setStatus(id, status) {
+    const l = this.listings.find(x => x.id === id);
+    if (!l) return;
+    await this.upsert({ ...l, status });
+  },
+
+  async toggleFeatured(id) {
+    const l = this.listings.find(x => x.id === id);
+    if (!l) return;
+    await this.upsert({ ...l, featured: !l.featured });
+  },
+
+  newId() {
+    const nums = this.listings.map(l => Number((l.id || 'L-0').split('-')[1] || 0)).filter(n => !isNaN(n));
+    const next = (Math.max(0, ...nums) + 1).toString().padStart(3, '0');
+    return 'L-' + next;
+  },
+
+  async reset() {
+    this.listings = [...SEED_LISTINGS];
+    this.notify();
+  },
+
+  publicListings() {
+    return this.listings.filter(l => l.status !== 'Draft');
+  },
+
+  featured() {
+    return this.publicListings().filter(l => l.featured);
+  },
+};
+
+
   window.addEventListener('storage', (e) => {
     if (e.key !== LS_KEY) return;
     const next = safeLoad();
@@ -216,6 +322,7 @@
 
   // Export
   window.AKStore = Store;
+  Store.load();
   window.SEED_LISTINGS = SEED_LISTINGS;
   window.formatPrice = formatPrice;
 })();
