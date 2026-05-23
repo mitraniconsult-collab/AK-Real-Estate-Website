@@ -1,1 +1,478 @@
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AK Real Estate — Listing</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --ak-black: #050505;
+      --ak-ink: #0a0a0a;
+      --ak-charcoal: #111111;
+      --ak-graphite: #1b1b1b;
+      --ak-crimson: #b0181c;
+      --fg: #f5f1ea;
+      --fg-2: rgba(245, 241, 234, .72);
+      --fg-3: rgba(245, 241, 234, .45);
+      --hairline: rgba(245, 241, 234, .14);
+      --font-display: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+      --font-body: Inter, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--ak-black);
+      color: var(--fg);
+      font-family: var(--font-body);
+    }
+
+    a { color: inherit; }
+
+    .shell {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 70% 20%, rgba(176,24,28,.10), transparent 32%),
+        linear-gradient(180deg, #080808 0%, #050505 100%);
+    }
+
+    header {
+      height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(20px, 5vw, 72px);
+      border-bottom: 1px solid var(--hairline);
+      position: sticky;
+      top: 0;
+      background: rgba(5,5,5,.82);
+      backdrop-filter: blur(14px);
+      z-index: 5;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      letter-spacing: .18em;
+      font-size: 22px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .red-square {
+      width: 7px;
+      height: 7px;
+      background: var(--ak-crimson);
+      display: inline-block;
+    }
+
+    .nav {
+      display: flex;
+      gap: 28px;
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--fg-2);
+    }
+
+    .nav a {
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      padding-bottom: 4px;
+    }
+
+    .nav a:hover {
+      color: var(--fg);
+      border-color: var(--ak-crimson);
+    }
+
+    main {
+      padding: clamp(28px, 5vw, 76px);
+    }
+
+    .loading,
+    .not-found {
+      min-height: calc(100vh - 82px);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--fg-2);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(360px, .8fr);
+      gap: clamp(28px, 5vw, 72px);
+      align-items: start;
+    }
+
+    .gallery {
+      display: grid;
+      gap: 16px;
+    }
+
+    .main-image {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      background: var(--ak-graphite);
+      border: 1px solid var(--hairline);
+      overflow: hidden;
+    }
+
+    .main-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(.92) contrast(1.04);
+    }
+
+    .thumbs {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .thumb {
+      aspect-ratio: 4 / 3;
+      border: 1px solid var(--hairline);
+      overflow: hidden;
+      background: var(--ak-graphite);
+      cursor: pointer;
+      opacity: .72;
+    }
+
+    .thumb.active {
+      border-color: var(--ak-crimson);
+      opacity: 1;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .details {
+      position: sticky;
+      top: 110px;
+      border: 1px solid var(--hairline);
+      background: rgba(17,17,17,.72);
+      padding: clamp(24px, 3vw, 42px);
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--fg-2);
+      font-size: 10px;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: clamp(44px, 6vw, 86px);
+      line-height: .92;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .price {
+      margin-top: 28px;
+      font-family: var(--font-display);
+      font-size: clamp(30px, 3vw, 44px);
+      letter-spacing: .05em;
+    }
+
+    .meta {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--hairline);
+      border: 1px solid var(--hairline);
+    }
+
+    .meta div {
+      background: var(--ak-black);
+      padding: 16px 14px;
+    }
+
+    .meta span {
+      display: block;
+      color: var(--fg-3);
+      font-size: 9px;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .meta strong {
+      font-weight: 400;
+      font-size: 15px;
+    }
+
+    .description {
+      margin-top: 30px;
+      color: var(--fg-2);
+      font-size: 15px;
+      line-height: 1.75;
+      font-weight: 300;
+    }
+
+    .features {
+      margin-top: 26px;
+      padding-top: 24px;
+      border-top: 1px solid var(--hairline);
+      color: var(--fg-2);
+      font-size: 12px;
+      line-height: 1.8;
+      letter-spacing: .04em;
+    }
+
+    .actions {
+      margin-top: 34px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 22px;
+      border: 1px solid var(--hairline);
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    .btn.primary {
+      background: var(--ak-crimson);
+      border-color: var(--ak-crimson);
+      color: white;
+    }
+
+    .btn.secondary {
+      color: var(--fg-2);
+    }
+
+    .btn:hover {
+      filter: brightness(1.12);
+    }
+
+    @media (max-width: 920px) {
+      header {
+        height: auto;
+        min-height: 72px;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 14px;
+        padding-top: 18px;
+        padding-bottom: 18px;
+      }
+
+      .nav {
+        gap: 16px;
+        flex-wrap: wrap;
+        font-size: 10px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .details {
+        position: relative;
+        top: auto;
+      }
+
+      .meta {
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        padding: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <header>
+      <a class="logo" href="/">
+        AK <span class="red-square"></span> Real Estate
+      </a>
+      <nav class="nav">
+        <a href="/">Начало</a>
+        <a href="/#services">Услуги</a>
+        <a href="/#contact">Контакт</a>
+        <a href="/admin/">Admin</a>
+      </nav>
+    </header>
+
+    <main id="app">
+      <div class="loading">Loading listing…</div>
+    </main>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://ylyilqwoiyirodigshgd.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_wxCfqS0aCFRRXf0WgIhGzw_2SGd8tcL";
+
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    const app = document.getElementById("app");
+
+    function formatPrice(n, currency = "EUR", listingType) {
+      if (n == null || isNaN(Number(n))) return "—";
+      const sym = currency === "USD" ? "$" : currency === "EUR" ? "€" : currency === "GBP" ? "£" : currency + " ";
+      let value = Number(n);
+      let formatted;
+      if (value >= 1000000) formatted = sym + (value / 1000000).toFixed(value % 1000000 === 0 ? 0 : 1) + "M";
+      else if (value >= 1000) formatted = sym + value.toLocaleString();
+      else formatted = sym + value;
+      if (listingType === "Rent") formatted += "/mo";
+      return formatted;
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function renderNotFound() {
+      app.innerHTML = `
+        <div class="not-found">
+          <div>
+            <div class="eyebrow" style="justify-content:center;"><span class="red-square"></span> Listing</div>
+            <h1 style="font-size:clamp(42px,8vw,92px);">Not found.</h1>
+            <p style="letter-spacing:.08em;text-transform:none;line-height:1.7;margin-top:20px;">
+              Обявата не е намерена или вече не е активна.
+            </p>
+            <div class="actions" style="justify-content:center;">
+              <a class="btn primary" href="/">Към началото</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderListing(listing) {
+      const images = Array.isArray(listing.images) ? listing.images : [];
+      const mainIndex = Number(listing.main_image || 0);
+      const mainImage = images[mainIndex] || images[0] || "";
+
+      app.innerHTML = `
+        <div class="grid">
+          <section class="gallery">
+            <div class="main-image">
+              ${mainImage ? `<img id="mainPhoto" src="${escapeHtml(mainImage)}" alt="">` : ""}
+            </div>
+
+            ${images.length > 1 ? `
+              <div class="thumbs">
+                ${images.map((src, index) => `
+                  <button class="thumb ${index === mainIndex ? "active" : ""}" data-src="${escapeHtml(src)}" type="button">
+                    <img src="${escapeHtml(src)}" alt="">
+                  </button>
+                `).join("")}
+              </div>
+            ` : ""}
+          </section>
+
+          <aside class="details">
+            <div class="eyebrow">
+              <span class="red-square"></span>
+              ${escapeHtml(listing.area || listing.city || "Property")}
+            </div>
+
+            <h1>${escapeHtml(listing.title)}</h1>
+
+            <div class="price">
+              ${formatPrice(listing.price, listing.currency, listing.listing_type)}
+            </div>
+
+            <div class="meta">
+              <div><span>Bedrooms</span><strong>${escapeHtml(listing.bedrooms || "—")}</strong></div>
+              <div><span>Bathrooms</span><strong>${escapeHtml(listing.bathrooms || "—")}</strong></div>
+              <div><span>Area</span><strong>${escapeHtml(listing.area_sqm || "—")} m²</strong></div>
+              <div><span>Type</span><strong>${escapeHtml(listing.property_type || "—")}</strong></div>
+              <div><span>Listing</span><strong>${escapeHtml(listing.listing_type || "—")}</strong></div>
+              <div><span>Status</span><strong>${escapeHtml(listing.status || "—")}</strong></div>
+            </div>
+
+            ${listing.description ? `<div class="description">${escapeHtml(listing.description)}</div>` : ""}
+
+            ${listing.features ? `<div class="features">${escapeHtml(listing.features)}</div>` : ""}
+
+            <div class="actions">
+              <a class="btn primary" href="/#contact">Заявете достъп</a>
+              <a class="btn secondary" href="/">Назад</a>
+            </div>
+          </aside>
+        </div>
+      `;
+
+      document.querySelectorAll(".thumb").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const photo = document.getElementById("mainPhoto");
+          if (photo) photo.src = btn.dataset.src;
+          document.querySelectorAll(".thumb").forEach(x => x.classList.remove("active"));
+          btn.classList.add("active");
+        });
+      });
+    }
+
+    async function loadListing() {
+      if (!id) {
+        renderNotFound();
+        return;
+      }
+
+      const { data, error } = await client
+        .from("listings")
+        .select("*")
+        .eq("id", id)
+        .neq("status", "Draft")
+        .single();
+
+      if (error || !data) {
+        console.error("Listing load error:", error);
+        renderNotFound();
+        return;
+      }
+
+      renderListing(data);
+    }
+
+    loadListing();
+  </script>
+</body>
+</html>
