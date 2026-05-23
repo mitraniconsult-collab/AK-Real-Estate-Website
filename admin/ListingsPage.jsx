@@ -274,7 +274,7 @@ function RowActions({ listing, onDelete }) {
   const next = listing.status === 'Active' ? 'Draft' : 'Active';
   return (
     <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center', justifyContent: 'flex-end' }}>
-      <ActionBtn title="View" href={`../ui_kits/website/index.html`} disabled={listing.status !== 'Active'}>
+     <ActionBtn title="View" href={`/#listing-${listing.id}`} disabled={listing.status !== 'Active'}>
         <Icon name="eye" size={14} />
       </ActionBtn>
       <ActionBtn title="Edit" href={`#/listings/${listing.id}/edit`}>
