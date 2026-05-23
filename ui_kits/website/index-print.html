@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AK Real Estate — A Quieter Kind of Luxury (Print)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="../../assets/logo-monogram.svg">
+<link rel="stylesheet" href="../../colors_and_type.css">
+<link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ak-ink);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+  * { box-sizing: border-box; }
+
+  /* ---------- PRINT ---------- */
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  @media print {
+    html, body { background: var(--ak-ink) !important; }
+
+    *, *::before, *::after {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      animation: none !important;
+      transition: none !important;
+    }
+
+    /* No fixed nav on print — push it inline above the hero so it shows once */
+    nav[data-print-nav] {
+      position: static !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      background: var(--ak-ink) !important;
+      border-bottom: 1px solid var(--hairline-light) !important;
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+
+    /* Each main section → its own landscape page */
+    main > section {
+      page-break-before: always;
+      break-before: page;
+      page-break-inside: avoid;
+      break-inside: avoid;
+      min-height: auto !important;
+      width: 100%;
+    }
+    /* but not the very first one */
+    main > section:first-child {
+      page-break-before: avoid;
+      break-before: avoid;
+    }
+
+    footer {
+      page-break-before: always;
+      break-before: page;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* Hero: shorter on print so headline + image both fit on one page */
+    main > section:first-child {
+      min-height: 180mm !important;
+    }
+
+    /* Listings masonry — let auto-rows shrink so it fits a page */
+    .ak-print-listings-grid {
+      grid-auto-rows: 80px !important;
+      gap: 10px !important;
+    }
+
+    /* Disable hover-only transitions/zooms */
+    img { transform: none !important; filter: saturate(.9) contrast(1.05) !important; }
+
+    /* Backdrop blurs become solid translucents */
+    [style*="backdrop-filter"] { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  }
+
+  ::selection { background: var(--ak-crimson); color: #fff; }
+  @keyframes ak-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .ak-rise { animation: ak-rise .9s var(--ease) both; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="atoms.jsx"></script>
+  <script type="text/babel" src="Nav.jsx"></script>
+  <script type="text/babel" src="Hero.jsx"></script>
+  <script type="text/babel" src="Listings.jsx"></script>
+  <script type="text/babel" src="Founder.jsx"></script>
+  <script type="text/babel" src="Concierge.jsx"></script>
+  <script type="text/babel" src="Editorial.jsx"></script>
+  <script type="text/babel" src="Press.jsx"></script>
+  <script type="text/babel" src="AppPromo.jsx"></script>
+  <script type="text/babel" src="Journal.jsx"></script>
+  <script type="text/babel" src="Contact.jsx"></script>
+  <script type="text/babel" src="Footer.jsx"></script>
+
+  <script type="text/babel">
+    const { Nav, Hero, Listings, Founder, Concierge, Editorial, Press, AppPromo, Journal, Contact, Footer } = window;
+
+    // Print-specific nav: static, no scroll listener
+    function PrintNav() {
+      return (
+        <nav data-print-nav style={{
+          position: 'static',
+          padding: '20px var(--gutter)',
+          display: 'flex', alignItems: 'center', gap: 24,
+          background: 'var(--ak-ink)',
+          borderBottom: '1px solid var(--hairline-light)',
+        }}>
+          <window.Logo size="md" />
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 28, alignItems: 'center', flexShrink: 0 }}>
+            {['Listings','The Founder','Concierge','Journal','Press','Contact'].map((l,i) => (
+              <span key={l} style={{
+                fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
+                letterSpacing: '0.28em', textTransform: 'uppercase',
+                color: i === 0 ? 'var(--ak-crimson)' : 'var(--fg)',
+              }}>{l}</span>
+            ))}
+          </div>
+          <span style={{
+            background: 'var(--ak-crimson)', color: '#fff',
+            padding: '11px 18px', fontSize: 10, fontWeight: 500,
+            letterSpacing: '0.18em', textTransform: 'uppercase',
+            flexShrink: 0,
+          }}>Request Access</span>
+        </nav>
+      );
+    }
+
+    function App() {
+      return (
+        <>
+          <PrintNav />
+          <main>
+            <Hero />
+            <Listings />
+            <Founder />
+            <Concierge />
+            <Editorial />
+            <Press />
+            <AppPromo />
+            <Journal />
+            <Contact />
+          </main>
+          <Footer />
+        </>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+    // Auto-print after fonts + scripts + images settle.
+    // Skip when ?noprint is on URL (for visual checks in iframe).
+    (async () => {
+      if (location.search.includes('noprint')) return;
+      try { await document.fonts.ready; } catch (e) {}
+      // Wait for images to finish loading
+      await Promise.all([...document.images].map(img =>
+        img.complete ? Promise.resolve() : new Promise(res => {
+          img.addEventListener('load', res, { once: true });
+          img.addEventListener('error', res, { once: true });
+        })
+      ));
+      await new Promise(r => setTimeout(r, 700));
+      window.print();
+    })();
+  </script>
+</body>
+</html>

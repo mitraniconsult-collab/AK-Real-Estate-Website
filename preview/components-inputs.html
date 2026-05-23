@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;font-family:'Inter',system-ui,sans-serif}body{background:#ece7dd;padding:32px;min-height:300px;display:flex;flex-direction:column;gap:20px;justify-content:center}
+.lbl{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:#4a4a48;width:120px;flex-shrink:0}
+.row{display:flex;align-items:flex-end;gap:32px}
+.field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+.field label{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#8a8478;font-weight:500}
+.field input{background:transparent;border:0;border-bottom:1px solid rgba(0,0,0,.2);padding:8px 0;font-family:'Inter',sans-serif;font-size:14px;color:#0a0a0a;outline:none}
+.field input:focus{border-color:#b0181c}
+.field input::placeholder{color:#8a8478}
+.field.f-active input{border-color:#b0181c}
+.field.f-error input{border-color:#b0181c;border-width:1.5px}
+.field.f-error .err{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#b0181c;font-weight:500;margin-top:2px}
+</style></head><body>
+<div class="row">
+  <div class="lbl">Text input</div>
+  <div class="field"><label>Full name</label><input value="" placeholder="Enter your name" /></div>
+  <div class="field f-active"><label>Email</label><input value="aki@private.estate" /></div>
+</div>
+<div class="row">
+  <div class="lbl">Interest</div>
+  <div class="field"><label>Price range</label><input value="$5M – $25M" /></div>
+  <div class="field f-error"><label>Phone</label><input value="not a number" /><div class="err">▪ A VALID NUMBER IS REQUIRED</div></div>
+</div>
+<div class="row">
+  <div class="lbl">Long form</div>
+  <div class="field" style="flex:1"><label>What are you looking for?</label><input value="A quiet street, a stone wall, a garden." /></div>
+</div>
+</body></html>

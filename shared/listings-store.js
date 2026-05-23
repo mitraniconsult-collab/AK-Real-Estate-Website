@@ -1,0 +1,221 @@
+// =========================================================
+//  AK REAL ESTATE — Shared listings store
+//  Used by BOTH the admin panel (admin/) and the public
+//  website (ui_kits/website/). Persists to localStorage and
+//  syncs across tabs via the `storage` event.
+// =========================================================
+
+(function () {
+  const LS_KEY = 'ak.listings.v1';
+  const TS_KEY = 'ak.listings.v1.touched';
+
+  const SEED_LISTINGS = [
+    {
+      id: 'L-001',
+      title: 'Maison Argentine',
+      description: 'A 1924 Mediterranean restored over four years by Studio Argent. Behind a stone wall on a one-block lane.',
+      propertyType: 'House', listingType: 'Sale', status: 'Active', featured: true,
+      city: 'Los Angeles', area: 'Bel Air',
+      address: '1421 Stone Canyon Road, Los Angeles, CA 90077',
+      price: 24800000, currency: 'USD',
+      bedrooms: 7, bathrooms: 9, areaSqm: 1152, floor: 0, totalFloors: 3, yearBuilt: 1924,
+      parking: true, elevator: false, furnished: false,
+      features: 'Motor court · Restored stone facade · Library · Cellar · Pool',
+      images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80&auto=format&fit=crop"],
+      mainImage: 0, createdAt: '2026-04-12',
+    },
+    {
+      id: 'L-002',
+      title: 'The Glass Pavilion',
+      description: 'A five-bedroom architectural by N. Marquis, set on a cliff above the cove. Cantilevered living room over the Pacific.',
+      propertyType: 'Villa', listingType: 'Sale', status: 'Active', featured: true,
+      city: 'Malibu', area: 'Encinal Bluffs',
+      address: '32100 Pacific Coast Hwy, Malibu, CA 90265',
+      price: 38000000, currency: 'USD',
+      bedrooms: 5, bathrooms: 6, areaSqm: 762, floor: 0, totalFloors: 2, yearBuilt: 2018,
+      parking: true, elevator: true, furnished: true,
+      features: 'Off-market · Architectural · Pool · Direct beach access',
+      images: ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80&auto=format&fit=crop"],
+      mainImage: 0, createdAt: '2026-04-02',
+    },
+    {
+      id: 'L-003',
+      title: 'Villa di Pietra',
+      description: 'A restored 1924 Italianate on the avocado orchards of Montecito. Eight bedrooms, twelve baths, a chapel.',
+      propertyType: 'Villa', listingType: 'Sale', status: 'Active', featured: false,
+      city: 'Montecito', area: 'Hot Springs',
+      address: '900 Hot Springs Rd, Montecito, CA 93108',
+      price: 14800000, currency: 'USD',
+      bedrooms: 8, bathrooms: 12, areaSqm: 1319, floor: 0, totalFloors: 3, yearBuilt: 1924,
+      parking: true, elevator: false, furnished: false,
+      features: 'Restored 1924 · Orchard · Chapel · Caretaker cottage',
+      images: ["https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=1200&q=80&auto=format&fit=crop"],
+      mainImage: 0, createdAt: '2026-03-18',
+    },
+    {
+      id: 'L-004',
+      title: 'Casa del Lago',
+      description: 'A four-bedroom lake house with private dock. Original Frank Lloyd Wright influence, refreshed in 2022.',
+      propertyType: 'House', listingType: 'Rent', status: 'Active', featured: false,
+      city: 'Lake Arrowhead', area: 'North Shore',
+      address: '28 Lakeshore Lane, Lake Arrowhead, CA 92352',
+      price: 42000, currency: 'USD',
+      bedrooms: 4, bathrooms: 5, areaSqm: 585, floor: 0, totalFloors: 2, yearBuilt: 1962,
+      parking: true, elevator: false, furnished: true,
+      features: 'Private dock · Boathouse · Seasonal · Furnished',
+      images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=80&auto=format&fit=crop"],
+      mainImage: 0, createdAt: '2026-05-01',
+    },
+    {
+      id: 'L-005',
+      title: 'Atelier 12',
+      description: 'A six-bedroom contemporary on a flag lot. Currently being finished — listed in draft for review.',
+      propertyType: 'House', listingType: 'Sale', status: 'Draft', featured: false,
+      city: 'Beverly Hills', area: 'Flats',
+      address: '906 Crescent Drive, Beverly Hills, CA 90210',
+      price: 18500000, currency: 'USD',
+      bedrooms: 6, bathrooms: 7, areaSqm: 911, floor: 0, totalFloors: 2, yearBuilt: 2025,
+      parking: true, elevator: true, furnished: false,
+      features: 'New construction · Gym · Wine room · Smart home',
+      images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80&auto=format&fit=crop"],
+      mainImage: 0, createdAt: '2026-05-12',
+    },
+    {
+      id: 'L-006',
+      title: 'The Ravine House',
+      description: 'A five-bedroom modernist in the Hollywood Hills, sold off-market in April 2026.',
+      propertyType: 'House', listingType: 'Sale', status: 'Sold', featured: false,
+      city: 'Los Angeles', area: 'Hollywood Hills',
+      address: '7800 Mulholland Drive, Los Angeles, CA 90046',
+      price: 12400000, currency: 'USD',
+      bedrooms: 5, bathrooms: 6, areaSqm: 707, floor: 0, totalFloors: 3, yearBuilt: 1971,
+      parking: true, elevator: false, furnished: false,
+      features: 'Modernist · Pool · Canyon view',
+      images: ["https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1200&q=80&auto=format&fit=crop"],
+      mainImage: 0, createdAt: '2026-02-04',
+    },
+    {
+      id: 'L-007',
+      title: 'Atelier Loft No. 4',
+      description: 'A two-bedroom downtown loft with east-facing light. Rented monthly.',
+      propertyType: 'Apartment', listingType: 'Rent', status: 'Rented', featured: false,
+      city: 'Los Angeles', area: 'Arts District',
+      address: '800 Traction Ave #4B, Los Angeles, CA 90013',
+      price: 18500, currency: 'USD',
+      bedrooms: 2, bathrooms: 2, areaSqm: 167, floor: 4, totalFloors: 8, yearBuilt: 1923,
+      parking: true, elevator: true, furnished: true,
+      features: 'Loft · Concrete · Skyline view · Pet-friendly',
+      images: ["https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1200&q=80&auto=format&fit=crop"],
+      mainImage: 0, createdAt: '2026-03-22',
+    },
+  ];
+
+  function safeLoad() {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    } catch (e) {}
+    return null;
+  }
+
+  function safeSave(listings) {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(listings));
+      localStorage.setItem(TS_KEY, String(Date.now()));
+    } catch (e) { /* quota / private mode */ }
+  }
+
+  const Store = {
+    listings: safeLoad() || [...SEED_LISTINGS],
+    subs: new Set(),
+
+    notify() {
+      this.subs.forEach(fn => { try { fn(this.listings); } catch (e) {} });
+    },
+
+    on(fn) {
+      this.subs.add(fn);
+      return () => this.subs.delete(fn);
+    },
+
+    _commit() {
+      safeSave(this.listings);
+      this.notify();
+    },
+
+    upsert(listing) {
+      const i = this.listings.findIndex(l => l.id === listing.id);
+      if (i === -1) this.listings = [listing, ...this.listings];
+      else this.listings = this.listings.map(l => l.id === listing.id ? listing : l);
+      this._commit();
+    },
+
+    remove(id) {
+      this.listings = this.listings.filter(l => l.id !== id);
+      this._commit();
+    },
+
+    setStatus(id, status) {
+      const l = this.listings.find(x => x.id === id);
+      if (!l) return;
+      this.upsert({ ...l, status });
+    },
+
+    toggleFeatured(id) {
+      const l = this.listings.find(x => x.id === id);
+      if (!l) return;
+      this.upsert({ ...l, featured: !l.featured });
+    },
+
+    newId() {
+      const nums = this.listings.map(l => Number((l.id || 'L-0').split('-')[1] || 0)).filter(n => !isNaN(n));
+      const next = (Math.max(0, ...nums) + 1).toString().padStart(3, '0');
+      return 'L-' + next;
+    },
+
+    reset() {
+      this.listings = [...SEED_LISTINGS];
+      this._commit();
+    },
+
+    // ----- Selectors for public site -----
+    publicListings() {
+      // Active + Sold + Rented are publicly visible; Sold/Rented get a badge.
+      // Drafts are admin-only.
+      return this.listings.filter(l => l.status !== 'Draft');
+    },
+
+    featured() {
+      return this.publicListings().filter(l => l.featured);
+    },
+  };
+
+  // Cross-tab sync: when another tab writes to localStorage, refresh here.
+  window.addEventListener('storage', (e) => {
+    if (e.key !== LS_KEY) return;
+    const next = safeLoad();
+    if (next) {
+      Store.listings = next;
+      Store.notify();
+    }
+  });
+
+  // ----- Helpers -----
+  function formatPrice(n, currency = 'USD', listingType) {
+    if (n == null || isNaN(n)) return '—';
+    const sym = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : currency + ' ';
+    let formatted;
+    if (n >= 1_000_000) formatted = sym + (n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1) + 'M';
+    else if (n >= 1000) formatted = sym + n.toLocaleString();
+    else formatted = sym + n;
+    if (listingType === 'Rent') formatted += '/mo';
+    return formatted;
+  }
+
+  // Export
+  window.AKStore = Store;
+  window.SEED_LISTINGS = SEED_LISTINGS;
+  window.formatPrice = formatPrice;
+})();

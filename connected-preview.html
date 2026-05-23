@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AK Real Estate — Admin ↔ Site (Connected Preview)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="assets/logo-monogram.svg">
+<link rel="stylesheet" href="colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: var(--ak-black); color: var(--fg); font-family: var(--font-body); font-weight: 300; -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+
+  .stage { display: grid; grid-template-rows: auto 1fr auto; height: 100vh; }
+
+  /* ---------- top bar ---------- */
+  header.bar {
+    display: flex; align-items: center; gap: 24px;
+    padding: 14px clamp(18px, 2vw, 28px);
+    border-bottom: 1px solid var(--hairline-light);
+    background: var(--ak-black);
+  }
+  .logo { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; }
+  .logo .ak { font-family: var(--font-display); font-weight: 300; font-size: 22px; letter-spacing: .18em; color: var(--fg); line-height: 1; }
+  .logo .sq { width: 7px; height: 7px; background: var(--ak-crimson); }
+  .logo .lbl { font-family: var(--font-display); font-weight: 300; font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--fg-2); line-height: 1; }
+  .title { font-family: var(--font-display); font-weight: 200; font-size: 22px; letter-spacing: .08em; text-transform: uppercase; }
+  .title em { color: var(--ak-crimson); font-style: italic; font-weight: 400; }
+  .crumb { color: var(--fg-3); font-size: 10px; font-weight: 500; letter-spacing: .28em; text-transform: uppercase; }
+
+  /* ---------- live indicator ---------- */
+  .live { margin-left: auto; display: inline-flex; align-items: center; gap: 8px;
+    font-size: 10px; font-weight: 500; letter-spacing: .28em; text-transform: uppercase; color: var(--fg-2); }
+  .live .dot { width: 8px; height: 8px; background: var(--ak-crimson); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+  .btn { background: transparent; border: 1px solid var(--hairline-light); color: var(--fg); cursor: pointer; padding: 9px 14px; font-family: var(--font-body); font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; transition: all .2s var(--ease); border-radius: 0; display: inline-flex; align-items: center; gap: 8px; }
+  .btn:hover { border-color: var(--ak-crimson); color: var(--ak-crimson-bright); }
+  .btn.primary { background: var(--ak-crimson); color: #fff; border-color: var(--ak-crimson); }
+  .btn.primary:hover { background: var(--ak-crimson-deep); color: #fff; }
+  .btn.danger { color: var(--ak-crimson-bright); border-color: rgba(176,24,28,.5); }
+
+  /* ---------- panels ---------- */
+  .panes { display: grid; grid-template-columns: 1fr 1fr; gap: 0; min-height: 0; }
+  .pane { display: grid; grid-template-rows: auto 1fr; min-height: 0; min-width: 0; border-right: 1px solid var(--hairline-light); }
+  .pane:last-child { border-right: 0; }
+
+  .pane-head {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 18px; background: var(--ak-charcoal);
+    border-bottom: 1px solid var(--hairline-light);
+  }
+  .pane-head .badge { font-family: var(--font-display); font-weight: 300; font-size: 11px; letter-spacing: .32em; text-transform: uppercase; padding: 4px 10px; border: 1px solid var(--hairline-light); color: var(--fg); }
+  .pane-head .badge.admin { background: var(--ak-crimson); border-color: var(--ak-crimson); color: #fff; }
+  .pane-head .badge.public { background: transparent; color: var(--fg); }
+  .pane-head .name { font-family: var(--font-display); font-weight: 300; font-size: 16px; letter-spacing: .14em; text-transform: uppercase; color: var(--fg); }
+  .pane-head .meta { margin-left: auto; font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--fg-3); }
+  .pane-head .meta a { color: var(--fg-2); text-decoration: none; border-bottom: 1px solid var(--ak-crimson); padding-bottom: 2px; transition: color .2s; }
+  .pane-head .meta a:hover { color: var(--fg); }
+
+  .pane-body { position: relative; background: var(--ak-ink); overflow: hidden; min-height: 0; }
+  .pane-body iframe { width: 100%; height: 100%; border: 0; display: block; background: var(--ak-ink); }
+
+  /* ---------- footer ---------- */
+  footer.tip {
+    padding: 12px clamp(18px, 2vw, 28px);
+    border-top: 1px solid var(--hairline-light);
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    background: var(--ak-black);
+    font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--fg-3);
+  }
+  footer.tip .sq { width: 6px; height: 6px; background: var(--ak-crimson); display: inline-block; }
+  footer.tip kbd { font-family: var(--font-body); font-size: 9px; padding: 2px 6px; border: 1px solid var(--hairline-light); color: var(--fg-2); }
+
+  /* ---------- flash ---------- */
+  .flash {
+    position: fixed; top: 70px; right: 24px; z-index: 100;
+    background: var(--ak-charcoal); border: 1px solid var(--ak-crimson);
+    padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+    transform: translateX(120%); transition: transform .35s var(--ease);
+    box-shadow: 0 18px 40px -16px rgba(0,0,0,.6);
+    min-width: 280px;
+  }
+  .flash.show { transform: translateX(0); }
+  .flash .sq { width: 8px; height: 8px; background: var(--ak-crimson); }
+  .flash .txt { font-size: 11px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--fg); }
+
+  /* ---------- mobile fallback ---------- */
+  @media (max-width: 900px) {
+    .panes { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+    .pane { border-right: 0; border-bottom: 1px solid var(--hairline-light); }
+    .pane:last-child { border-bottom: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <!-- ============== TOP BAR ============== -->
+  <header class="bar">
+    <span class="logo">
+      <span class="ak">AK</span>
+      <span class="sq"></span>
+      <span class="lbl">REAL ESTATE</span>
+    </span>
+    <span style="width:1px;height:18px;background:var(--hairline-light)"></span>
+    <span class="crumb">▪ Connected Preview</span>
+    <span class="title">Admin ↔ <em>Site.</em></span>
+
+    <span class="live"><span class="dot"></span>Live sync · same-tab + cross-tab</span>
+
+    <button id="reseed"  class="btn danger" title="Restore the seed listings">↺ Reset Data</button>
+    <button id="reload"  class="btn">↻ Reload Frames</button>
+  </header>
+
+  <!-- ============== PANES ============== -->
+  <main class="panes">
+    <section class="pane">
+      <header class="pane-head">
+        <span class="badge admin">ADMIN</span>
+        <span class="name">Listings Management</span>
+        <span class="meta">
+          <a href="admin/index.html" target="_blank" rel="noopener">Open Full Admin ↗</a>
+        </span>
+      </header>
+      <div class="pane-body">
+        <iframe id="admin-frame" src="admin/_p/listings.html" title="Admin Panel"></iframe>
+      </div>
+    </section>
+
+    <section class="pane">
+      <header class="pane-head">
+        <span class="badge public">PUBLIC SITE</span>
+        <span class="name">akrealestate.com / listings</span>
+        <span class="meta">
+          <a href="ui_kits/website/index.html" target="_blank" rel="noopener">Open Full Site ↗</a>
+        </span>
+      </header>
+      <div class="pane-body">
+        <iframe id="site-frame" src="ui_kits/website/index.html#listings" title="Public Website"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============== FOOTER TIPS ============== -->
+  <footer class="tip">
+    <span class="sq"></span>
+    <span>Try this:</span>
+    <span style="color:var(--fg-2)">Publish a draft</span>
+    <span style="opacity:.5">→</span>
+    <span style="color:var(--fg-2)">Toggle ★ Featured</span>
+    <span style="opacity:.5">→</span>
+    <span style="color:var(--fg-2)">Mark a listing Sold</span>
+    <span style="opacity:.5">→</span>
+    <span style="color:var(--fg-2)">Edit a price</span>
+    <span style="flex:1"></span>
+    <span>Changes reflect on the right within a beat</span>
+  </footer>
+</div>
+
+<!-- ============== FLASH ============== -->
+<div id="flash" class="flash">
+  <span class="sq"></span>
+  <span class="txt" id="flash-txt">Synced</span>
+</div>
+
+<!-- Load shared store so this page can react to changes too -->
+<script src="shared/listings-store.js"></script>
+<script>
+(function () {
+  const adminFrame = document.getElementById('admin-frame');
+  const siteFrame  = document.getElementById('site-frame');
+  const flash      = document.getElementById('flash');
+  const flashTxt   = document.getElementById('flash-txt');
+
+  let flashTimer = null;
+  function showFlash(msg) {
+    flashTxt.textContent = msg;
+    flash.classList.add('show');
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(() => flash.classList.remove('show'), 1800);
+  }
+
+  // ---- Cross-frame sync ----
+  // Same-origin iframes share localStorage; `storage` event fires in every
+  // OTHER window when one writes. So admin writes → site frame's window
+  // receives storage event → its Store re-loads from localStorage and
+  // re-renders. We just also surface a top-level flash for visibility.
+  let lastSnapshot = JSON.stringify(window.AKStore.listings);
+  function checkChange() {
+    const cur = JSON.stringify(window.AKStore.listings);
+    if (cur !== lastSnapshot) {
+      lastSnapshot = cur;
+      showFlash('Site updated · listings synced');
+    }
+  }
+  window.AKStore.on(checkChange);
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'ak.listings.v1') checkChange();
+  });
+
+  // Force iframes to re-pull from localStorage on next 'storage' event by
+  // poking them; usually unnecessary because each iframe registers its own
+  // storage listener via shared/listings-store.js.
+
+  // ---- Controls ----
+  document.getElementById('reseed').addEventListener('click', () => {
+    if (!confirm('Reset listings to the seeded defaults? Any changes will be lost.')) return;
+    window.AKStore.reset();
+    // The storage event fires in OTHER windows only — manually re-load iframes
+    // so they pick up the reset immediately.
+    adminFrame.contentWindow.location.reload();
+    siteFrame.contentWindow.location.reload();
+    showFlash('Listings reset to seed');
+  });
+
+  document.getElementById('reload').addEventListener('click', () => {
+    adminFrame.contentWindow.location.reload();
+    siteFrame.contentWindow.location.reload();
+    showFlash('Frames reloaded');
+  });
+})();
+</script>
+</body>
+</html>

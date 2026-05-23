@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AK Real Estate — A Quieter Kind of Luxury</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="../assets/logo-monogram.svg">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
+
+<!-- =========================================================
+     External resources referenced by JS string literals.
+     The bundler resolves these and exposes them as
+     window.__resources[id] (Blob URLs) in the standalone file.
+     ========================================================= -->
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=2400&q=80&auto=format&fit=crop" data-resource-id="imgHero" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80&auto=format&fit=crop" data-resource-id="imgListA" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80&auto=format&fit=crop" data-resource-id="imgListB" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=1200&q=80&auto=format&fit=crop" data-resource-id="imgListC" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=80&auto=format&fit=crop" data-resource-id="imgListD" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80&auto=format&fit=crop" data-resource-id="imgListE" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1200&q=80&auto=format&fit=crop" data-resource-id="imgListF" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=80&auto=format&fit=crop" data-resource-id="imgFounder" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=2000&q=80&auto=format&fit=crop" data-resource-id="imgConcierge" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1800&q=80&auto=format&fit=crop" data-resource-id="imgEdHero" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=900&q=80&auto=format&fit=crop" data-resource-id="imgEdInset" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1600&q=80&auto=format&fit=crop" data-resource-id="imgApp" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=900&q=80&auto=format&fit=crop" data-resource-id="imgJournA" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&q=80&auto=format&fit=crop" data-resource-id="imgJournB" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80&auto=format&fit=crop" data-resource-id="imgSocA" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80&auto=format&fit=crop" data-resource-id="imgSocB" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80&auto=format&fit=crop" data-resource-id="imgSocC" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=600&q=80&auto=format&fit=crop" data-resource-id="imgSocD" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600&q=80&auto=format&fit=crop" data-resource-id="imgSocE" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&q=80&auto=format&fit=crop" data-resource-id="imgSocF" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=2200&q=80&auto=format&fit=crop" data-resource-id="imgContact" />
+
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1400&q=80&auto=format&fit=crop" data-resource-id="imgServiceMortgage" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1400&q=80&auto=format&fit=crop" data-resource-id="imgServiceRenovation" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1400&q=80&auto=format&fit=crop" data-resource-id="imgServiceInterior" />
+
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ak-ink);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+  * { box-sizing: border-box; }
+  ::selection { background: var(--ak-crimson); color: #fff; }
+  @keyframes ak-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .ak-rise { animation: ak-rise .9s var(--ease) both; }
+</style>
+</head>
+<body>
+
+<!-- Splash thumbnail shown while assets unpack & as no-JS fallback -->
+<template id="__bundler_thumbnail" data-bg-color="#0a0a0a">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#0a0a0a"/>
+    <rect x="180" y="160" width="840" height="480" fill="none" stroke="#f5f1ea" stroke-width="1.5" opacity="0.4"/>
+    <g fill="#f5f1ea" font-family="Georgia, serif" font-weight="300" letter-spacing="20" text-anchor="middle">
+      <text x="600" y="420" font-size="120">AK</text>
+    </g>
+    <rect x="585" y="470" width="30" height="30" fill="#b0181c"/>
+    <g fill="#9a9590" font-family="Georgia, serif" font-weight="300" letter-spacing="14" text-anchor="middle">
+      <text x="600" y="560" font-size="22">REAL ESTATE</text>
+    </g>
+  </svg>
+</template>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="atoms.jsx"></script>
+<script type="text/babel" src="i18n.jsx"></script>
+<script type="text/babel" src="Nav.jsx"></script>
+<script type="text/babel" src="Hero.jsx"></script>
+<script type="text/babel" src="Listings.jsx"></script>
+<script type="text/babel" src="Founder.jsx"></script>
+<script type="text/babel" src="Concierge.jsx"></script>
+<script type="text/babel" src="Editorial.jsx"></script>
+<script type="text/babel" src="Press.jsx"></script>
+<script type="text/babel" src="AppPromo.jsx"></script>
+<script type="text/babel" src="Journal.jsx"></script>
+<script type="text/babel" src="Contact.jsx"></script>
+<script type="text/babel" src="Footer.jsx"></script>
+<script type="text/babel" src="Services.jsx"></script>
+
+<script type="text/babel">
+  const { AkLangProvider, Nav, Hero, Listings, Founder, Concierge, Editorial, Press, AppPromo, Journal, Contact, Footer, ServicesPage } = window;
+
+  // tiny hash router — '#/services' → services page; everything else → home
+  function readRoute() {
+    const h = (window.location.hash || '').replace(/^#\/?/, '').toLowerCase();
+    if (h === 'services') return 'services';
+    if (h === 'contact')  return 'contact';
+    return 'home';
+  }
+
+  function App() {
+    const [route, setRoute] = React.useState(readRoute());
+
+    React.useEffect(() => {
+      const fn = () => setRoute(readRoute());
+      window.addEventListener('hashchange', fn);
+      return () => window.removeEventListener('hashchange', fn);
+    }, []);
+
+    // scroll to top when route changes
+    React.useEffect(() => { window.scrollTo({ top: 0, behavior: 'auto' }); }, [route]);
+
+    const onNav = (id) => {
+      if (id === 'services') { window.location.hash = '#/services'; return; }
+      if (id === 'contact') {
+        if (route !== 'home') { window.location.hash = '#/'; }
+        // scroll to contact section once home is rendered
+        setTimeout(() => {
+          const el = document.getElementById('contact');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 80);
+        return;
+      }
+      // listings / home
+      window.location.hash = '#/';
+    };
+
+    const active = route === 'services' ? 'services'
+                 : route === 'contact'  ? 'contact'
+                 : 'listings';
+
+    return (
+      <>
+        <Nav active={active} onNav={onNav} />
+        {route === 'services' ? (
+          <main><ServicesPage onNav={onNav} /></main>
+        ) : (
+          <main>
+            <Hero />
+            <Listings />
+            <Founder />
+            <Concierge />
+            <Editorial />
+            <Press />
+            <AppPromo />
+            <Journal />
+            <div id="contact"><Contact /></div>
+          </main>
+        )}
+        <Footer />
+      </>
+    );
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    <AkLangProvider><App /></AkLangProvider>
+  );
+</script>
+</body>
+</html>

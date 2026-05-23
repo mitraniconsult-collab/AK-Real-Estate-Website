@@ -1,0 +1,38 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+html,body{margin:0;font-family:'Inter',system-ui,sans-serif}
+body{padding:0;min-height:280px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+.cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;position:relative;min-height:280px;border-right:1px solid rgba(255,255,255,.06)}
+.cell:last-child{border:0}
+.cell.dark{background:#0a0a0a}
+.cell.light{background:#f5f1ea;border-right:1px solid rgba(0,0,0,.08)}
+.cell.gold{background:#1a1408}
+.cap{position:absolute;top:14px;left:18px;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:#9a9590;font-weight:500;display:flex;align-items:center;gap:8px}
+.cap .sq{width:5px;height:5px;background:#c9a14a;display:inline-block}
+.cell.light .cap{color:#4a4a48}
+.cell.light .cap .sq{background:#8a6a20}
+.logo{max-width:160px;max-height:160px;width:auto;height:auto;display:block}
+.logo.invert{filter:invert(1) hue-rotate(180deg) saturate(0)}
+.foot{position:absolute;bottom:14px;left:18px;right:18px;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5550;font-weight:500;text-align:center}
+.cell.light .foot{color:#8a8478}
+</style></head><body>
+<div class="cell dark">
+  <div class="cap"><span class="sq"></span>WORDMARK · ON BLACK</div>
+  <img class="logo" src="../assets/logo-ak-real-estate.png" alt="AK Real Estate">
+  <div class="foot">Primary lockup · gold on black</div>
+</div>
+<div class="cell light">
+  <div class="cap"><span class="sq"></span>WORDMARK · ON BONE</div>
+  <img class="logo" src="../assets/logo-ak-real-estate.png" alt="AK Real Estate" style="mix-blend-mode:multiply">
+  <div class="foot">Light surface lockup</div>
+</div>
+<div class="cell gold">
+  <div class="cap"><span class="sq" style="background:#c9a14a"></span>CLEAR SPACE · SCALE</div>
+  <div style="display:flex;align-items:flex-end;gap:14px">
+    <img src="../assets/logo-ak-real-estate.png" style="width:40px;height:40px;display:block" alt="">
+    <img src="../assets/logo-ak-real-estate.png" style="width:80px;height:80px;display:block" alt="">
+    <img src="../assets/logo-ak-real-estate.png" style="width:140px;height:140px;display:block" alt="">
+  </div>
+  <div class="foot" style="color:#c9a14a">Min 40px · keep 25% clear space</div>
+</div>
+</body></html>

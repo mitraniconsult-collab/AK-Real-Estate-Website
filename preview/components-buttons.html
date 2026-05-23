@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;font-family:'Inter',system-ui,sans-serif}body{background:#0a0a0a;color:#f5f1ea;padding:32px;min-height:240px;display:flex;flex-direction:column;gap:22px;justify-content:center}
+.lbl{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:#9a9590;width:120px;flex-shrink:0}
+.row{display:flex;align-items:center;gap:18px}
+.btn{font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:500;border:0;cursor:pointer;padding:14px 22px;display:inline-flex;align-items:center;gap:10px}
+.btn-pri{background:#b0181c;color:#fff}
+.btn-pri:hover{background:#7a0f12}
+.btn-sec{background:transparent;color:#f5f1ea;border:1px solid #f5f1ea}
+.btn-sec:hover{border-color:#b0181c;color:#b0181c}
+.btn-ter{background:transparent;color:#f5f1ea;border:0;padding:6px 0;position:relative}
+.btn-ter::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:#b0181c;transform-origin:left;transform:scaleX(.4);transition:transform .4s cubic-bezier(.2,.6,.2,1)}
+.btn-ter:hover::after{transform:scaleX(1)}
+.spec{font-family:'JetBrains Mono',monospace;font-size:10px;color:#5a5550;margin-left:auto}
+</style></head><body>
+<div class="row"><div class="lbl">Primary</div><button class="btn btn-pri">REQUEST PRIVATE VIEWING</button><button class="btn btn-pri">VIEW LISTING ›</button><div class="spec">#b0181c · 0 radius</div></div>
+<div class="row"><div class="lbl">Secondary</div><button class="btn btn-sec">DOWNLOAD BROCHURE</button><button class="btn btn-sec">ALL LISTINGS</button><div class="spec">1px hairline</div></div>
+<div class="row"><div class="lbl">Tertiary</div><button class="btn btn-ter">READ THE STORY</button><button class="btn btn-ter">CONTACT THE FOUNDER</button><div class="spec">underline wipe</div></div>
+<div class="row"><div class="lbl">Press / hover</div><button class="btn btn-pri" style="background:#7a0f12;box-shadow:inset 0 2px 6px rgba(0,0,0,.6)">PRESSED</button><button class="btn btn-sec" style="border-color:#b0181c;color:#b0181c">HOVER</button><div class="spec">hover deepens / inset</div></div>
+</body></html>

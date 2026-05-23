@@ -1,0 +1,49 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;font-family:'Inter',system-ui,sans-serif}body{background:#0a0a0a;color:#f5f1ea;padding:28px;min-height:380px;display:flex;gap:20px;justify-content:center;align-items:center}
+.card{width:280px;border-radius:4px;overflow:hidden;background:#141414;box-shadow:0 24px 60px -20px rgba(0,0,0,0.7),0 4px 12px rgba(0,0,0,0.25);position:relative;cursor:pointer;transition:transform .9s cubic-bezier(.2,.6,.2,1)}
+.img{aspect-ratio:4/5;background-position:center;background-size:cover;position:relative}
+.c1 .img{background:linear-gradient(180deg,#2a1a12 0%,#0a0808 100%),radial-gradient(ellipse at 70% 30%,#7a5a3a,transparent 60%);background-blend-mode:screen}
+.c2 .img{background:linear-gradient(180deg,#1a1a1f 0%,#080806 100%),radial-gradient(ellipse at 40% 60%,#5a5040,transparent 60%);background-blend-mode:screen}
+.c3 .img{background:linear-gradient(180deg,#241612 0%,#0a0606 100%),radial-gradient(ellipse at 30% 80%,#8a4a30,transparent 60%);background-blend-mode:screen}
+.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.10) 0%,rgba(0,0,0,.75) 100%)}
+.eyebrow{position:absolute;top:14px;left:14px;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:#f5f1ea;font-weight:500;display:flex;align-items:center;gap:8px}
+.eyebrow .sq{width:6px;height:6px;background:#b0181c}
+.tag{position:absolute;top:14px;right:14px;background:#b0181c;color:#fff;font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:500;padding:5px 10px}
+.body{padding:18px 16px 18px}
+.title{font-family:'Antonio',sans-serif;font-weight:300;font-size:22px;letter-spacing:.06em;text-transform:uppercase;line-height:1.05;margin-bottom:10px}
+.meta{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#9a9590;font-weight:500;display:flex;gap:8px;align-items:center}
+.price{font-family:'Antonio',sans-serif;font-weight:300;font-size:18px;color:#f5f1ea;margin-left:auto;letter-spacing:.06em}
+.line{height:1px;width:24px;background:#b0181c;margin-top:14px}
+</style></head><body>
+<div class="card c1">
+  <div class="img"><div class="scrim"></div>
+    <div class="eyebrow"><span class="sq"></span>NEW</div>
+  </div>
+  <div class="body">
+    <div class="title">Maison<br>Argentine</div>
+    <div class="meta">BEL AIR · 7 BR · 9 BA<span class="price">$24.8M</span></div>
+    <div class="line"></div>
+  </div>
+</div>
+<div class="card c2">
+  <div class="img"><div class="scrim"></div>
+    <div class="eyebrow"><span class="sq"></span>PRIVATE</div>
+    <div class="tag">OFF-MARKET</div>
+  </div>
+  <div class="body">
+    <div class="title">The Glass<br>Pavilion</div>
+    <div class="meta">MALIBU · 5 BR · 6 BA<span class="price">$38M</span></div>
+    <div class="line"></div>
+  </div>
+</div>
+<div class="card c3">
+  <div class="img"><div class="scrim"></div>
+    <div class="eyebrow"><span class="sq"></span>RESTORED · 1924</div>
+  </div>
+  <div class="body">
+    <div class="title">Villa di<br>Pietra</div>
+    <div class="meta">MONTECITO · 8 BR · 12 BA<span class="price">$14.8M</span></div>
+    <div class="line"></div>
+  </div>
+</div>
+</body></html>
