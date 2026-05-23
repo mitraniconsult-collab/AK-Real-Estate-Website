@@ -450,6 +450,37 @@
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
     }
+    function translateStatus(status) {
+  const map = {
+    Active: "Активен",
+    Sold: "Продаден",
+    Rented: "Отдаден",
+    Draft: "Чернова"
+  };
+
+  return escapeHtml(map[status] || status || "—");
+}
+
+function translateListingType(type) {
+  const map = {
+    Sale: "Продажба",
+    Rent: "Наем"
+  };
+
+  return escapeHtml(map[type] || type || "—");
+}
+
+function translatePropertyType(type) {
+  const map = {
+    Apartment: "Апартамент",
+    House: "Къща",
+    Villa: "Вила",
+    Office: "Офис",
+    Land: "Парцел"
+  };
+
+  return escapeHtml(map[type] || type || "—");
+}
 
     function renderNotFound() {
       app.innerHTML = `
