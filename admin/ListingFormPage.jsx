@@ -37,7 +37,7 @@ function ListingFormPage({ mode, id }) {
     return Object.keys(e).length === 0;
   };
 
-  const save = (publish) => {
+  const save = async (publish) => {
     if (!validate()) return;
     const status = publish ? 'Active' : form.status;
     const payload = {
@@ -46,7 +46,7 @@ function ListingFormPage({ mode, id }) {
       id: editing ? form.id : Store.newId(),
       createdAt: editing ? form.createdAt : new Date().toISOString().slice(0, 10),
     };
-    Store.upsert(payload);
+    await Store.upsert(payload);
     setSaved(true);
     setTimeout(() => navigate('/listings'), 500);
   };
@@ -242,7 +242,7 @@ function ListingFormPage({ mode, id }) {
           body={`${form.title} (${form.id}) will be permanently removed.`}
           danger="Delete"
           onCancel={() => setConfirmDel(false)}
-          onConfirm={() => { Store.remove(form.id); setConfirmDel(false); navigate('/listings'); }}
+          onConfirm={() => { await Store.remove(form.id); setConfirmDel(false); navigate('/listings'); }}
         />
       )}
     </div>
