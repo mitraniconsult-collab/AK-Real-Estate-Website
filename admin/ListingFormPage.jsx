@@ -242,7 +242,7 @@ function ListingFormPage({ mode, id }) {
           body={`${form.title} (${form.id}) will be permanently removed.`}
           danger="Delete"
           onCancel={() => setConfirmDel(false)}
-          onConfirm={() => { await Store.remove(form.id); setConfirmDel(false); navigate('/listings'); }}
+          onConfirm={async () => { await Store.remove(form.id); setConfirmDel(false); navigate('/listings'); }}
         />
       )}
     </div>
