@@ -37,16 +37,71 @@ function navigate(to) {
   location.hash = to;
 }
 
-// ----- Fake auth -----
+// ----- Supabase auth -----
 function useAuth() {
   const [signedIn, setSignedIn] = React.useState(false);
+  const [checkingAuth, setCheckingAuth] = React.useState(true);
+
+  React.useEffect(() => {
+    let mounted = true;
+
+    async function checkSession() {
+      if (!window.akSupabase) {
+        if (mounted) {
+          setSignedIn(false);
+          setCheckingAuth(false);
+        }
+        return;
+      }
+
+      const { data } = await window.akSupabase.auth.getSession();
+
+      if (!mounted) return;
+
+      const hasSession = !!data?.session;
+      setSignedIn(hasSession);
+      setCheckingAuth(false);
+
+      if (hasSession && (!location.hash || location.hash === '#' || location.hash === '#/login')) {
+        navigate('/dashboard');
+      }
+    }
+
+    checkSession();
+
+    const { data: listener } = window.akSupabase.auth.onAuthStateChange((_event, session) => {
+      setSignedIn(!!session);
+
+      if (session && (!location.hash || location.hash === '#' || location.hash === '#/login')) {
+        navigate('/dashboard');
+      }
+
+      if (!session) {
+        navigate('/login');
+      }
+    });
+
+    return () => {
+      mounted = false;
+      listener?.subscription?.unsubscribe();
+    };
+  }, []);
+
   return {
     signedIn,
-    signIn: (email, password) => {
+    checkingAuth,
+
+    signIn: async () => {
       setSignedIn(true);
-      if (!location.hash || location.hash === '#') navigate('/dashboard');
+      if (!location.hash || location.hash === '#' || location.hash === '#/login') {
+        navigate('/dashboard');
+      }
     },
-    signOut: () => {
+
+    signOut: async () => {
+      if (window.akSupabase) {
+        await window.akSupabase.auth.signOut();
+      }
       setSignedIn(false);
       navigate('/login');
     },
