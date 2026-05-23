@@ -349,11 +349,50 @@ const STOCK = [
 function ImageManager({ images, mainImage, onChange }) {
   const inputRef = React.useRef(null);
 
-  const handleFiles = (files) => {
-    const urls = Array.from(files).map(f => URL.createObjectURL(f));
-    const next = [...images, ...urls];
-    onChange(next, images.length === 0 ? 0 : mainImage);
-  };
+  const handleFiles = async (files) => {
+  if (!window.akSupabase) {
+    alert('Supabase is not configured.');
+    return;
+  }
+
+  const uploadedUrls = [];
+
+  for (const file of Array.from(files)) {
+    const ext = file.name.split('.').pop() || 'jpg';
+    const safeName = file.name
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9.-]/g, '');
+
+    const path = `listings/${Date.now()}-${Math.random().toString(36).slice(2)}-${safeName || `image.${ext}`}`;
+
+    const { error: uploadError } = await window.akSupabase.storage
+      .from('listing-images')
+      .upload(path, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error('Image upload error:', uploadError);
+      alert(uploadError.message || 'Image upload failed.');
+      continue;
+    }
+
+    const { data } = window.akSupabase.storage
+      .from('listing-images')
+      .getPublicUrl(path);
+
+    if (data?.publicUrl) {
+      uploadedUrls.push(data.publicUrl);
+    }
+  }
+
+  if (uploadedUrls.length === 0) return;
+
+  const next = [...images, ...uploadedUrls];
+  onChange(next, images.length === 0 ? 0 : mainImage);
+};
 
   const addStock = () => {
     const url = STOCK[(images.length + Math.floor(Math.random() * 5)) % STOCK.length];
