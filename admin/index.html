@@ -73,9 +73,27 @@
       const route = useRoute();
       const auth = useAuth();
 
-      if (!auth.signedIn) {
-        return <LoginPage onSubmit={auth.signIn} />;
-      }
+if (auth.checkingAuth) {
+  return (
+    <div style={{
+      minHeight: '100vh',
+      display: 'grid',
+      placeItems: 'center',
+      background: 'var(--ak-black)',
+      color: 'var(--fg)',
+      fontFamily: 'var(--font-body)',
+      letterSpacing: '0.22em',
+      textTransform: 'uppercase',
+      fontSize: 11
+    }}>
+      Checking access…
+    </div>
+  );
+}
+
+if (!auth.signedIn) {
+  return <LoginPage onSubmit={auth.signIn} />;
+}
 
       let page;
       if (route.name === 'dashboard') page = <DashboardPage />;
