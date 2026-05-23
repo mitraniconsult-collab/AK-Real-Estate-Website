@@ -7,6 +7,14 @@
     {
       "source": "/listing",
       "destination": "/listing.html"
+    },
+    {
+      "source": "/services",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/index.html"
     }
   ]
 }
