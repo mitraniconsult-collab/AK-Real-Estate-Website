@@ -505,4 +505,32 @@ function ImageThumb({ src, isMain, onMain, onRemove }) {
   );
 }
 
+// Local Toggle overrides the atoms.jsx version: adds the hidden checkbox that
+// wires label-click → onChange. Visual appearance is identical.
+function Toggle({ checked, onChange, label }) {
+  return (
+    <label style={{ display: 'inline-flex', alignItems: 'center', gap: 14, cursor: 'pointer' }}>
+      <input
+        type="checkbox"
+        checked={!!checked}
+        onChange={(e) => onChange(e.target.checked)}
+        style={{ position: 'absolute', opacity: 0, width: 0, height: 0 }}
+      />
+      <span style={{
+        position: 'relative', width: 44, height: 22,
+        background: checked ? 'var(--ak-crimson)' : 'rgba(255,255,255,.10)',
+        border: '1px solid', borderColor: checked ? 'var(--ak-crimson)' : 'var(--hairline-light)',
+        transition: 'all .22s var(--ease)',
+      }}>
+        <span style={{
+          position: 'absolute', top: 2, left: checked ? 23 : 2,
+          width: 16, height: 16, background: '#fff',
+          transition: 'left .22s var(--ease)',
+        }}></span>
+      </span>
+      <span style={{ fontSize: 13, fontWeight: 300, color: 'var(--fg)' }}>{label}</span>
+    </label>
+  );
+}
+
 Object.assign(window, { ListingFormPage, ImageManager, PreviewCard });
