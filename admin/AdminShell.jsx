@@ -41,6 +41,7 @@ function useAdminLang() {
   const setLang = (l) => {
     localStorage.setItem('ak-admin-locale', l);
     setLangState(l);
+    window.dispatchEvent(new CustomEvent('ak-admin-locale-change', { detail: { lang: l } }));
   };
   const t = (key) => (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || key;
   return { lang, setLang, t };
