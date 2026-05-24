@@ -8,11 +8,11 @@ const DASH_T = {
     '＋ New Listing':          '＋ Нов имот',
     'Total Listings':         'Всички имоти',
     'all statuses':           'всички статуси',
-    'Active':                 'Активни',
+    'Active':                 'Активен',
     'visible publicly':       'публично видими',
     'Draft':                  'Чернова',
     'admin-only':             'само администратор',
-    'Sold / Rented':          'Продадени / Наети',
+    'Sold / Rented':          'Продадени / Отдадени',
     'closed deals':           'приключени сделки',
     'Featured':               'Препоръчани',
     'on home page':           'на началната страница',
@@ -31,6 +31,10 @@ const DASH_T = {
     'marked sold':            'отбелязан продаден',
     'saved as draft':         'запазен като чернова',
     'published for rent':     'публикуван под наем',
+    // status badge labels
+    'Sold':                   'Продаден',
+    'Rented':                 'Отдаден',
+    'Edit':                   'Редакция',
   },
   en: {
     'Admin · Overview':       'Admin · Overview',
@@ -62,6 +66,10 @@ const DASH_T = {
     'marked sold':            'marked sold',
     'saved as draft':         'saved as draft',
     'published for rent':     'published for rent',
+    // status badge labels
+    'Sold':                   'Sold',
+    'Rented':                 'Rented',
+    'Edit':                   'Edit',
   },
 };
 
@@ -83,6 +91,30 @@ function useDashLang() {
 
   const t = (key) => (DASH_T[lang] && DASH_T[lang][key]) || key;
   return { t };
+}
+
+function translateStatus(status, t) {
+  return t(status);
+}
+
+// Local status badge — mirrors atoms.jsx StatusBadge styling, text goes through t().
+function DashStatusBadge({ status }) {
+  const { t } = useDashLang();
+  const map = {
+    Active:  { bg: 'var(--ak-crimson)', fg: '#fff', border: 'transparent' },
+    Draft:   { bg: 'transparent', fg: 'var(--fg-2)', border: 'var(--hairline-light)' },
+    Sold:    { bg: 'rgba(176,24,28,.15)', fg: 'var(--ak-crimson-bright)', border: 'rgba(176,24,28,.40)' },
+    Rented:  { bg: 'rgba(255,255,255,.05)', fg: 'var(--fg)', border: 'var(--hairline-light)' },
+  };
+  const s = map[status] || map.Draft;
+  return (
+    <span style={{
+      display: 'inline-block', padding: '4px 10px',
+      background: s.bg, color: s.fg, border: `1px solid ${s.border}`,
+      fontSize: 9, fontWeight: 500, letterSpacing: '0.20em',
+      textTransform: 'uppercase', borderRadius: 0,
+    }}>{translateStatus(status, t)}</span>
+  );
 }
 
 function DashboardPage() {
@@ -240,7 +272,7 @@ function LatestRow({ listing }) {
         color: 'var(--fg)', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
         {formatPrice(listing.price, listing.currency, listing.listingType)}
       </span>
-      <StatusBadge status={listing.status} />
+      <DashStatusBadge status={listing.status} />
       <span style={{ color: hover ? 'var(--ak-crimson)' : 'var(--fg-3)',
         transition: 'color .2s var(--ease)' }}>›</span>
     </a>
@@ -279,7 +311,7 @@ function ActivityPanel() {
               textTransform: 'uppercase',
               color: a.mark === 'Sold' ? 'var(--ak-crimson-bright)' :
                      a.mark === 'Active' ? 'var(--fg)' :
-                     'var(--fg-3)' }}>{a.mark}</span>
+                     'var(--fg-3)' }}>{translateStatus(a.mark, t)}</span>
             <div>
               <div style={{ fontSize: 13, color: 'var(--fg)', fontWeight: 300, lineHeight: 1.4 }}>
                 {a.name} {t(a.action)}
