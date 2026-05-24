@@ -1,6 +1,66 @@
 // DashboardPage — section title + 4 stat cards + latest listings + activity.
 
+const DASH_T = {
+  bg: {
+    'Admin · Overview':       'Администрация · Преглед',
+    'The portfolio,':         'Портфолиото,',
+    'quietly.':               'тихо.',
+    '＋ New Listing':          '＋ Нов имот',
+    'Total Listings':         'Всички имоти',
+    'all statuses':           'всички статуси',
+    'Active':                 'Активни',
+    'visible publicly':       'публично видими',
+    'Draft':                  'Чернова',
+    'admin-only':             'само администратор',
+    'Sold / Rented':          'Продадени / Наети',
+    'closed deals':           'приключени сделки',
+    'Featured':               'Препоръчани',
+    'on home page':           'на началната страница',
+    'Active Portfolio Value': 'Стойност на активните',
+    'sum of active':          'сума на активните',
+    'Avg. Price':             'Средна цена',
+    'all listings':           'всички имоти',
+    'Cities':                 'Градове',
+    'markets covered':        'покрити пазари',
+    'Latest Listings':        'Последни имоти',
+    'View All ↗':             'Виж всички ↗',
+    'Recent Activity':        'Последна активност',
+  },
+  en: {
+    'Admin · Overview':       'Admin · Overview',
+    'The portfolio,':         'The portfolio,',
+    'quietly.':               'quietly.',
+    '＋ New Listing':          '＋ New Listing',
+    'Total Listings':         'Total Listings',
+    'all statuses':           'all statuses',
+    'Active':                 'Active',
+    'visible publicly':       'visible publicly',
+    'Draft':                  'Draft',
+    'admin-only':             'admin-only',
+    'Sold / Rented':          'Sold / Rented',
+    'closed deals':           'closed deals',
+    'Featured':               'Featured',
+    'on home page':           'on home page',
+    'Active Portfolio Value': 'Active Portfolio Value',
+    'sum of active':          'sum of active',
+    'Avg. Price':             'Avg. Price',
+    'all listings':           'all listings',
+    'Cities':                 'Cities',
+    'markets covered':        'markets covered',
+    'Latest Listings':        'Latest Listings',
+    'View All ↗':             'View All ↗',
+    'Recent Activity':        'Recent Activity',
+  },
+};
+
+function useDashLang() {
+  const lang = localStorage.getItem('ak-admin-locale') || 'bg';
+  const t = (key) => (DASH_T[lang] && DASH_T[lang][key]) || key;
+  return { t };
+}
+
 function DashboardPage() {
+  const { t } = useDashLang();
   const listings = useListings();
   const total = listings.length;
   const active = listings.filter(l => l.status === 'Active').length;
@@ -15,10 +75,10 @@ function DashboardPage() {
     <div className="ak-rise">
       <SectionTitle
         n="00"
-        label="Admin · Overview"
-        title="The portfolio,"
-        accent="quietly."
-        action={<Btn variant="primary" as="a" href="#/listings/new">＋ New Listing</Btn>}
+        label={t('Admin · Overview')}
+        title={t('The portfolio,')}
+        accent={t('quietly.')}
+        action={<Btn variant="primary" as="a" href="#/listings/new">{t('＋ New Listing')}</Btn>}
       />
 
       {/* stat row */}
@@ -26,10 +86,10 @@ function DashboardPage() {
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
         gap: 'clamp(12px, 1.4vw, 20px)',
       }}>
-        <StatCard label="Total Listings"   value={total}    sub="all statuses" accent="crimson" />
-        <StatCard label="Active"           value={active}   sub="visible publicly" />
-        <StatCard label="Draft"            value={draft}    sub="admin-only" />
-        <StatCard label="Sold / Rented"    value={closed}   sub="closed deals" />
+        <StatCard label={t('Total Listings')}   value={total}    sub={t('all statuses')} accent="crimson" />
+        <StatCard label={t('Active')}           value={active}   sub={t('visible publicly')} />
+        <StatCard label={t('Draft')}            value={draft}    sub={t('admin-only')} />
+        <StatCard label={t('Sold / Rented')}    value={closed}   sub={t('closed deals')} />
       </div>
 
       {/* secondary row */}
@@ -38,10 +98,10 @@ function DashboardPage() {
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
         gap: 'clamp(12px, 1.4vw, 20px)',
       }}>
-        <StatCard label="Featured"          value={featured} sub="on home page" emphasis="muted" />
-        <StatCard label="Active Portfolio Value" value={'$' + (totalValue / 1_000_000).toFixed(1) + 'M'} sub="sum of active" emphasis="muted" />
-        <StatCard label="Avg. Price"        value={total ? '$' + Math.round(listings.reduce((s, l) => s + (l.price || 0), 0) / total / 1_000_000) + 'M' : '—'} sub="all listings" emphasis="muted" />
-        <StatCard label="Cities"            value={new Set(listings.map(l => l.city)).size} sub="markets covered" emphasis="muted" />
+        <StatCard label={t('Featured')}          value={featured} sub={t('on home page')} emphasis="muted" />
+        <StatCard label={t('Active Portfolio Value')} value={'$' + (totalValue / 1_000_000).toFixed(1) + 'M'} sub={t('sum of active')} emphasis="muted" />
+        <StatCard label={t('Avg. Price')}        value={total ? '$' + Math.round(listings.reduce((s, l) => s + (l.price || 0), 0) / total / 1_000_000) + 'M' : '—'} sub={t('all listings')} emphasis="muted" />
+        <StatCard label={t('Cities')}            value={new Set(listings.map(l => l.city)).size} sub={t('markets covered')} emphasis="muted" />
       </div>
 
       {/* latest + activity */}
@@ -95,16 +155,17 @@ function StatCard({ label, value, sub, accent, emphasis }) {
 }
 
 function LatestListings({ listings }) {
+  const { t } = useDashLang();
   return (
     <section>
       <div style={{ display: 'flex', alignItems: 'end', gap: 16, marginBottom: 18 }}>
-        <Eyebrow>Latest Listings</Eyebrow>
+        <Eyebrow>{t('Latest Listings')}</Eyebrow>
         <span style={{ flex: 1, height: 1, background: 'var(--hairline-light)' }}></span>
         <a href="#/listings" style={{
           fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
           textTransform: 'uppercase', color: 'var(--fg-2)', textDecoration: 'none',
           borderBottom: '1px solid var(--ak-crimson)', paddingBottom: 2,
-        }}>View All ↗</a>
+        }}>{t('View All ↗')}</a>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -161,6 +222,7 @@ function LatestRow({ listing }) {
 }
 
 function ActivityPanel() {
+  const { t } = useDashLang();
   const items = [
     { mark: 'Active', txt: 'Maison Argentine published',          ago: '2 hours ago' },
     { mark: 'Edit',   txt: 'Villa di Pietra price updated',       ago: '5 hours ago' },
@@ -177,7 +239,7 @@ function ActivityPanel() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 22 }}>
         <RedSquare size={6} />
         <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
-          textTransform: 'uppercase', color: 'var(--fg)' }}>Recent Activity</span>
+          textTransform: 'uppercase', color: 'var(--fg)' }}>{t('Recent Activity')}</span>
       </div>
       <ol style={{ listStyle: 'none', padding: 0, margin: 0,
         display: 'flex', flexDirection: 'column', gap: 0 }}>
