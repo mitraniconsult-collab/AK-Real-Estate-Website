@@ -1,7 +1,53 @@
 // AdminShell — left sidebar nav + top bar + main content.
 // Responsive: sidebar collapses to top-bar drawer below 1024px.
 
+const TRANSLATIONS = {
+  bg: {
+    'Admin Console':   'Конзола',
+    'Manage':          'Управление',
+    'Dashboard':       'Табло',
+    'Listings':        'Имоти',
+    'New Listing':     'Нов имот',
+    'Search listings…':'Търси имоти…',
+    'All systems quiet':'Всичко е наред',
+    'Sign Out':        'Изход',
+    'View Public Site':'Публичен сайт',
+    'Founder':         'Основател',
+    'Admin':           'Администрация',
+    'Edit':            'Редактиране',
+  },
+  en: {
+    'Admin Console':   'Admin Console',
+    'Manage':          'Manage',
+    'Dashboard':       'Dashboard',
+    'Listings':        'Listings',
+    'New Listing':     'New Listing',
+    'Search listings…':'Search listings…',
+    'All systems quiet':'All systems quiet',
+    'Sign Out':        'Sign Out',
+    'View Public Site':'View Public Site',
+    'Founder':         'Founder',
+    'Admin':           'Admin',
+    'Edit':            'Edit',
+  },
+};
+
+const AdminLangContext = React.createContext({ lang: 'bg', setLang: () => {}, t: k => k });
+
+function useAdminLang() {
+  const [lang, setLangState] = React.useState(
+    () => localStorage.getItem('ak-admin-locale') || 'bg'
+  );
+  const setLang = (l) => {
+    localStorage.setItem('ak-admin-locale', l);
+    setLangState(l);
+  };
+  const t = (key) => (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || key;
+  return { lang, setLang, t };
+}
+
 function AdminShell({ active, onSignOut, children }) {
+  const langCtx = useAdminLang();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   React.useEffect(() => {
@@ -12,41 +58,44 @@ function AdminShell({ active, onSignOut, children }) {
   }, []);
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'grid',
-      gridTemplateColumns: isMobile ? '1fr' : '260px 1fr',
-      background: 'var(--ak-ink)', color: 'var(--fg)',
-    }}>
-      {/* sidebar */}
-      {!isMobile && <Sidebar active={active} onSignOut={onSignOut} />}
-      {isMobile && mobileOpen && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 60,
-          background: 'rgba(0,0,0,.65)', backdropFilter: 'blur(8px)',
-        }} onClick={() => setMobileOpen(false)}>
-          <div style={{ width: 280, height: '100%', background: 'var(--ak-black)' }} onClick={(e) => e.stopPropagation()}>
-            <Sidebar active={active} onSignOut={() => { setMobileOpen(false); onSignOut(); }} onNavigate={() => setMobileOpen(false)} />
+    <AdminLangContext.Provider value={langCtx}>
+      <div style={{
+        minHeight: '100vh',
+        display: 'grid',
+        gridTemplateColumns: isMobile ? '1fr' : '260px 1fr',
+        background: 'var(--ak-ink)', color: 'var(--fg)',
+      }}>
+        {/* sidebar */}
+        {!isMobile && <Sidebar active={active} onSignOut={onSignOut} />}
+        {isMobile && mobileOpen && (
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 60,
+            background: 'rgba(0,0,0,.65)', backdropFilter: 'blur(8px)',
+          }} onClick={() => setMobileOpen(false)}>
+            <div style={{ width: 280, height: '100%', background: 'var(--ak-black)' }} onClick={(e) => e.stopPropagation()}>
+              <Sidebar active={active} onSignOut={() => { setMobileOpen(false); onSignOut(); }} onNavigate={() => setMobileOpen(false)} />
+            </div>
+          </div>
+        )}
+
+        {/* main */}
+        <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          <TopBar isMobile={isMobile} onMenu={() => setMobileOpen(true)} />
+          <div style={{ flex: 1, minWidth: 0, padding: 'clamp(20px, 3vw, 48px) clamp(20px, 3vw, 48px) 80px' }}>
+            {children}
           </div>
         </div>
-      )}
-
-      {/* main */}
-      <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        <TopBar isMobile={isMobile} onMenu={() => setMobileOpen(true)} />
-        <div style={{ flex: 1, minWidth: 0, padding: 'clamp(20px, 3vw, 48px) clamp(20px, 3vw, 48px) 80px' }}>
-          {children}
-        </div>
       </div>
-    </div>
+    </AdminLangContext.Provider>
   );
 }
 
 function Sidebar({ active, onSignOut, onNavigate }) {
+  const { t } = React.useContext(AdminLangContext);
   const items = [
-    { id: 'dashboard',   label: 'Dashboard',  icon: 'layout-dashboard', to: '/dashboard' },
-    { id: 'listings',    label: 'Listings',   icon: 'home',             to: '/listings' },
-    { id: 'listing-new', label: 'New Listing', icon: 'plus',            to: '/listings/new' },
+    { id: 'dashboard',   label: t('Dashboard'),   icon: 'layout-dashboard', to: '/dashboard' },
+    { id: 'listings',    label: t('Listings'),    icon: 'home',             to: '/listings' },
+    { id: 'listing-new', label: t('New Listing'), icon: 'plus',            to: '/listings/new' },
   ];
   return (
     <aside style={{
@@ -62,7 +111,7 @@ function Sidebar({ active, onSignOut, onNavigate }) {
         <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
           <RedSquare size={5} />
           <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.32em', textTransform: 'uppercase', color: 'var(--fg-3)' }}>
-            Admin Console
+            {t('Admin Console')}
           </span>
         </div>
       </div>
@@ -70,7 +119,7 @@ function Sidebar({ active, onSignOut, onNavigate }) {
       {/* nav */}
       <nav style={{ padding: '24px 12px', display: 'flex', flexDirection: 'column', gap: 2 }}>
         <div style={{ padding: '0 12px 12px', fontSize: 9, fontWeight: 500, letterSpacing: '0.32em',
-          textTransform: 'uppercase', color: 'var(--fg-3)' }}>▪ Manage</div>
+          textTransform: 'uppercase', color: 'var(--fg-3)' }}>▪ {t('Manage')}</div>
         {items.map(it => (
           <NavItem key={it.id} item={it} active={active === it.id || (it.id === 'listings' && active === 'listing-edit')} onNavigate={onNavigate} />
         ))}
@@ -85,7 +134,7 @@ function Sidebar({ active, onSignOut, onNavigate }) {
             letterSpacing: '0.06em', color: 'var(--fg)' }}>AK</div>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg)', letterSpacing: '0.02em' }}>A. Kane</div>
-            <div style={{ fontSize: 10, color: 'var(--fg-3)', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Founder</div>
+            <div style={{ fontSize: 10, color: 'var(--fg-3)', letterSpacing: '0.18em', textTransform: 'uppercase' }}>{t('Founder')}</div>
           </div>
         </div>
         <button onClick={onSignOut} style={{
@@ -98,16 +147,16 @@ function Sidebar({ active, onSignOut, onNavigate }) {
         }}
         onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--ak-crimson)'; e.currentTarget.style.color = 'var(--ak-crimson-bright)'; }}
         onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--hairline-light)'; e.currentTarget.style.color = 'var(--fg-2)'; }}>
-          Sign Out <span>›</span>
+          {t('Sign Out')} <span>›</span>
         </button>
-        <a href="../ui_kits/website/index.html" target="_blank" rel="noopener" style={{
+        <a href="/" target="_blank" rel="noopener" style={{
           marginTop: 12, display: 'block', fontSize: 10, fontWeight: 500,
           letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--fg-3)',
           textDecoration: 'none', textAlign: 'center',
         }}
         onMouseEnter={(e) => e.currentTarget.style.color = 'var(--ak-crimson)'}
         onMouseLeave={(e) => e.currentTarget.style.color = 'var(--fg-3)'}>
-          ↗ View Public Site
+          ↗ {t('View Public Site')}
         </a>
       </div>
     </aside>
@@ -137,7 +186,34 @@ function NavItem({ item, active, onNavigate }) {
   );
 }
 
+function LangSwitch() {
+  const { lang, setLang } = React.useContext(AdminLangContext);
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+      {['bg', 'en'].map(l => (
+        <button key={l} onClick={() => setLang(l)} style={{
+          background: 'transparent',
+          border: l === lang ? '1px solid var(--ak-crimson)' : '1px solid var(--hairline-light)',
+          color: l === lang ? 'var(--ak-crimson-bright)' : 'var(--fg-3)',
+          padding: '3px 7px',
+          cursor: 'pointer',
+          fontFamily: 'var(--font-body)',
+          fontSize: 10,
+          fontWeight: 500,
+          letterSpacing: '0.18em',
+          textTransform: 'uppercase',
+          borderRadius: 0,
+          transition: 'all .2s var(--ease)',
+        }}>
+          {l.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function TopBar({ isMobile, onMenu }) {
+  const { t } = React.useContext(AdminLangContext);
   const [search, setSearch] = React.useState('');
 
   function submitSearch() {
@@ -189,7 +265,7 @@ function TopBar({ isMobile, onMenu }) {
               e.currentTarget.focus();
             }
           }}
-          placeholder="Search listings…"
+          placeholder={t('Search listings…')}
           style={{
             background: 'transparent', border: 0, outline: 'none',
             color: 'var(--fg)', fontSize: 12, fontWeight: 300, flex: 1, padding: '4px 0',
@@ -221,25 +297,30 @@ function TopBar({ isMobile, onMenu }) {
 
       <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
         textTransform: 'uppercase', color: 'var(--fg-2)', whiteSpace: 'nowrap' }}>
-        <span style={{ color: 'var(--ak-crimson)' }}>▪</span>&nbsp; All systems quiet
+        <span style={{ color: 'var(--ak-crimson)' }}>▪</span>&nbsp; {t('All systems quiet')}
       </span>
+
+      <span style={{ width: 1, height: 20, background: 'var(--hairline-light)' }}></span>
+
+      <LangSwitch />
     </header>
   );
 }
 
 function Breadcrumbs() {
+  const { t } = React.useContext(AdminLangContext);
   const route = useRoute();
   const crumbs = [];
-  crumbs.push({ label: 'Admin', to: '/dashboard' });
-  if (route.name === 'dashboard') crumbs.push({ label: 'Dashboard' });
-  if (route.name === 'listings') crumbs.push({ label: 'Listings' });
+  crumbs.push({ label: t('Admin'), to: '/dashboard' });
+  if (route.name === 'dashboard') crumbs.push({ label: t('Dashboard') });
+  if (route.name === 'listings') crumbs.push({ label: t('Listings') });
   if (route.name === 'listing-new') {
-    crumbs.push({ label: 'Listings', to: '/listings' });
-    crumbs.push({ label: 'New Listing' });
+    crumbs.push({ label: t('Listings'), to: '/listings' });
+    crumbs.push({ label: t('New Listing') });
   }
   if (route.name === 'listing-edit') {
-    crumbs.push({ label: 'Listings', to: '/listings' });
-    crumbs.push({ label: 'Edit · ' + (route.id || '') });
+    crumbs.push({ label: t('Listings'), to: '/listings' });
+    crumbs.push({ label: t('Edit') + ' · ' + (route.id || '') });
   }
   return (
     <nav style={{ display: 'flex', alignItems: 'center', gap: 10,
