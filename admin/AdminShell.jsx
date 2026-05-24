@@ -126,17 +126,6 @@ function Sidebar({ active, onSignOut, onNavigate }) {
       </nav>
 
       <div style={{ marginTop: 'auto', padding: '24px', borderTop: '1px solid var(--hairline-light)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-          <div style={{ width: 36, height: 36, background: 'var(--ak-graphite)',
-            border: '1px solid var(--hairline-light)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: 14,
-            letterSpacing: '0.06em', color: 'var(--fg)' }}>AK</div>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg)', letterSpacing: '0.02em' }}>A. Kane</div>
-            <div style={{ fontSize: 10, color: 'var(--fg-3)', letterSpacing: '0.18em', textTransform: 'uppercase' }}>{t('Founder')}</div>
-          </div>
-        </div>
         <button onClick={onSignOut} style={{
           background: 'transparent', border: '1px solid var(--hairline-light)',
           color: 'var(--fg-2)', padding: '10px 14px', cursor: 'pointer',
