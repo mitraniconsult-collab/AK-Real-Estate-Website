@@ -25,6 +25,12 @@ const DASH_T = {
     'Latest Listings':        'Последни имоти',
     'View All ↗':             'Виж всички ↗',
     'Recent Activity':        'Последна активност',
+    'Full Activity Log →':    'Пълна история →',
+    'published':              'публикуван',
+    'price updated':          'с обновена цена',
+    'marked sold':            'отбелязан продаден',
+    'saved as draft':         'запазен като чернова',
+    'published for rent':     'публикуван под наем',
   },
   en: {
     'Admin · Overview':       'Admin · Overview',
@@ -50,11 +56,31 @@ const DASH_T = {
     'Latest Listings':        'Latest Listings',
     'View All ↗':             'View All ↗',
     'Recent Activity':        'Recent Activity',
+    'Full Activity Log →':    'Full Activity Log →',
+    'published':              'published',
+    'price updated':          'price updated',
+    'marked sold':            'marked sold',
+    'saved as draft':         'saved as draft',
+    'published for rent':     'published for rent',
   },
 };
 
 function useDashLang() {
-  const lang = localStorage.getItem('ak-admin-locale') || 'bg';
+  const read = () => localStorage.getItem('ak-admin-locale') || 'bg';
+  const [lang, setLang] = React.useState(read);
+
+  React.useEffect(() => {
+    const sync = () => setLang(read());
+    window.addEventListener('storage', sync);
+    window.addEventListener('ak-admin-locale-change', sync);
+    window.addEventListener('focus', sync);
+    return () => {
+      window.removeEventListener('storage', sync);
+      window.removeEventListener('ak-admin-locale-change', sync);
+      window.removeEventListener('focus', sync);
+    };
+  }, []);
+
   const t = (key) => (DASH_T[lang] && DASH_T[lang][key]) || key;
   return { t };
 }
@@ -98,10 +124,10 @@ function DashboardPage() {
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
         gap: 'clamp(12px, 1.4vw, 20px)',
       }}>
-        <StatCard label={t('Featured')}          value={featured} sub={t('on home page')} emphasis="muted" />
+        <StatCard label={t('Featured')}              value={featured} sub={t('on home page')} emphasis="muted" />
         <StatCard label={t('Active Portfolio Value')} value={'$' + (totalValue / 1_000_000).toFixed(1) + 'M'} sub={t('sum of active')} emphasis="muted" />
-        <StatCard label={t('Avg. Price')}        value={total ? '$' + Math.round(listings.reduce((s, l) => s + (l.price || 0), 0) / total / 1_000_000) + 'M' : '—'} sub={t('all listings')} emphasis="muted" />
-        <StatCard label={t('Cities')}            value={new Set(listings.map(l => l.city)).size} sub={t('markets covered')} emphasis="muted" />
+        <StatCard label={t('Avg. Price')}             value={total ? '$' + Math.round(listings.reduce((s, l) => s + (l.price || 0), 0) / total / 1_000_000) + 'M' : '—'} sub={t('all listings')} emphasis="muted" />
+        <StatCard label={t('Cities')}                 value={new Set(listings.map(l => l.city)).size} sub={t('markets covered')} emphasis="muted" />
       </div>
 
       {/* latest + activity */}
@@ -224,11 +250,11 @@ function LatestRow({ listing }) {
 function ActivityPanel() {
   const { t } = useDashLang();
   const items = [
-    { mark: 'Active', txt: 'Maison Argentine published',          ago: '2 hours ago' },
-    { mark: 'Edit',   txt: 'Villa di Pietra price updated',       ago: '5 hours ago' },
-    { mark: 'Sold',   txt: 'The Ravine House marked sold',        ago: '3 days ago' },
-    { mark: 'Draft',  txt: 'Atelier 12 saved as draft',           ago: '4 days ago' },
-    { mark: 'Active', txt: 'Casa del Lago published for rent',    ago: '6 days ago' },
+    { mark: 'Active', name: 'Maison Argentine',  action: 'published',          ago: '2 hours ago' },
+    { mark: 'Edit',   name: 'Villa di Pietra',    action: 'price updated',      ago: '5 hours ago' },
+    { mark: 'Sold',   name: 'The Ravine House',   action: 'marked sold',        ago: '3 days ago' },
+    { mark: 'Draft',  name: 'Atelier 12',         action: 'saved as draft',     ago: '4 days ago' },
+    { mark: 'Active', name: 'Casa del Lago',      action: 'published for rent', ago: '6 days ago' },
   ];
   return (
     <aside style={{
@@ -247,7 +273,7 @@ function ActivityPanel() {
           <li key={i} style={{
             display: 'grid', gridTemplateColumns: '80px 1fr',
             gap: 16, padding: '14px 0',
-            borderTop: i === 0 ? '1px solid var(--hairline-light)' : '1px solid var(--hairline-light)',
+            borderTop: '1px solid var(--hairline-light)',
           }}>
             <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
               textTransform: 'uppercase',
@@ -255,7 +281,9 @@ function ActivityPanel() {
                      a.mark === 'Active' ? 'var(--fg)' :
                      'var(--fg-3)' }}>{a.mark}</span>
             <div>
-              <div style={{ fontSize: 13, color: 'var(--fg)', fontWeight: 300, lineHeight: 1.4 }}>{a.txt}</div>
+              <div style={{ fontSize: 13, color: 'var(--fg)', fontWeight: 300, lineHeight: 1.4 }}>
+                {a.name} {t(a.action)}
+              </div>
               <div style={{ fontSize: 10, color: 'var(--fg-3)', letterSpacing: '0.18em',
                 textTransform: 'uppercase', marginTop: 4 }}>{a.ago}</div>
             </div>
@@ -267,7 +295,7 @@ function ActivityPanel() {
           textTransform: 'uppercase', color: 'var(--fg-2)', textDecoration: 'none',
           display: 'inline-flex', alignItems: 'center', gap: 8,
           borderBottom: '1px solid var(--ak-crimson)', paddingBottom: 2 }}>
-          Full Activity Log →
+          {t('Full Activity Log →')}
         </a>
       </div>
     </aside>
