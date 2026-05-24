@@ -17,6 +17,29 @@
       This page requires JavaScript to display.
     </div>
   </noscript>
+
+  <!-- AK Real Estate — Nav mobile patch -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    @media (max-width: 768px) {
+      /* Reduce side padding and allow wrapping */
+      nav {
+        padding-left:  16px !important;
+        padding-right: 16px !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+      }
+      /* Move the links row (Listings · Services · Contact) to a second line */
+      nav > div[style*="margin-left: auto"] {
+        margin-left:     0 !important;
+        order:           3 !important;
+        width:           100% !important;
+        flex-wrap:       wrap !important;
+        justify-content: center !important;
+        gap:             12px !important;
+      }
+    }
+  </style>
 </head>
 <body>
   <div id="__bundler_thumbnail">
