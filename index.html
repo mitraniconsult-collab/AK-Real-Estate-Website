@@ -198,5 +198,164 @@ document.addEventListener('DOMContentLoaded', async function() {
   }, true);
 })();
 </script>
+<script>
+(function () {
+  var SB_URL = 'https://ylyilqwoiyirodigshgd.supabase.co';
+  var SB_KEY = 'sb_publishable_wxCfqS0aCFRRXf0WgIhGzw_2SGd8tcL';
+
+  /* Seed ID fallback (when Supabase is unreachable) */
+  var SEED_IDS = {
+    'maison argentine':   'L-001',
+    'the glass pavilion': 'L-002',
+    'villa di pietra':    'L-003',
+    'casa del lago':      'L-004',
+    'atelier 12':         'L-005',
+    'the ravine house':   'L-006',
+    'atelier loft no. 4': 'L-007',
+  };
+
+  var FILTER_LABELS = ['all', 'off-market', 'new', 'restored', 'architectural',
+                       'for sale', 'for rent', 'featured', 'recently sold'];
+
+  /* ── Click handler: "View All Houses", "Виж всички домове", filter chips ── */
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('a, button');
+    if (!el) return;
+    var t = (el.textContent || '').trim().toLowerCase();
+
+    if (t === 'view all houses →' || t === 'view all houses' ||
+        t === 'виж всички домове →' ||
+        t === 'виж всички домове' ||
+        t === 'all listings →' || t === 'all listings') {
+      e.preventDefault();
+      e.stopPropagation();
+      window.location.href = '/listings';
+      return;
+    }
+
+    /* Filter chips inside the listings section → navigate instead of re-rendering */
+    if (el.tagName === 'BUTTON' && FILTER_LABELS.indexOf(t) !== -1) {
+      var sec = el.closest('section');
+      if (sec) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href = '/listings';
+      }
+    }
+  }, true);
+
+  /* ── Helpers ── */
+  function esc(v) {
+    return String(v || '').replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function fmtPrice(n, currency, listingType) {
+    if (n == null || isNaN(n)) return '—';
+    var sym = currency === 'USD' ? '$' : currency === 'EUR' ? '€'
+            : currency === 'GBP' ? '£' : String(currency || '') + ' ';
+    var v = +n, s;
+    if (v >= 1e6) s = sym + (v / 1e6).toFixed(v % 1e6 === 0 ? 0 : 1) + 'M';
+    else if (v >= 1000) s = sym + v.toLocaleString();
+    else s = sym + v;
+    return listingType === 'Rent' ? s + '/mo' : s;
+  }
+
+  var SPANS = [
+    { cols: 'span 8', rows: 'span 3' },
+    { cols: 'span 4', rows: 'span 4' },
+    { cols: 'span 4', rows: 'span 2' },
+    { cols: 'span 4', rows: 'span 2' },
+    { cols: 'span 5', rows: 'span 3' },
+    { cols: 'span 7', rows: 'span 3' },
+  ];
+
+  function cardHTML(row, idx) {
+    var imgs = Array.isArray(row.images) ? row.images : [];
+    var img  = imgs[Number(row.main_image || 0)] || imgs[0] || '';
+    var sp   = SPANS[idx % SPANS.length];
+    var href = '/listing?id=' + encodeURIComponent(row.id);
+    var loc  = esc(row.area || row.city || '');
+    var price = fmtPrice(row.price, row.currency, row.listing_type);
+    var beds  = esc(String(row.bedrooms || '—'));
+    var baths = esc(String(row.bathrooms || '—'));
+    var area  = row.area_sqm ? row.area_sqm + ' m²' : '—';
+    return '<a href="' + href + '" style="grid-column:' + sp.cols + ';grid-row:' + sp.rows
+      + ';position:relative;overflow:hidden;border-radius:4px;background:var(--ak-charcoal)'
+      + ';text-decoration:none;color:var(--fg);display:block;">'
+      + (img ? '<img src="' + esc(img) + '" alt="' + esc(row.title || '') + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.9) contrast(1.04);">' : '')
+      + '<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.10) 0%,rgba(0,0,0,.10) 40%,rgba(0,0,0,.85) 100%);"></div>'
+      + '<span style="position:absolute;top:16px;right:16px;background:var(--ak-crimson);color:#fff;font-size:9px;font-weight:500;letter-spacing:.20em;text-transform:uppercase;padding:5px 10px;">★ Featured</span>'
+      + '<div style="position:absolute;left:18px;right:18px;bottom:18px;">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+          + '<span style="width:6px;height:6px;background:var(--ak-crimson);display:inline-block;flex-shrink:0;"></span>'
+          + '<span style="font-size:10px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--fg-2);">' + loc + '</span>'
+        + '</div>'
+        + '<h3 style="margin:0;font-family:var(--font-display);font-weight:300;font-size:clamp(22px,2.6vw,38px);line-height:1;letter-spacing:.06em;text-transform:uppercase;color:var(--fg);">' + esc(row.title || '') + '</h3>'
+        + '<div style="display:flex;align-items:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid rgba(245,241,234,.20);">'
+          + '<span style="font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-2);flex:1;">' + beds + ' BR · ' + baths + ' BA · ' + area + '</span>'
+          + '<span style="font-family:var(--font-display);font-weight:300;font-size:clamp(18px,1.8vw,24px);color:var(--fg);letter-spacing:.04em;">' + price + '</span>'
+        + '</div>'
+      + '</div>'
+      + '</a>';
+  }
+
+  function emptyHTML() {
+    return '<div style="grid-column:1/-1;padding:80px 24px;text-align:center;border:1px dashed var(--hairline-light);background:var(--ak-charcoal);">'
+      + '<div style="font-family:var(--font-display);font-weight:300;font-size:28px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">The portfolio is quiet at the moment.</div>'
+      + '<p style="margin:0 auto;max-width:460px;font-size:13px;color:var(--fg-2);font-weight:300;line-height:1.6;">No featured residences at this time. New listings are released by invitation.</p>'
+      + '</div>';
+  }
+
+  function findGrid() {
+    var divs = document.querySelectorAll('div');
+    for (var i = 0; i < divs.length; i++) {
+      var s = divs[i].style;
+      if (s && s.gridTemplateColumns && s.gridTemplateColumns.indexOf('repeat(12') !== -1) return divs[i];
+    }
+    return null;
+  }
+
+  /* Fix href="#" card links using seed ID map (Supabase fallback) */
+  function fixCardLinks() {
+    document.querySelectorAll('a').forEach(function (a) {
+      if (a.getAttribute('href') !== '#') return;
+      var h3 = a.querySelector('h3');
+      if (!h3) return;
+      var id = SEED_IDS[h3.textContent.trim().toLowerCase()];
+      if (id) a.setAttribute('href', '/listing?id=' + encodeURIComponent(id));
+    });
+  }
+
+  function applyListings(rows) {
+    var grid = findGrid();
+    if (!grid) { fixCardLinks(); return; }
+    grid.innerHTML = rows.length ? rows.slice(0, 6).map(cardHTML).join('') : emptyHTML();
+  }
+
+  function fetchFeatured() {
+    fetch(SB_URL + '/rest/v1/listings?status=eq.Active&featured=eq.true&order=created_at.desc', {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY },
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) { applyListings(Array.isArray(data) ? data : []); })
+    .catch(function () { fixCardLinks(); });
+  }
+
+  function run() {
+    if (findGrid()) {
+      fetchFeatured();
+    } else {
+      var obs = new MutationObserver(function (_, o) {
+        if (findGrid()) { o.disconnect(); fetchFeatured(); }
+      });
+      obs.observe(document.documentElement, { childList: true, subtree: true });
+      setTimeout(function () { obs.disconnect(); fixCardLinks(); }, 6000);
+    }
+  }
+
+  setTimeout(run, 0);
+})();
+</script>
 </body>
 </html>
