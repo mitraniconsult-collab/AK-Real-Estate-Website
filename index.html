@@ -23,24 +23,58 @@
   <style>
     @media (max-width: 768px) {
 
-      /* ── Nav ── */
+      /* ── Root: force full viewport width, kill horizontal overflow ── */
+      html, body {
+        width:     100vw    !important;
+        max-width: 100vw    !important;
+        overflow-x: hidden  !important;
+      }
+      #root {
+        width:     100vw    !important;
+        max-width: 100vw    !important;
+      }
+      main {
+        max-width:  100vw   !important;
+        overflow-x: hidden  !important;
+      }
+
+      /* ── Nav: wrap into two rows (logo / links) ── */
       nav {
         padding-left:  16px    !important;
         padding-right: 16px    !important;
         flex-wrap:     wrap    !important;
-        gap:           8px     !important;
-        overflow-x:    hidden  !important;
+        gap:           6px     !important;
       }
+      /* Links + lang + CTA container drops to its own row */
       nav > div[style*="margin-left: auto"] {
         margin-left:     0       !important;
         order:           3       !important;
         width:           100%    !important;
         flex-wrap:       wrap    !important;
         justify-content: center  !important;
-        gap:             12px    !important;
+        gap:             14px    !important;
+        font-size:       9px     !important;
       }
 
-      /* ── Hero ── */
+      /* ── Listings section header: stack heading above filter chips ── */
+      /* "grid-template-columns: 1fr auto" is unique to the Listings <header> */
+      [style*="grid-template-columns: 1fr auto"] {
+        grid-template-columns: 1fr  !important;
+      }
+
+      /* ── Masonry grid → single column ── */
+      /* "repeat(12, 1fr)" is unique to the PropertyCard grid wrapper */
+      [style*="repeat(12, 1fr)"] {
+        grid-template-columns: 1fr   !important;
+        grid-auto-rows:        260px !important;
+      }
+      /* Reset every card's col/row span so they each occupy the full width */
+      [style*="repeat(12, 1fr)"] > a {
+        grid-column: 1 / -1 !important;
+        grid-row:    auto   !important;
+      }
+
+      /* ── Hero: collapse 2-col grid, scale headline ── */
       /* "grid-template-columns: auto 1fr" is unique to the hero content div */
       [style*="grid-template-columns: auto 1fr"] {
         grid-template-columns: 1fr !important;
@@ -58,6 +92,7 @@
         font-size:   clamp(34px, 9vw, 60px) !important;
         line-height: 0.95 !important;
       }
+      /* Hero CTA row: left-align and allow wrapping */
       [style*="grid-template-columns: auto 1fr"] > div:last-child > div:last-child {
         justify-content: flex-start !important;
         flex-wrap:       wrap       !important;
@@ -66,14 +101,22 @@
     }
 
     @media (max-width: 480px) {
+
+      /* Further reduce headline on small phones */
       h1 {
         font-size: clamp(28px, 8vw, 44px) !important;
       }
-      /* Stack CTA buttons vertically on very small screens */
+
+      /* Stack hero CTA buttons full-width */
       [style*="grid-template-columns: auto 1fr"] > div:last-child > div:last-child {
         flex-direction: column  !important;
         align-items:    stretch !important;
         gap:            10px    !important;
+      }
+
+      /* Shorter card height on very small screens */
+      [style*="repeat(12, 1fr)"] {
+        grid-auto-rows: 220px !important;
       }
     }
   </style>
