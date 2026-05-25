@@ -33,6 +33,7 @@ function Nav({ active = 'listings', onNav }) {
   const links = [
     { id: 'listings',  label: 'Обяви'  },
     { id: 'concierge', label: 'Услуги' },
+    { id: 'contact',   label: 'Свържи се с нас', cta: true },
   ];
 
   const onPick = (id) => {
@@ -61,7 +62,7 @@ function Nav({ active = 'listings', onNav }) {
             marginLeft: 'auto', display: 'flex', gap: 'clamp(18px, 2.4vw, 36px)', alignItems: 'center',
             flexShrink: 0,
           }}>
-            {links.map(l => (
+            {links.filter(l => !l.cta).map(l => (
               <NavLink key={l.id} active={active === l.id} onClick={() => onPick(l.id)}>{l.label}</NavLink>
             ))}
           </div>
@@ -133,21 +134,23 @@ function Nav({ active = 'listings', onNav }) {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {links.map((l, i) => (
-              <a key={l.id} href="#"
-                onClick={(e) => { e.preventDefault(); onPick(l.id); }}
+              <a key={l.id}
+                href={l.cta ? 'mailto:homesectoronline@gmail.com' : '#'}
+                onClick={l.cta ? () => setOpen(false) : (e) => { e.preventDefault(); onPick(l.id); }}
                 style={{
                   display: 'flex', alignItems: 'baseline', gap: 16,
                   textDecoration: 'none',
                   fontFamily: 'var(--font-display)', fontWeight: 200,
                   fontSize: 'clamp(34px, 9vw, 56px)', lineHeight: 1.1,
                   letterSpacing: '0.06em', textTransform: 'uppercase',
-                  color: active === l.id ? 'var(--ak-crimson)' : 'var(--fg)',
+                  color: l.cta ? 'var(--ak-crimson)' : (active === l.id ? 'var(--ak-crimson)' : 'var(--fg)'),
                   padding: '10px 0',
                   borderBottom: '1px solid var(--hairline-light)',
                 }}>
                 <span style={{
                   fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
-                  letterSpacing: '0.28em', color: 'var(--fg-3)',
+                  letterSpacing: '0.28em',
+                  color: l.cta ? 'var(--ak-crimson)' : 'var(--fg-3)',
                   minWidth: 28,
                 }}>0{i + 1}</span>
                 <span style={{ flex: 1 }}>{l.label}</span>
@@ -156,12 +159,8 @@ function Nav({ active = 'listings', onNav }) {
           </div>
 
           <div style={{ marginTop: 'auto', paddingTop: 40 }}>
-            <Btn variant="primary" as="a" href="mailto:homesectoronline@gmail.com"
-              style={{ width: '100%', textAlign: 'center', padding: '16px 22px', textDecoration: 'none', display: 'block' }}>
-              Свържи се с нас
-            </Btn>
             <div style={{
-              marginTop: 28, display: 'flex', alignItems: 'center', gap: 10,
+              display: 'flex', alignItems: 'center', gap: 10,
               fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
               textTransform: 'uppercase', color: 'var(--fg-3)',
             }}>
