@@ -31,12 +31,8 @@ function Nav({ active = 'listings', onNav }) {
   }, [open]);
 
   const links = [
-    { id: 'listings', label: 'Listings' },
-    { id: 'founder', label: 'The Founder' },
-    { id: 'concierge', label: 'Concierge' },
-    { id: 'journal', label: 'Journal' },
-    { id: 'press', label: 'Press' },
-    { id: 'contact', label: 'Contact' },
+    { id: 'listings',  label: 'Обяви'  },
+    { id: 'concierge', label: 'Услуги' },
   ];
 
   const onPick = (id) => {
@@ -72,8 +68,9 @@ function Nav({ active = 'listings', onNav }) {
         )}
 
         {!isMobile && (
-          <Btn variant="primary" style={{ padding: '11px 18px', fontSize: 10 }}>
-            Request Access
+          <Btn variant="primary" as="a" href="mailto:homesectoronline@gmail.com"
+            style={{ padding: '11px 18px', fontSize: 10, textDecoration: 'none', flexShrink: 0 }}>
+            Свържи се с нас
           </Btn>
         )}
 
@@ -159,8 +156,9 @@ function Nav({ active = 'listings', onNav }) {
           </div>
 
           <div style={{ marginTop: 'auto', paddingTop: 40 }}>
-            <Btn variant="primary" style={{ width: '100%', textAlign: 'center', padding: '16px 22px' }}>
-              Request Access
+            <Btn variant="primary" as="a" href="mailto:homesectoronline@gmail.com"
+              style={{ width: '100%', textAlign: 'center', padding: '16px 22px', textDecoration: 'none', display: 'block' }}>
+              Свържи се с нас
             </Btn>
             <div style={{
               marginTop: 28, display: 'flex', alignItems: 'center', gap: 10,
