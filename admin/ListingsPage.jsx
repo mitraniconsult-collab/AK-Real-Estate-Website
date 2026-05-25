@@ -3,7 +3,24 @@
 function ListingsPage() {
   const route = useRoute();
   const listings = useListings();
-  const [view, setView] = React.useState('table');     // 'table' | 'cards'
+
+  // On mobile (<1024px) always use card view — table is unusable on small screens.
+  const [isMobile, setIsMobile] = React.useState(
+    typeof window !== 'undefined' && window.innerWidth < 1024
+  );
+  const [view, setView] = React.useState(
+    typeof window !== 'undefined' && window.innerWidth < 1024 ? 'cards' : 'table'
+  );
+  React.useEffect(() => {
+    const fn = () => {
+      const m = window.innerWidth < 1024;
+      setIsMobile(m);
+      if (m) setView('cards');
+    };
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+
   const [q, setQ] = React.useState(route.search || '');
 
 React.useEffect(() => {
@@ -81,11 +98,13 @@ React.useEffect(() => {
               fontSize: 13, fontWeight: 300, flex: 1, padding: '6px 0', fontFamily: 'var(--font-body)' }} />
         </div>
 
-        {/* View toggle */}
-        <div style={{ display: 'flex', border: '1px solid var(--hairline-light)' }}>
-          <ViewToggle active={view === 'table'} onClick={() => setView('table')} title="Table view">≣</ViewToggle>
-          <ViewToggle active={view === 'cards'} onClick={() => setView('cards')} title="Card view">▦</ViewToggle>
-        </div>
+        {/* View toggle — hidden on mobile (always card view) */}
+        {!isMobile && (
+          <div style={{ display: 'flex', border: '1px solid var(--hairline-light)' }}>
+            <ViewToggle active={view === 'table'} onClick={() => setView('table')} title="Table view">≣</ViewToggle>
+            <ViewToggle active={view === 'cards'} onClick={() => setView('cards')} title="Card view">▦</ViewToggle>
+          </div>
+        )}
       </div>
 
       {/* Result count */}

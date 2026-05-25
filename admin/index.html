@@ -50,6 +50,33 @@
       display: none !important;
     }
   }
+
+  /* ── Dashboard: stack Latest Listings + Recent Activity at tablet width ── */
+  @media (max-width: 980px) {
+    /* "minmax(0, 1.4fr) minmax(0, 1fr)" is unique to the dashboard bottom grid */
+    [style*="1.4fr) minmax(0, 1fr)"] {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  /* ── Phone ── */
+  @media (max-width: 640px) {
+
+    /* DashboardPage LatestRow: 5-col → 3-col; hide price (child 3) + arrow (child 5) */
+    [style*="64px 1fr auto auto auto"] {
+      grid-template-columns: 56px 1fr auto !important;
+    }
+    [style*="64px 1fr auto auto auto"] > span:nth-child(3),
+    [style*="64px 1fr auto auto auto"] > span:nth-child(5) {
+      display: none !important;
+    }
+
+    /* ListingsPage filter bar search: remove hard min-width so it wraps cleanly */
+    [style*="min-width: 220px"] {
+      min-width: 0 !important;
+      flex: 1 1 auto !important;
+    }
+  }
 </style>
 </head>
 <body>
