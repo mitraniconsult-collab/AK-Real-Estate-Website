@@ -35,6 +35,21 @@
 
   @keyframes ak-rise { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: none; } }
   .ak-rise { animation: ak-rise .5s cubic-bezier(0.2, 0.6, 0.2, 1) forwards; }
+
+  /* ── Mobile responsive ── */
+  @media (max-width: 640px) {
+
+    /* LoginPage: collapse 2-col cinematic layout to single column.
+       [style*="1.2fr 1fr"] is unique to LoginPage's root grid in this app. */
+    [style*="1.2fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Hide the decorative left image panel — form becomes full-width. */
+    [style*="1.2fr 1fr"] > div:first-child {
+      display: none !important;
+    }
+  }
 </style>
 </head>
 <body>

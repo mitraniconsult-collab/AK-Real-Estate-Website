@@ -51,8 +51,12 @@ function AdminShell({ active, onSignOut, children }) {
   const langCtx = useAdminLang();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
+  const [isPhone,  setIsPhone]  = React.useState(false);
   React.useEffect(() => {
-    const fn = () => setIsMobile(window.innerWidth < 1024);
+    const fn = () => {
+      setIsMobile(window.innerWidth < 1024);
+      setIsPhone(window.innerWidth  <  640);
+    };
     fn();
     window.addEventListener('resize', fn);
     return () => window.removeEventListener('resize', fn);
@@ -81,7 +85,7 @@ function AdminShell({ active, onSignOut, children }) {
 
         {/* main */}
         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-          <TopBar isMobile={isMobile} onMenu={() => setMobileOpen(true)} />
+          <TopBar isMobile={isMobile} isPhone={isPhone} onMenu={() => setMobileOpen(true)} />
           <div style={{ flex: 1, minWidth: 0, padding: 'clamp(20px, 3vw, 48px) clamp(20px, 3vw, 48px) 80px' }}>
             {children}
           </div>
@@ -202,7 +206,7 @@ function LangSwitch() {
   );
 }
 
-function TopBar({ isMobile, onMenu }) {
+function TopBar({ isMobile, isPhone, onMenu }) {
   const { t } = React.useContext(AdminLangContext);
   const [search, setSearch] = React.useState('');
 
@@ -219,7 +223,7 @@ function TopBar({ isMobile, onMenu }) {
 
   return (
     <header style={{
-      display: 'flex', alignItems: 'center', gap: 16,
+      display: 'flex', alignItems: 'center', gap: isMobile ? 10 : 16,
       padding: '14px clamp(20px, 3vw, 48px)',
       borderBottom: '1px solid var(--hairline-light)',
       background: 'var(--ak-ink)',
@@ -235,14 +239,21 @@ function TopBar({ isMobile, onMenu }) {
       )}
       {isMobile && <Logo size="sm" />}
 
-      <Breadcrumbs />
+      {/* Breadcrumbs: hidden on phone (logo already visible), ellipsis-clipped on tablet */}
+      {!isPhone && (
+        <div style={{ minWidth: 0, maxWidth: 'clamp(80px, 28vw, 320px)', overflow: 'hidden' }}>
+          <Breadcrumbs />
+        </div>
+      )}
 
       <span style={{ flex: 1 }}></span>
 
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
         borderBottom: '1px solid var(--hairline-light)',
-        padding: '4px 0', minWidth: 220,
+        padding: '4px 0',
+        minWidth: isMobile ? 0 : 220,
+        flex: isMobile ? '1 1 auto' : undefined,
       }}>
         <Icon name="search" size={14} style={{ color: 'var(--fg-3)' }} />
         <input
@@ -283,14 +294,15 @@ function TopBar({ isMobile, onMenu }) {
         </button>
       </div>
 
-      <span style={{ width: 1, height: 20, background: 'var(--hairline-light)' }}></span>
-
-      <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
-        textTransform: 'uppercase', color: 'var(--fg-2)', whiteSpace: 'nowrap' }}>
-        <span style={{ color: 'var(--ak-crimson)' }}>▪</span>&nbsp; {t('All systems quiet')}
-      </span>
-
-      <span style={{ width: 1, height: 20, background: 'var(--hairline-light)' }}></span>
+      {/* Status indicator + flanking dividers — hidden on mobile to prevent overflow */}
+      {!isMobile && <span style={{ width: 1, height: 20, background: 'var(--hairline-light)' }}></span>}
+      {!isMobile && (
+        <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
+          textTransform: 'uppercase', color: 'var(--fg-2)', whiteSpace: 'nowrap' }}>
+          <span style={{ color: 'var(--ak-crimson)' }}>▪</span>&nbsp; {t('All systems quiet')}
+        </span>
+      )}
+      {!isMobile && <span style={{ width: 1, height: 20, background: 'var(--hairline-light)' }}></span>}
 
       <LangSwitch />
     </header>
@@ -313,21 +325,22 @@ function Breadcrumbs() {
     crumbs.push({ label: t('Edit') + ' · ' + (route.id || '') });
   }
   return (
-    <nav style={{ display: 'flex', alignItems: 'center', gap: 10,
+    <nav style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, overflow: 'hidden',
       fontSize: 10, fontWeight: 500, letterSpacing: '0.22em', textTransform: 'uppercase' }}>
       {crumbs.map((c, i) => (
         <React.Fragment key={i}>
           {c.to ? (
             <a href={'#' + c.to} style={{
               color: 'var(--fg-2)', textDecoration: 'none',
-              transition: 'color .2s var(--ease)',
+              transition: 'color .2s var(--ease)', flexShrink: 0,
             }}
             onMouseEnter={(e) => e.currentTarget.style.color = 'var(--ak-crimson)'}
             onMouseLeave={(e) => e.currentTarget.style.color = 'var(--fg-2)'}>{c.label}</a>
           ) : (
-            <span style={{ color: 'var(--fg)' }}>{c.label}</span>
+            <span style={{ color: 'var(--fg)', minWidth: 0, overflow: 'hidden',
+              textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.label}</span>
           )}
-          {i < crumbs.length - 1 && <span style={{ color: 'var(--fg-3)' }}>/</span>}
+          {i < crumbs.length - 1 && <span style={{ color: 'var(--fg-3)', flexShrink: 0 }}>/</span>}
         </React.Fragment>
       ))}
     </nav>
