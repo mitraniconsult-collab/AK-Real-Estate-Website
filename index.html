@@ -38,22 +38,28 @@
         overflow-x: hidden  !important;
       }
 
-      /* ── Nav: wrap into two rows (logo / links) ── */
+      /* ── Nav: logo fills row 1, all other items wrap to centred row 2 ── */
       nav {
-        padding-left:  16px    !important;
-        padding-right: 16px    !important;
-        flex-wrap:     wrap    !important;
-        gap:           6px     !important;
+        padding:         12px 16px  !important;
+        flex-wrap:       wrap       !important;
+        gap:             8px        !important;
+        justify-content: center     !important;
+        align-items:     center     !important;
       }
-      /* Links + lang + CTA container drops to its own row */
+      /* Logo <a> is the only direct anchor child of nav — put it on its own full-width row */
+      nav > a {
+        flex: 0 0 100% !important;
+      }
+      /* Every non-anchor nav child (links div, LangSwitcher, Btn) → row 2 */
+      nav > *:not(a) {
+        order: 3 !important;
+      }
+      /* Links container: drop auto-margin, wrap and centre in row 2 */
       nav > div[style*="margin-left: auto"] {
         margin-left:     0       !important;
-        order:           3       !important;
-        width:           100%    !important;
         flex-wrap:       wrap    !important;
-        justify-content: center  !important;
         gap:             14px    !important;
-        font-size:       9px     !important;
+        justify-content: center  !important;
       }
 
       /* ── Listings section header: stack heading above filter chips ── */
@@ -74,25 +80,40 @@
         grid-row:    auto   !important;
       }
 
-      /* ── Hero: collapse 2-col grid, scale headline ── */
-      /* "grid-template-columns: auto 1fr" is unique to the hero content div */
+      /* ── Hero content wrapper: collapse grid + fix box-sizing overflow ── */
+      /* Default box-sizing: content-box adds padding on top of the element width,
+         making the div wider than the viewport. width: 100% + border-box absorbs it. */
+      /* Exact value "grid-template-columns: auto 1fr" is unique to Hero's content div */
       [style*="grid-template-columns: auto 1fr"] {
-        grid-template-columns: 1fr !important;
-        gap: 0 !important;
+        grid-template-columns: 1fr        !important;
+        gap:                   0          !important;
+        width:                 100%       !important;
+        box-sizing:            border-box !important;
       }
+      /* Hide decorative vertical side label (first grid child) */
       [style*="grid-template-columns: auto 1fr"] > div:first-child {
         display: none !important;
       }
+      /* Headline block: stretch to full cell width; fix box-sizing so it stays inside grid */
       [style*="grid-template-columns: auto 1fr"] > div:last-child {
-        text-align:   left    !important;
-        justify-self: stretch !important;
-        max-width:    100%    !important;
+        text-align:   left        !important;
+        justify-self: stretch     !important;
+        max-width:    100%        !important;
+        width:        100%        !important;
+        box-sizing:   border-box  !important;
       }
+      /* Body paragraph: neutralise the auto left-margin that pushes it rightward */
+      [style*="grid-template-columns: auto 1fr"] > div:last-child > p {
+        margin-left: 0    !important;
+        max-width:   100% !important;
+      }
+      /* Hero headline */
       h1 {
         font-size:   clamp(34px, 9vw, 60px) !important;
-        line-height: 0.95 !important;
+        line-height: 0.95                   !important;
+        word-break:  break-word             !important;
       }
-      /* Hero CTA row: left-align and allow wrapping */
+      /* CTA row: left-align and allow buttons to wrap */
       [style*="grid-template-columns: auto 1fr"] > div:last-child > div:last-child {
         justify-content: flex-start !important;
         flex-wrap:       wrap       !important;
