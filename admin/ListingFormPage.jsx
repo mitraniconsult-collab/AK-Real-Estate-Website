@@ -527,7 +527,7 @@ function MetaRow({ label, value }) {
 }
 
 function PreviewCard({ form }) {
-  const img = form.images[form.mainImage];
+  const img = getImageUrl(form.images[form.mainImage]);
   return (
     <div style={{ borderRadius: 4, overflow: 'hidden', background: '#0a0a0a' }}>
       <div style={{ position: 'relative', aspectRatio: '4/5', background: 'var(--ak-graphite)' }}>
@@ -574,6 +574,15 @@ const STOCK = [
   "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&q=80&auto=format&fit=crop",
 ];
+
+// Resolves the display URL from an image entry that may be a plain string
+// or an object with various URL fields (Supabase storage returns objects with
+// url / publicUrl / public_url; older records may use src, path, or image_url).
+function getImageUrl(image) {
+  if (!image) return '';
+  if (typeof image === 'string') return image;
+  return image.url || image.publicUrl || image.public_url || image.image_url || image.src || image.path || '';
+}
 
 function ImageManager({ images, mainImage, onChange, isPhone }) {
   const t = useFormLang();
@@ -660,15 +669,22 @@ function ImageManager({ images, mainImage, onChange, isPhone }) {
 }
 
 function ImageThumb({ src, isMain, onMain, onRemove }) {
+  const url = getImageUrl(src);
   return (
     <div style={{
       position: 'relative', aspectRatio: '4/3', overflow: 'hidden',
       border: '1px solid ' + (isMain ? 'var(--ak-crimson)' : 'var(--hairline-light)'),
       background: 'var(--ak-graphite)',
     }}>
-      <img src={src} alt=""
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
-                 objectFit: 'cover' }} />
+      {url ? (
+        <img src={url} alt=""
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
+                   objectFit: 'cover' }} />
+      ) : (
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
+          justifyContent: 'center', fontSize: 10, fontWeight: 500, letterSpacing: '0.20em',
+          textTransform: 'uppercase', color: 'var(--fg-3)' }}>No image</div>
+      )}
       {isMain && (
         <div style={{ position: 'absolute', top: 6, left: 6,
           background: 'var(--ak-crimson)', color: '#fff',
