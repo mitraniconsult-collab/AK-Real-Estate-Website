@@ -77,7 +77,7 @@ function AdminShell({ active, onSignOut, children }) {
             position: 'fixed', inset: 0, zIndex: 60,
             background: 'rgba(0,0,0,.65)', backdropFilter: 'blur(8px)',
           }} onClick={() => setMobileOpen(false)}>
-            <div style={{ width: 280, height: '100%', background: 'var(--ak-black)' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ width: 'min(86vw, 360px)', height: '100%', background: 'var(--ak-black)' }} onClick={(e) => e.stopPropagation()}>
               <Sidebar active={active} onSignOut={() => { setMobileOpen(false); onSignOut(); }} onNavigate={() => setMobileOpen(false)} />
             </div>
           </div>

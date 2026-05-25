@@ -120,6 +120,16 @@ function DashStatusBadge({ status }) {
 function DashboardPage() {
   const { t } = useDashLang();
   const listings = useListings();
+
+  const [isMobile, setIsMobile] = React.useState(
+    typeof window !== 'undefined' && window.innerWidth < 980
+  );
+  React.useEffect(() => {
+    const fn = () => setIsMobile(window.innerWidth < 980);
+    fn();
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
   const total = listings.length;
   const active = listings.filter(l => l.status === 'Active').length;
   const draft = listings.filter(l => l.status === 'Draft').length;
@@ -165,7 +175,8 @@ function DashboardPage() {
       {/* latest + activity */}
       <div style={{
         marginTop: 'clamp(40px, 5vw, 72px)',
-        display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)',
+        display: 'grid',
+        gridTemplateColumns: isMobile ? '1fr' : 'minmax(0, 1.4fr) minmax(0, 1fr)',
         gap: 'clamp(20px, 2.4vw, 40px)',
       }}>
         <LatestListings listings={latest} />
@@ -235,6 +246,53 @@ function LatestListings({ listings }) {
 
 function LatestRow({ listing }) {
   const [hover, setHover] = React.useState(false);
+  const [isPhone, setIsPhone] = React.useState(
+    typeof window !== 'undefined' && window.innerWidth < 640
+  );
+  React.useEffect(() => {
+    const fn = () => setIsPhone(window.innerWidth < 640);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+
+  const thumb = listing.images && listing.images[listing.mainImage];
+  const thumbEl = (size) => (
+    <div style={{ width: size, height: size, flexShrink: 0, overflow: 'hidden',
+      background: 'var(--ak-graphite)', borderRadius: 2, position: 'relative' }}>
+      {thumb && <img src={thumb} alt=""
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
+                 objectFit: 'cover', filter: 'saturate(.9)' }} />}
+    </div>
+  );
+
+  if (isPhone) {
+    return (
+      <a href={`#/listings/${listing.id}/edit`}
+        onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          padding: '12px', textDecoration: 'none', color: 'var(--fg)',
+          borderBottom: '1px solid var(--hairline-light)',
+          background: hover ? 'rgba(255,255,255,.02)' : 'transparent',
+          transition: 'background .2s var(--ease)',
+        }}>
+        {thumbEl(48)}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: 15,
+            letterSpacing: '0.04em', textTransform: 'uppercase',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {listing.title}
+          </div>
+          <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.18em',
+            textTransform: 'uppercase', color: 'var(--fg-3)', marginTop: 3 }}>
+            {listing.area} · {listing.city}
+          </div>
+        </div>
+        <DashStatusBadge status={listing.status} />
+      </a>
+    );
+  }
+
   return (
     <a href={`#/listings/${listing.id}/edit`}
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
@@ -246,14 +304,7 @@ function LatestRow({ listing }) {
         background: hover ? 'rgba(255,255,255,.02)' : 'transparent',
         transition: 'background .2s var(--ease)',
       }}>
-      <div style={{ width: 64, height: 64, overflow: 'hidden',
-        background: 'var(--ak-graphite)', borderRadius: 2, position: 'relative' }}>
-        {listing.images && listing.images[listing.mainImage] && (
-          <img src={listing.images[listing.mainImage]} alt=""
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
-                     objectFit: 'cover', filter: 'saturate(.9)' }} />
-        )}
-      </div>
+      {thumbEl(64)}
       <div style={{ minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: 18,
