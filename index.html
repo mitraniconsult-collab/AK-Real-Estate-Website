@@ -119,6 +119,79 @@
         flex-wrap:       wrap       !important;
         gap:             14px       !important;
       }
+
+      /* ── §02 Founder: collapse 3-col outer grid, hide decorative vertical label ── */
+      /* "minmax(48px, auto) minmax(0, 1.05fr)" is unique to Founder's outer grid */
+      [style*="minmax(48px, auto) minmax(0, 1.05fr)"] {
+        grid-template-columns: 1fr !important;
+      }
+      [style*="minmax(48px, auto) minmax(0, 1.05fr)"] > div:first-child {
+        display: none !important;
+      }
+
+      /* ── §03 Concierge: collapse outer grid, hide vertical label ── */
+      /* "minmax(48px,auto) 1fr" (no space after comma) is unique to Concierge's outer grid */
+      [style*="minmax(48px,auto) 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+      [style*="minmax(48px,auto) 1fr"] > div:first-child {
+        display: none !important;
+      }
+      /* "grid-template-columns: 1.1fr 1fr" is unique to Concierge's inner header */
+      [style*="grid-template-columns: 1.1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* ── All equal 2-col fr grids → single column ── */
+      /* Covers: §03 services + image, §03 service tiles, §04 section header,
+         §04 caption pair, AppPromo main + values grid, Contact main grid */
+      [style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* ── §04 Editorial image composition ── */
+      /* "grid-template-columns: 1.4fr 1fr" is unique to Editorial's image grid */
+      [style*="grid-template-columns: 1.4fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* ── §05 Press: 2-col → single column ── */
+      /* "repeat(2, 1fr)" is unique to Press; does not match repeat(12,…) or others */
+      [style*="repeat(2, 1fr)"] {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* ── §06 Journal: posts 3-col → single column; social strip 6-col → 3-col ── */
+      [style*="repeat(3, 1fr)"] {
+        grid-template-columns: 1fr !important;
+      }
+      [style*="repeat(6, 1fr)"] {
+        grid-template-columns: repeat(3, 1fr) !important;
+      }
+
+      /* ── Contact: fixed 160px label column → full width ── */
+      /* "160px 1fr" is unique to ContactLine's grid */
+      [style*="160px 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* ── Footer sitemap: 5-col → 2-col ── */
+      /* "repeat(4, 1fr)" is unique to Footer's sitemap grid */
+      [style*="repeat(4, 1fr)"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+      /* Footer header bar (logo + hairline + subscribe): allow wrapping */
+      /* "gap: 32px" combined with footer context is unique to this flex bar */
+      footer > div[style*="gap: 32px"] {
+        flex-wrap: wrap !important;
+        gap:       16px !important;
+      }
+
+      /* ── AppPromo phone mock: cap fixed 280px width on narrow screens ── */
+      /* "aspect-ratio: 9/19" is unique to the phone mock container */
+      [style*="aspect-ratio: 9/19"] {
+        width: min(280px, 70vw) !important;
+      }
     }
 
     @media (max-width: 480px) {
@@ -135,9 +208,19 @@
         gap:            10px    !important;
       }
 
-      /* Shorter card height on very small screens */
+      /* Shorter listing card height */
       [style*="repeat(12, 1fr)"] {
         grid-auto-rows: 220px !important;
+      }
+
+      /* Footer sitemap: 2-col → 1-col on very small screens */
+      [style*="repeat(4, 1fr)"] {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* Journal social strip: 3-col → 2-col on very small screens */
+      [style*="repeat(6, 1fr)"] {
+        grid-template-columns: repeat(2, 1fr) !important;
       }
     }
   </style>
