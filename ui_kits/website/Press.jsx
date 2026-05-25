@@ -11,7 +11,7 @@ function Press() {
   return (
     <section style={{ background: 'var(--ak-ink)', color: 'var(--fg)',
       padding: 'var(--section-y) var(--gutter)', position: 'relative' }}>
-      <header style={{ display: 'flex', alignItems: 'end', gap: 24,
+      <header className="r-press-head" style={{ display: 'flex', alignItems: 'end', gap: 24,
         marginBottom: 'clamp(48px,5vw,80px)' }}>
         <SectionNumeral n="05" label="Press & Features" />
         <span style={{ flex: 1, height: 1, background: 'var(--hairline-light)',
@@ -23,7 +23,7 @@ function Press() {
         </a>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
+      <div className="r-cols-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
         gap: 'clamp(24px,3vw,48px) clamp(40px,5vw,96px)' }}>
         {PRESS.map(p => <PressItem key={p.outlet} {...p} />)}
       </div>

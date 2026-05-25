@@ -8,7 +8,7 @@ function Editorial() {
     <section style={{ background: 'var(--ak-bone)', color: 'var(--fg-on-light)',
       padding: 'var(--section-y) var(--gutter)', position: 'relative' }}>
 
-      <header style={{ display: 'grid', gridTemplateColumns: '1fr 1fr',
+      <header className="r-stack-640" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr',
         gap: 'clamp(24px,5vw,80px)', alignItems: 'end',
         marginBottom: 'clamp(48px,5vw,80px)' }}>
         <div>
@@ -31,7 +31,7 @@ function Editorial() {
       </header>
 
       {/* image composition: large + inset */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 'clamp(16px,2.5vw,40px)',
+      <div className="r-stack-640" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 'clamp(16px,2.5vw,40px)',
         alignItems: 'stretch' }}>
         <figure style={{ margin: 0, position: 'relative', borderRadius: 4, overflow: 'hidden',
           aspectRatio: '4/3', boxShadow: '0 24px 60px -20px rgba(20,18,14,.25)' }}>
@@ -55,7 +55,7 @@ function Editorial() {
                        objectFit: 'cover', filter: 'saturate(.85) contrast(1.06)' }} />
           </figure>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28 }}>
+          <div className="r-edit-inset-copy" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28 }}>
             <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, fontWeight: 300, color: 'var(--ak-pewter)' }}>
               For four years the house was empty. The orchard was not. Through three drought
               seasons a single caretaker walked it twice a week and decided which trees were
@@ -69,7 +69,7 @@ function Editorial() {
         </div>
       </div>
 
-      <div style={{ marginTop: 'clamp(40px,5vw,72px)', display: 'flex',
+      <div className="r-flex-wrap" style={{ marginTop: 'clamp(40px,5vw,72px)', display: 'flex',
         alignItems: 'center', gap: 24 }}>
         <RedLine />
         <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.28em',

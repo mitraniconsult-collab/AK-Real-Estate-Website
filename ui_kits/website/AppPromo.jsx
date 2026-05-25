@@ -6,11 +6,11 @@ function AppPromo() {
   return (
     <section style={{ background: 'var(--ak-bone)', color: 'var(--fg-on-light)',
       padding: 'var(--section-y) var(--gutter)', position: 'relative' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(24px,5vw,96px)',
+      <div className="r-stack-980" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(24px,5vw,96px)',
         alignItems: 'center' }}>
 
         {/* app mock — phone */}
-        <div style={{ position: 'relative', justifySelf: 'center' }}>
+        <div className="r-app-phone" style={{ position: 'relative', justifySelf: 'center' }}>
           <div style={{ position: 'absolute', inset: '-40px -60px', borderRadius: '50%',
             border: '1px solid rgba(0,0,0,.06)', pointerEvents: 'none' }}></div>
           <div style={{ width: 280, aspectRatio: '9/19', borderRadius: 32,
@@ -78,7 +78,7 @@ function AppPromo() {
           </p>
 
           {/* values mini grid */}
-          <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: '1fr 1fr',
+          <div className="r-cols-2" style={{ marginTop: 40, display: 'grid', gridTemplateColumns: '1fr 1fr',
             gap: '24px 36px', borderTop: '1px solid rgba(0,0,0,.10)', paddingTop: 24 }}>
             {[
               ['Discretion', 'Off-market is the default, not a feature.'],
@@ -97,7 +97,7 @@ function AppPromo() {
             ))}
           </div>
 
-          <div style={{ marginTop: 36, display: 'flex', gap: 20, alignItems: 'center' }}>
+          <div className="r-flex-wrap" style={{ marginTop: 36, display: 'flex', gap: 20, alignItems: 'center' }}>
             <Btn variant="primary">Request Invitation</Btn>
             <a href="#" style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
               textTransform: 'uppercase', color: 'var(--fg-on-light)', textDecoration: 'none',

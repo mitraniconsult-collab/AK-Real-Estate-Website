@@ -32,14 +32,14 @@ function Hero() {
         borderRadius: '50%', border: '1px solid rgba(245,241,234,.10)', pointerEvents: 'none' }}></div>
 
       {/* content */}
-      <div style={{
+      <div className="r-stack-640-keep-label" style={{
         position: 'relative', minHeight: 'min(92vh, 820px)',
-        padding: 'calc(var(--section-y) * 0.55) var(--gutter) calc(var(--section-y) * 0.55)',
+        padding: 'calc(var(--section-y) * 0.55) var(--gutter) calc(var(--section-y) * 0.7)',
         display: 'grid', gridTemplateColumns: 'auto 1fr',
         gap: 'clamp(20px, 4vw, 64px)', alignItems: 'center',
       }}>
         {/* vertical label */}
-        <div style={{ display: 'flex', alignItems: 'flex-end', height: '100%', paddingBottom: 20 }}>
+        <div className="r-edge-label" style={{ display: 'flex', alignItems: 'flex-end', height: '100%', paddingBottom: 20 }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
             <div style={{ width: 1, height: 60, background: 'var(--ak-crimson)' }}></div>
             <VLabel>§ 01 — A Private Portfolio</VLabel>
@@ -48,7 +48,7 @@ function Hero() {
         </div>
 
         {/* headline block, right-justified */}
-        <div className="ak-rise" style={{ textAlign: 'right', maxWidth: 960, justifySelf: 'end' }}>
+        <div className="ak-rise r-text-left-mobile" style={{ textAlign: 'right', maxWidth: 960, justifySelf: 'end' }}>
           <Eyebrow style={{ marginBottom: 28 }}>Since 2014 · Los Angeles · Off-Market</Eyebrow>
           <h1 style={{
             margin: 0,
@@ -79,7 +79,7 @@ function Hero() {
       </div>
 
       {/* bottom hairline strip with marquee-style meta */}
-      <div style={{
+      <div className="r-hero-strip" style={{
         position: 'absolute', left: 'var(--gutter)', right: 'var(--gutter)', bottom: 24,
         display: 'flex', alignItems: 'center', gap: 24, opacity: .8,
       }}>

@@ -6,12 +6,12 @@ function Founder() {
   return (
     <section style={{ background: 'var(--ak-bone)', color: 'var(--fg-on-light)',
       padding: 'var(--section-y) var(--gutter)', position: 'relative' }}>
-      <div style={{ display: 'grid',
+      <div className="r-stack-980" style={{ display: 'grid',
         gridTemplateColumns: 'minmax(48px, auto) minmax(0, 1.05fr) minmax(0, 1fr)',
         gap: 'clamp(24px, 5vw, 96px)', alignItems: 'start' }}>
 
         {/* vertical edge label */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 18,
+        <div className="r-edge-label" style={{ display: 'flex', alignItems: 'center', gap: 18,
           flexDirection: 'column', paddingTop: 60 }}>
           <div style={{ width: 1, height: 80, background: 'var(--ak-crimson)' }}></div>
           <VLabel style={{ color: 'var(--fg-on-light-3)' }}>§ 02 — The Founder</VLabel>

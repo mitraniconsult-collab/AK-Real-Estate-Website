@@ -25,7 +25,7 @@ function Journal() {
   return (
     <section style={{ background: 'var(--ak-ink)', color: 'var(--fg)',
       padding: 'var(--section-y) var(--gutter)', position: 'relative' }}>
-      <header style={{ display: 'flex', alignItems: 'end',
+      <header className="r-press-head" style={{ display: 'flex', alignItems: 'end',
         gap: 24, marginBottom: 'clamp(40px,5vw,72px)' }}>
         <SectionNumeral n="06" label="News & Insights" />
         <span style={{ flex: 1, height: 1, background: 'var(--hairline-light)', marginBottom: 12 }}></span>
@@ -36,13 +36,13 @@ function Journal() {
         </a>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+      <div className="r-journal" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
         gap: 'clamp(20px, 2.4vw, 36px)', marginBottom: 'clamp(64px,7vw,110px)' }}>
         {POSTS.map((p, i) => <JournalCard key={i} {...p} />)}
       </div>
 
       {/* Social — Instagram-style strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 4 }}>
+      <div className="r-cols-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 4 }}>
         {SOCIAL.map((src, i) => (
           <a key={i} href="#" style={{ position: 'relative', aspectRatio: '1/1',
             overflow: 'hidden', display: 'block' }}>

@@ -55,7 +55,7 @@ function Listings() {
     <section style={{ background: 'var(--ak-ink)', color: 'var(--fg)',
       padding: 'var(--section-y) var(--gutter)', position: 'relative' }}>
       {/* header */}
-      <header style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 32,
+      <header className="r-stack-640" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 32,
         alignItems: 'end', marginBottom: 'clamp(48px, 6vw, 96px)' }}>
         <div>
           <SectionNumeral n="01" label="Featured Portfolio" />
@@ -93,7 +93,7 @@ function Listings() {
 
       {/* masonry grid */}
       {top.length > 0 && (
-        <div style={{
+        <div className="r-masonry" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(12, 1fr)',
           gridAutoRows: '180px',
@@ -109,7 +109,7 @@ function Listings() {
 
       {/* Overflow as smaller cards */}
       {rest.length > 0 && (
-        <div style={{
+        <div className="r-overflow-2" style={{
           marginTop: 'clamp(20px, 2.4vw, 32px)',
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
@@ -121,7 +121,7 @@ function Listings() {
         </div>
       )}
 
-      <div style={{ marginTop: 'clamp(48px, 6vw, 80px)', display: 'flex',
+      <div className="r-listings-foot" style={{ marginTop: 'clamp(48px, 6vw, 80px)', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
         <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.28em',
           textTransform: 'uppercase', color: 'var(--fg-2)' }}>

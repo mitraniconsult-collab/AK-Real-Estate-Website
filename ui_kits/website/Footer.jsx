@@ -11,7 +11,7 @@ function Footer() {
     <footer style={{ background: 'var(--ak-black)', color: 'var(--fg)',
       padding: 'clamp(80px,8vw,140px) var(--gutter) 36px', position: 'relative' }}>
       {/* big wordmark */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 32,
+      <div className="r-footer-head" style={{ display: 'flex', alignItems: 'center', gap: 32,
         marginBottom: 'clamp(56px, 6vw, 96px)', paddingBottom: 36,
         borderBottom: '1px solid var(--hairline-light)' }}>
         <Logo size="lg" />
@@ -20,7 +20,7 @@ function Footer() {
       </div>
 
       {/* sitemap + tagline */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr repeat(4, 1fr)',
+      <div className="r-cols-2" style={{ display: 'grid', gridTemplateColumns: '1.4fr repeat(4, 1fr)',
         gap: 'clamp(24px, 3vw, 56px)', marginBottom: 80 }}>
         <div>
           <Eyebrow style={{ marginBottom: 18 }}>A Quieter Practice</Eyebrow>
@@ -62,19 +62,19 @@ function Footer() {
       </div>
 
       {/* legal strip */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 24, paddingTop: 24,
+      <div className="r-legal" style={{ display: 'flex', alignItems: 'center', gap: 24, paddingTop: 24,
         borderTop: '1px solid var(--hairline-light)',
         fontSize: 10, fontWeight: 500, letterSpacing: '0.22em', textTransform: 'uppercase',
         color: 'var(--fg-3)' }}>
         <span>© 2026 AK Real Estate, Inc.</span>
         <span style={{ color: 'var(--ak-crimson)' }}>▪</span>
         <span>DRE #01988201</span>
-        <span style={{ color: 'var(--hairline-light)' }}>·</span>
+        <span className="r-spacer" style={{ color: 'var(--hairline-light)' }}>·</span>
         <a href="#" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>Privacy</a>
         <a href="#" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>Terms</a>
         <a href="#" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>Accessibility</a>
         <a href="#" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>Fair Housing</a>
-        <span style={{ flex: 1 }}></span>
+        <span className="r-spacer" style={{ flex: 1 }}></span>
         <span>A Quieter Kind of Luxury</span>
       </div>
     </footer>

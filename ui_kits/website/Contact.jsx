@@ -21,7 +21,7 @@ function Contact() {
         backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='6'><line x1='0' y1='0' x2='0' y2='6' stroke='white' stroke-width='.5' opacity='.06' transform='rotate(35)'/></svg>\")",
         mixBlendMode: 'overlay', opacity: .8, pointerEvents: 'none' }}></div>
 
-      <div style={{ position: 'relative', padding: 'var(--section-y) var(--gutter)',
+      <div className="r-stack-980" style={{ position: 'relative', padding: 'var(--section-y) var(--gutter)',
         display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,96px)',
         alignItems: 'start' }}>
         {/* left — headline */}
@@ -84,7 +84,7 @@ function Contact() {
             <Field label="A note" value={message} onChange={setMessage}
               placeholder="A quiet street, a stone wall, a garden." textarea />
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 8 }}>
+            <div className="r-flex-wrap" style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 8 }}>
               <Btn variant="primary" as="button" type="submit">Send Request</Btn>
               <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
                 textTransform: 'uppercase', color: 'var(--fg-2)' }}>
@@ -141,7 +141,7 @@ function Field({ label, value, onChange, placeholder, textarea }) {
 
 function ContactLine({ label, value }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: 24,
+    <div className="r-contact-line" style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: 24,
       alignItems: 'baseline', paddingBottom: 14,
       borderBottom: '1px solid var(--hairline-light)' }}>
       <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',

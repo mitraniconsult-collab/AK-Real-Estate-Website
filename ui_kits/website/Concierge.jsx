@@ -23,11 +23,11 @@ function Concierge() {
         width: '50vw', height: '50vw', maxWidth: 720, maxHeight: 720,
         borderRadius: '50%', border: '1px solid rgba(245,241,234,.05)', pointerEvents: 'none' }}></div>
 
-      <div style={{ position: 'relative', display: 'grid',
+      <div className="r-stack-980-keep-label" style={{ position: 'relative', display: 'grid',
         gridTemplateColumns: 'minmax(48px,auto) 1fr', gap: 'clamp(24px,4vw,72px)' }}>
 
         {/* vertical label */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
+        <div className="r-edge-label" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
           gap: 18, paddingTop: 60 }}>
           <div style={{ width: 1, height: 80, background: 'var(--ak-crimson)' }}></div>
           <VLabel>§ 03 — Why Work With Us</VLabel>
@@ -35,7 +35,7 @@ function Concierge() {
 
         <div>
           {/* header */}
-          <header style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr',
+          <header className="r-stack-640" style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr',
             gap: 'clamp(32px, 6vw, 96px)', marginBottom: 'clamp(60px, 7vw, 110px)' }}>
             <div>
               <SectionNumeral n="03" label="The Practice" />
@@ -53,8 +53,8 @@ function Concierge() {
           </header>
 
           {/* services grid + image */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(24px,3vw,48px)' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr',
+          <div className="r-stack-980" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(24px,3vw,48px)' }}>
+            <div className="r-services" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr',
               gap: 'clamp(24px, 3vw, 56px) clamp(24px, 3vw, 48px)' }}>
               {SERVICES.map(s => <ServiceTile key={s.n} {...s} />)}
             </div>
@@ -76,7 +76,7 @@ function Concierge() {
           </div>
 
           {/* CTA strip */}
-          <div style={{ marginTop: 'clamp(48px,6vw,96px)', display: 'flex',
+          <div className="r-flex-wrap" style={{ marginTop: 'clamp(48px,6vw,96px)', display: 'flex',
             alignItems: 'center', gap: 24, paddingTop: 24,
             borderTop: '1px solid var(--hairline-light)' }}>
             <RedSquare />
