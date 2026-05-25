@@ -3,10 +3,10 @@
 const CONCIERGE_IMG = "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=2000&q=80&auto=format&fit=crop";
 
 const SERVICES = [
-  { n: '01', title: 'Acquisition', body: 'Sourcing off-market listings, restored landmarks, and architecturally significant residences across California and beyond.' },
-  { n: '02', title: 'White-Glove Concierge', body: 'A single point of contact for the entire arc — viewings, due diligence, design, staffing, and handover.' },
-  { n: '03', title: 'Discreet Sale', body: 'Selling without a sign. A vetted buyer pool, private viewings, and a closing that never appears in print.' },
-  { n: '04', title: 'Stewardship', body: 'Year-round oversight for the residences in our portfolio — caretakers, restoration projects, and seasonal openings.' },
+  { n: '01', title: 'Кредитен консултант',    body: 'Финансово насочване и съдействие при избор на подходящо кредитиране.' },
+  { n: '02', title: 'Имотно посредничество',  body: 'Съдействие при намиране, покупка и продажба на имот според нуждите на клиента.' },
+  { n: '03', title: 'Интериорен дизайн',       body: 'Концепция, стил и завършен интериор, съобразен с начина на живот.' },
+  { n: '04', title: 'Ремонт от А до Я',        body: 'Организация и управление на ремонтния процес от първия оглед до финалното предаване.' },
 ];
 
 function Concierge() {
@@ -47,8 +47,8 @@ function Concierge() {
             </div>
             <p style={{ margin: '70px 0 0', maxWidth: 460, alignSelf: 'end',
               fontSize: 16, lineHeight: 1.7, fontWeight: 300, color: 'var(--fg-2)' }}>
-              From the first quiet viewing to the season the gardener is hired, one principal
-              walks beside you. We do not pass clients to a team. The team is the principal.
+              От първата консултация до финалното предаване — един принципал до вас.
+              Не прехвърляме клиенти на екип. Услугата е лична.
             </p>
           </header>
 

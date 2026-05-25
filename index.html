@@ -147,6 +147,17 @@
 <body>
   <div id="root"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    window.AK_SUPABASE_URL = "https://ylyilqwoiyirodigshgd.supabase.co";
+    window.AK_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_wxCfqS0aCFRRXf0WgIhGzw_2SGd8tcL";
+    if (window.supabase) {
+      window.akSupabase = window.supabase.createClient(
+        window.AK_SUPABASE_URL,
+        window.AK_SUPABASE_PUBLISHABLE_KEY
+      );
+    }
+  </script>
   <script src="shared/listings-store.js"></script>
 
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -157,17 +168,14 @@
   <script type="text/babel" src="ui_kits/website/Nav.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Hero.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Listings.jsx"></script>
-  <script type="text/babel" src="ui_kits/website/Founder.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Concierge.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Editorial.jsx"></script>
-  <script type="text/babel" src="ui_kits/website/Press.jsx"></script>
-  <script type="text/babel" src="ui_kits/website/AppPromo.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Journal.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Contact.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Footer.jsx"></script>
 
   <script type="text/babel">
-    const { Nav, Hero, Listings, Founder, Concierge, Editorial, Press, AppPromo, Journal, Contact, Footer } = window;
+    const { Nav, Hero, Listings, Concierge, Editorial, Journal, Contact, Footer } = window;
     function App() {
       const [active, setActive] = React.useState('listings');
       return (
@@ -175,12 +183,9 @@
           <Nav active={active} onNav={setActive} />
           <main>
             <Hero />
-            <Listings />
-            <Founder />
+            <Listings featuredOnly={true} />
             <Concierge />
             <Editorial />
-            <Press />
-            <AppPromo />
             <Journal />
             <Contact />
           </main>
