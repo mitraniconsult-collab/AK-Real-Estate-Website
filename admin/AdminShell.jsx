@@ -212,15 +212,91 @@ function TopBar({ isMobile, isPhone, onMenu }) {
 
   function submitSearch() {
     const q = search.trim();
-
     if (!q) {
       location.hash = '/listings';
       return;
     }
-
     location.hash = `/listings?search=${encodeURIComponent(q)}`;
   }
 
+  // Shared search field — reused in both phone and non-phone layouts.
+  const searchField = (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 8,
+      borderBottom: '1px solid var(--hairline-light)',
+      padding: '4px 0',
+      minWidth: (!isPhone && isMobile) ? 0 : (!isMobile ? 220 : undefined),
+      flex: (!isPhone && isMobile) ? '1 1 auto' : undefined,
+      width: isPhone ? '100%' : undefined,
+    }}>
+      <Icon name="search" size={14} style={{ color: 'var(--fg-3)' }} />
+      <input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') submitSearch();
+          if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            e.currentTarget.focus();
+          }
+        }}
+        placeholder={t('Search listings…')}
+        style={{
+          background: 'transparent', border: 0, outline: 'none',
+          color: 'var(--fg)', fontSize: 12, fontWeight: 300, flex: 1, padding: '4px 0',
+          fontFamily: 'var(--font-body)',
+        }}
+      />
+      <button
+        onClick={submitSearch}
+        title="Search"
+        style={{
+          background: 'transparent', border: 0, color: 'var(--fg-3)',
+          cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center',
+        }}
+      >
+        <kbd style={{
+          fontSize: 9, fontWeight: 500, letterSpacing: '0.18em',
+          color: 'var(--fg-3)', border: '1px solid var(--hairline-light)',
+          padding: '2px 6px', borderRadius: 0, fontFamily: 'var(--font-body)',
+        }}>↵</kbd>
+      </button>
+    </div>
+  );
+
+  // ── Phone layout: two rows ──────────────────────────────────────────────────
+  if (isPhone) {
+    return (
+      <header style={{
+        display: 'flex', flexDirection: 'column',
+        borderBottom: '1px solid var(--hairline-light)',
+        background: 'var(--ak-ink)',
+        position: 'sticky', top: 0, zIndex: 30,
+      }}>
+        {/* Row 1: hamburger | logo | lang switch */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '14px clamp(20px, 3vw, 48px)',
+        }}>
+          <button onClick={onMenu} style={{
+            background: 'transparent', border: '1px solid var(--hairline-light)',
+            color: 'var(--fg)', padding: '6px 10px', cursor: 'pointer', borderRadius: 0,
+          }}>
+            <Icon name="menu" size={16} />
+          </button>
+          <Logo size="sm" />
+          <span style={{ flex: 1 }}></span>
+          <LangSwitch />
+        </div>
+        {/* Row 2: full-width search */}
+        <div style={{ padding: '0 clamp(20px, 3vw, 48px) 12px' }}>
+          {searchField}
+        </div>
+      </header>
+    );
+  }
+
+  // ── Tablet + desktop layout: single row (unchanged) ─────────────────────────
   return (
     <header style={{
       display: 'flex', alignItems: 'center', gap: isMobile ? 10 : 16,
@@ -239,62 +315,16 @@ function TopBar({ isMobile, isPhone, onMenu }) {
       )}
       {isMobile && <Logo size="sm" />}
 
-      {/* Breadcrumbs: hidden on phone (logo already visible), ellipsis-clipped on tablet */}
-      {!isPhone && (
-        <div style={{ minWidth: 0, maxWidth: 'clamp(80px, 28vw, 320px)', overflow: 'hidden' }}>
-          <Breadcrumbs />
-        </div>
-      )}
+      {/* Breadcrumbs: hidden on phone, ellipsis-clipped on tablet */}
+      <div style={{ minWidth: 0, maxWidth: 'clamp(80px, 28vw, 320px)', overflow: 'hidden' }}>
+        <Breadcrumbs />
+      </div>
 
       <span style={{ flex: 1 }}></span>
 
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        borderBottom: '1px solid var(--hairline-light)',
-        padding: '4px 0',
-        minWidth: isMobile ? 0 : 220,
-        flex: isMobile ? '1 1 auto' : undefined,
-      }}>
-        <Icon name="search" size={14} style={{ color: 'var(--fg-3)' }} />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') submitSearch();
-            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-              e.preventDefault();
-              e.currentTarget.focus();
-            }
-          }}
-          placeholder={t('Search listings…')}
-          style={{
-            background: 'transparent', border: 0, outline: 'none',
-            color: 'var(--fg)', fontSize: 12, fontWeight: 300, flex: 1, padding: '4px 0',
-            fontFamily: 'var(--font-body)',
-          }}
-        />
-        <button
-          onClick={submitSearch}
-          title="Search"
-          style={{
-            background: 'transparent',
-            border: 0,
-            color: 'var(--fg-3)',
-            cursor: 'pointer',
-            padding: 0,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <kbd style={{
-            fontSize: 9, fontWeight: 500, letterSpacing: '0.18em',
-            color: 'var(--fg-3)', border: '1px solid var(--hairline-light)',
-            padding: '2px 6px', borderRadius: 0, fontFamily: 'var(--font-body)',
-          }}>↵</kbd>
-        </button>
-      </div>
+      {searchField}
 
-      {/* Status indicator + flanking dividers — hidden on mobile to prevent overflow */}
+      {/* Status indicator + flanking dividers — desktop only */}
       {!isMobile && <span style={{ width: 1, height: 20, background: 'var(--hairline-light)' }}></span>}
       {!isMobile && (
         <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
