@@ -18,56 +18,62 @@
     </div>
   </noscript>
 
-  <!-- AK Real Estate — Nav + Hero mobile patch -->
+  <!-- AK Real Estate — Safe Mobile Header Hero Patch -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     @media (max-width: 768px) {
 
-      /* ── Nav ───────────────────────────────────────────────────── */
-      /* Reduce side padding and allow wrapping */
+      /* ── Nav ── */
       nav {
-        padding-left:  16px !important;
-        padding-right: 16px !important;
-        flex-wrap: wrap !important;
-        gap: 8px !important;
+        padding-left:  16px    !important;
+        padding-right: 16px    !important;
+        flex-wrap:     wrap    !important;
+        gap:           8px     !important;
+        overflow-x:    hidden  !important;
       }
-      /* Move the links row (Listings · Services · Contact) to a second line */
       nav > div[style*="margin-left: auto"] {
-        margin-left:     0 !important;
-        order:           3 !important;
-        width:           100% !important;
-        flex-wrap:       wrap !important;
-        justify-content: center !important;
-        gap:             12px !important;
+        margin-left:     0       !important;
+        order:           3       !important;
+        width:           100%    !important;
+        flex-wrap:       wrap    !important;
+        justify-content: center  !important;
+        gap:             12px    !important;
       }
 
-      /* ── Hero ──────────────────────────────────────────────────── */
-      /* Collapse the "vertical-label | headline" 2-col grid → 1 col.
-         grid-template-columns: auto 1fr is unique to the hero content div. */
+      /* ── Hero ── */
+      /* "grid-template-columns: auto 1fr" is unique to the hero content div */
       [style*="grid-template-columns: auto 1fr"] {
         grid-template-columns: 1fr !important;
         gap: 0 !important;
       }
-      /* Hide the decorative vertical label (first grid child) */
       [style*="grid-template-columns: auto 1fr"] > div:first-child {
         display: none !important;
       }
-      /* Headline block: stretch full width and left-align */
       [style*="grid-template-columns: auto 1fr"] > div:last-child {
-        text-align:   left !important;
+        text-align:   left    !important;
         justify-self: stretch !important;
-        max-width:    100% !important;
+        max-width:    100%    !important;
       }
-      /* Hero h1: scale down from clamp(56px, 10vw, 168px) */
       h1 {
         font-size:   clamp(34px, 9vw, 60px) !important;
         line-height: 0.95 !important;
       }
-      /* CTA row (last child of headline block): left-align and wrap */
       [style*="grid-template-columns: auto 1fr"] > div:last-child > div:last-child {
         justify-content: flex-start !important;
-        flex-wrap:       wrap !important;
-        gap:             14px !important;
+        flex-wrap:       wrap       !important;
+        gap:             14px       !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: clamp(28px, 8vw, 44px) !important;
+      }
+      /* Stack CTA buttons vertically on very small screens */
+      [style*="grid-template-columns: auto 1fr"] > div:last-child > div:last-child {
+        flex-direction: column  !important;
+        align-items:    stretch !important;
+        gap:            10px    !important;
       }
     }
   </style>
