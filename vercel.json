@@ -10,7 +10,7 @@
     },
     {
       "source": "/services",
-      "destination": "/index.html"
+      "destination": "/services.html"
     },
     {
       "source": "/contact",

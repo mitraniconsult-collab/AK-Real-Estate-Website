@@ -31,8 +31,8 @@ function Nav({ active = 'listings', onNav }) {
   }, [open]);
 
   const links = [
-    { id: 'listings',  label: 'Обяви'  },
-    { id: 'concierge', label: 'Услуги' },
+    { id: 'listings',  label: 'Обяви',  href: '/listings' },
+    { id: 'concierge', label: 'Услуги', href: '/services' },
     { id: 'contact',   label: 'Свържи се с нас', cta: true },
   ];
 
@@ -63,13 +63,13 @@ function Nav({ active = 'listings', onNav }) {
             flexShrink: 0,
           }}>
             {links.filter(l => !l.cta).map(l => (
-              <NavLink key={l.id} active={active === l.id} onClick={() => onPick(l.id)}>{l.label}</NavLink>
+              <NavLink key={l.id} active={active === l.id} href={l.href} onClick={() => onPick(l.id)}>{l.label}</NavLink>
             ))}
           </div>
         )}
 
         {!isMobile && (
-          <Btn variant="primary" as="a" href="mailto:homesectoronline@gmail.com"
+          <Btn variant="primary" as="a" href="mailto:office@akrealestatebg.com"
             style={{ padding: '11px 18px', fontSize: 10, textDecoration: 'none', flexShrink: 0 }}>
             Свържи се с нас
           </Btn>
@@ -135,8 +135,8 @@ function Nav({ active = 'listings', onNav }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {links.map((l, i) => (
               <a key={l.id}
-                href={l.cta ? 'mailto:homesectoronline@gmail.com' : '#'}
-                onClick={l.cta ? () => setOpen(false) : (e) => { e.preventDefault(); onPick(l.id); }}
+                href={l.cta ? 'mailto:office@akrealestatebg.com' : (l.href || '#')}
+                onClick={l.cta ? () => setOpen(false) : undefined}
                 style={{
                   display: 'flex', alignItems: 'baseline', gap: 16,
                   textDecoration: 'none',
@@ -174,11 +174,11 @@ function Nav({ active = 'listings', onNav }) {
   );
 }
 
-function NavLink({ children, active, onClick }) {
+function NavLink({ children, active, onClick, href }) {
   const [hover, setHover] = React.useState(false);
   const color = active ? 'var(--ak-crimson)' : (hover ? 'var(--ak-crimson)' : 'var(--fg)');
   return (
-    <a href="#" onClick={(e) => { e.preventDefault(); onClick && onClick(); }}
+    <a href={href || '#'} onClick={!href ? (e) => { e.preventDefault(); onClick && onClick(); } : undefined}
        onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
        style={{
          fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
