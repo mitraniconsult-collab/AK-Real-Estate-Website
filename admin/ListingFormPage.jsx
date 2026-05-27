@@ -192,6 +192,7 @@ function ListingFormPage({ mode, id }) {
   const [errors, setErrors] = React.useState({});
   const [saved, setSaved] = React.useState(false);
   const [confirmDel, setConfirmDel] = React.useState(false);
+  const [imagesUploading, setImagesUploading] = React.useState(false);
 
   // Responsive breakpoints — ≤860px stacks columns; ≤640px collapses grids
   const [isTablet, setIsTablet] = React.useState(false);
@@ -224,6 +225,7 @@ function ListingFormPage({ mode, id }) {
 
   const save = (publish) => {
     if (!validate()) return;
+    if (imagesUploading) return;
     const status = publish ? 'Active' : form.status;
     const payload = {
       ...form,
@@ -264,8 +266,8 @@ function ListingFormPage({ mode, id }) {
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', rowGap: 8 }}>
               <Btn variant="secondary" as="a" href="#/listings">{t('Cancel')}</Btn>
               {editing && <Btn variant="danger" onClick={() => setConfirmDel(true)}>{t('Delete')}</Btn>}
-              <Btn variant="secondary" onClick={() => save(false)}>{saveDraftLabel}</Btn>
-              <Btn variant="primary"   onClick={() => save(true)}>{publishLabel}</Btn>
+              <Btn variant="secondary" onClick={() => save(false)} disabled={imagesUploading}>{saveDraftLabel}</Btn>
+              <Btn variant="primary"   onClick={() => save(true)} disabled={imagesUploading}>{publishLabel}</Btn>
             </div>
           ) : null
         }
@@ -380,6 +382,7 @@ function ListingFormPage({ mode, id }) {
             <ImageManager
               images={form.images} mainImage={form.mainImage}
               onChange={(images, mainImage) => setForm(prev => ({ ...prev, images, mainImage }))}
+              onUploadingChange={(n) => setImagesUploading(n > 0)}
               isPhone={isPhone}
             />
           </FormSection>
@@ -442,11 +445,11 @@ function ListingFormPage({ mode, id }) {
           border: '1px solid var(--hairline-light)',
           display: 'flex', flexDirection: 'column', gap: 12,
         }}>
-          <Btn variant="primary" onClick={() => save(true)}
+          <Btn variant="primary" onClick={() => save(true)} disabled={imagesUploading}
             style={{ width: '100%', justifyContent: 'center' }}>
             {publishLabel}
           </Btn>
-          <Btn variant="secondary" onClick={() => save(false)}
+          <Btn variant="secondary" onClick={() => save(false)} disabled={imagesUploading}
             style={{ width: '100%', justifyContent: 'center' }}>
             {saveDraftLabel}
           </Btn>
@@ -591,14 +594,47 @@ function getImageUrl(image) {
   return base + '/storage/v1/object/public/listing-images/' + raw;
 }
 
-function ImageManager({ images, mainImage, onChange, isPhone }) {
+function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone }) {
   const t = useFormLang();
   const inputRef = React.useRef(null);
+  const [pending, setPending] = React.useState([]);
+  const imagesRef = React.useRef(images);
+  const mainImageRef = React.useRef(mainImage);
+  React.useEffect(() => { imagesRef.current = images; }, [images]);
+  React.useEffect(() => { mainImageRef.current = mainImage; }, [mainImage]);
+  React.useEffect(() => {
+    onUploadingChange && onUploadingChange(pending.length);
+  }, [pending.length]);
 
-  const handleFiles = (files) => {
-    const urls = Array.from(files).map(f => URL.createObjectURL(f));
-    const next = [...images, ...urls];
-    onChange(next, images.length === 0 ? 0 : mainImage);
+  const handleFiles = async (files) => {
+    const supabase = window.akSupabase;
+    if (!supabase) return;
+    const newPending = Array.from(files).map(f => ({
+      id: crypto.randomUUID(),
+      blobUrl: URL.createObjectURL(f),
+      file: f,
+    }));
+    setPending(prev => [...prev, ...newPending]);
+    for (const item of newPending) {
+      try {
+        const ext = (item.file.name.split('.').pop() || 'jpg').toLowerCase();
+        const path = item.id + '.' + ext;
+        const { data, error } = await supabase.storage
+          .from('listing-images')
+          .upload(path, item.file, { upsert: false });
+        if (error) throw error;
+        const { data: urlData } = supabase.storage
+          .from('listing-images')
+          .getPublicUrl(data.path);
+        const curImages = imagesRef.current;
+        const curMain = mainImageRef.current;
+        onChange([...curImages, urlData.publicUrl], curImages.length === 0 ? 0 : curMain);
+      } catch (err) {
+        console.error('Image upload failed:', err);
+      }
+      setPending(prev => prev.filter(p => p.id !== item.id));
+      URL.revokeObjectURL(item.blobUrl);
+    }
   };
 
   const addStock = () => {
@@ -652,12 +688,15 @@ function ImageManager({ images, mainImage, onChange, isPhone }) {
       </div>
 
       {/* Thumbs */}
-      {images.length > 0 && (
+      {(images.length > 0 || pending.length > 0) && (
         <div style={{ marginTop: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
             <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
               textTransform: 'uppercase', color: 'var(--fg-2)' }}>
-              {images.length} image{images.length === 1 ? '' : 's'} · Click ★ to set the main image
+              {images.length + pending.length} image{images.length + pending.length === 1 ? '' : 's'}
+              {pending.length > 0
+                ? ' · ' + pending.length + ' uploading…'
+                : ' · Click ★ to set the main image'}
             </span>
           </div>
           <div style={{ display: 'grid',
@@ -667,6 +706,9 @@ function ImageManager({ images, mainImage, onChange, isPhone }) {
               <ImageThumb key={i} src={src} isMain={i === mainImage}
                 onMain={() => onChange(images, i)}
                 onRemove={() => remove(i)} />
+            ))}
+            {pending.map((item) => (
+              <ImageThumbLoading key={item.id} blobUrl={item.blobUrl} />
             ))}
           </div>
         </div>
@@ -715,6 +757,30 @@ function ImageThumb({ src, isMain, onMain, onRemove }) {
             padding: '4px 8px', fontSize: 11, cursor: 'pointer', lineHeight: 1,
           }}>✕</button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ImageThumbLoading({ blobUrl }) {
+  return (
+    <div style={{
+      position: 'relative', aspectRatio: '4/3', overflow: 'hidden',
+      border: '1px solid var(--hairline-light)',
+      background: 'var(--ak-graphite)',
+      opacity: 0.65,
+    }}>
+      {blobUrl && (
+        <img src={blobUrl} alt=""
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+      )}
+      <div style={{
+        position: 'absolute', inset: 0, display: 'flex',
+        alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(0,0,0,.50)',
+      }}>
+        <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.22em',
+          textTransform: 'uppercase', color: '#fff' }}>Uploading…</span>
       </div>
     </div>
   );
