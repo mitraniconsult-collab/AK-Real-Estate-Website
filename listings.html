@@ -532,6 +532,12 @@
     let allListings = [];
     let activeFilter = "All";
 
+    function getImageUrl(image) {
+      if (!image) return '';
+      if (typeof image === 'string') return image;
+      return image.url || image.publicUrl || image.public_url || image.image_url || image.src || image.path || '';
+    }
+
     function formatPrice(n, currency = "EUR", listingType) {
       if (n == null || isNaN(Number(n))) return "—";
       const sym = currency === "USD" ? "$" : currency === "EUR" ? "€" : currency === "GBP" ? "£" : currency + " ";
@@ -593,7 +599,7 @@
 
       grid.innerHTML = visible.map(listing => {
         const images = Array.isArray(listing.images) ? listing.images : [];
-        const img = images[Number(listing.main_image || 0)] || images[0] || "";
+        const img = getImageUrl(images[Number(listing.main_image || 0)] || images[0] || "");
         const location = listing.area || listing.city || "—";
 
         return `

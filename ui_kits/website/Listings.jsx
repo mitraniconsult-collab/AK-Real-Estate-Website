@@ -229,9 +229,15 @@ function FilterChip({ children, active, onClick }) {
   );
 }
 
+function getImageUrl(image) {
+  if (!image) return '';
+  if (typeof image === 'string') return image;
+  return image.url || image.publicUrl || image.public_url || image.image_url || image.src || image.path || '';
+}
+
 function PropertyCard({ listing, cols, rows, compact }) {
   const [hover, setHover] = React.useState(false);
-  const img = (listing.images && listing.images[listing.mainImage]) || (listing.images && listing.images[0]);
+  const img = getImageUrl((listing.images && listing.images[listing.mainImage]) || (listing.images && listing.images[0]));
   const isClosed = listing.status === 'Sold' || listing.status === 'Rented';
 
   let tag = null;
