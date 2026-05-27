@@ -583,9 +583,12 @@ function getImageUrl(image) {
   let raw = typeof image === 'string' ? image
     : (image.url || image.publicUrl || image.public_url || image.image_url || image.src || image.path || '');
   if (!raw) return '';
-  if (raw.startsWith('http') || raw.startsWith('blob:') || raw.startsWith('data:')) return raw;
+  if (raw.startsWith('blob:') || raw.startsWith('data:')) return raw;
+  if (raw.startsWith('http')) return raw;
   const base = (window.AK_SUPABASE_URL || 'https://ylyilqwoiyirodigshgd.supabase.co').replace(/\/$/, '');
-  return base + '/storage/v1/object/public/' + raw;
+  if (raw.includes('/storage/v1/object/public/')) return base + raw.substring(raw.indexOf('/storage/v1/object/public/'));
+  if (raw.includes('/')) return base + '/storage/v1/object/public/' + raw;
+  return base + '/storage/v1/object/public/listing-images/' + raw;
 }
 
 function ImageManager({ images, mainImage, onChange, isPhone }) {
