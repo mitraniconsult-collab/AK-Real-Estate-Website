@@ -580,8 +580,12 @@ const STOCK = [
 // url / publicUrl / public_url; older records may use src, path, or image_url).
 function getImageUrl(image) {
   if (!image) return '';
-  if (typeof image === 'string') return image;
-  return image.url || image.publicUrl || image.public_url || image.image_url || image.src || image.path || '';
+  let raw = typeof image === 'string' ? image
+    : (image.url || image.publicUrl || image.public_url || image.image_url || image.src || image.path || '');
+  if (!raw) return '';
+  if (raw.startsWith('http') || raw.startsWith('blob:') || raw.startsWith('data:')) return raw;
+  const base = (window.AK_SUPABASE_URL || 'https://ylyilqwoiyirodigshgd.supabase.co').replace(/\/$/, '');
+  return base + '/storage/v1/object/public/' + raw;
 }
 
 function ImageManager({ images, mainImage, onChange, isPhone }) {

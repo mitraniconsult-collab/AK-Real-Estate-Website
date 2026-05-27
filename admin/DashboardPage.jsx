@@ -1,5 +1,15 @@
 // DashboardPage — section title + 4 stat cards + latest listings + activity.
 
+function getImageUrl(image) {
+  if (!image) return '';
+  let raw = typeof image === 'string' ? image
+    : (image.url || image.publicUrl || image.public_url || image.image_url || image.src || image.path || '');
+  if (!raw) return '';
+  if (raw.startsWith('http') || raw.startsWith('blob:') || raw.startsWith('data:')) return raw;
+  const base = (window.AK_SUPABASE_URL || 'https://ylyilqwoiyirodigshgd.supabase.co').replace(/\/$/, '');
+  return base + '/storage/v1/object/public/' + raw;
+}
+
 const DASH_T = {
   bg: {
     'Admin · Overview':       'Администрация · Преглед',
@@ -255,7 +265,7 @@ function LatestRow({ listing }) {
     return () => window.removeEventListener('resize', fn);
   }, []);
 
-  const thumb = listing.images && listing.images[listing.mainImage];
+  const thumb = listing.images ? getImageUrl(listing.images[listing.mainImage]) : '';
   const thumbEl = (size) => (
     <div style={{ width: size, height: size, flexShrink: 0, overflow: 'hidden',
       background: 'var(--ak-graphite)', borderRadius: 2, position: 'relative' }}>

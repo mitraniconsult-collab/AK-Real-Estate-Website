@@ -534,8 +534,11 @@
 
     function getImageUrl(image) {
       if (!image) return '';
-      if (typeof image === 'string') return image;
-      return image.url || image.publicUrl || image.public_url || image.image_url || image.src || image.path || '';
+      let raw = typeof image === 'string' ? image
+        : (image.url || image.publicUrl || image.public_url || image.image_url || image.src || image.path || '');
+      if (!raw) return '';
+      if (raw.startsWith('http') || raw.startsWith('blob:') || raw.startsWith('data:')) return raw;
+      return SUPABASE_URL + '/storage/v1/object/public/' + raw;
     }
 
     function formatPrice(n, currency = "EUR", listingType) {

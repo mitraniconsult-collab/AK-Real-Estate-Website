@@ -452,6 +452,16 @@
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
     }
+
+    function getImageUrl(image) {
+      if (!image) return '';
+      let raw = typeof image === 'string' ? image
+        : (image.url || image.publicUrl || image.public_url || image.image_url || image.src || image.path || '');
+      if (!raw) return '';
+      if (raw.startsWith('http') || raw.startsWith('blob:') || raw.startsWith('data:')) return raw;
+      return SUPABASE_URL + '/storage/v1/object/public/' + raw;
+    }
+
     function translateStatus(status) {
   const map = {
     Active: "Активен",
@@ -504,7 +514,7 @@ function translatePropertyType(type) {
     function renderListing(listing) {
       const images = Array.isArray(listing.images) ? listing.images : [];
       const mainIndex = Number(listing.main_image || 0);
-      const mainImage = images[mainIndex] || images[0] || "";
+      const mainImage = getImageUrl(images[mainIndex] || images[0] || "");
 
       app.innerHTML = `
         <div class="grid">
@@ -516,8 +526,8 @@ function translatePropertyType(type) {
             ${images.length > 1 ? `
               <div class="thumbs">
                 ${images.map((src, index) => `
-                  <button class="thumb ${index === mainIndex ? "active" : ""}" data-src="${escapeHtml(src)}" type="button">
-                    <img src="${escapeHtml(src)}" alt="">
+                  <button class="thumb ${index === mainIndex ? "active" : ""}" data-src="${escapeHtml(getImageUrl(src))}" type="button">
+                    <img src="${escapeHtml(getImageUrl(src))}" alt="">
                   </button>
                 `).join("")}
               </div>

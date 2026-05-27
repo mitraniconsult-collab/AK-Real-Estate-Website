@@ -1,5 +1,15 @@
 // ListingsPage — filter bar + table view + actions.
 
+function getImageUrl(image) {
+  if (!image) return '';
+  let raw = typeof image === 'string' ? image
+    : (image.url || image.publicUrl || image.public_url || image.image_url || image.src || image.path || '');
+  if (!raw) return '';
+  if (raw.startsWith('http') || raw.startsWith('blob:') || raw.startsWith('data:')) return raw;
+  const base = (window.AK_SUPABASE_URL || 'https://ylyilqwoiyirodigshgd.supabase.co').replace(/\/$/, '');
+  return base + '/storage/v1/object/public/' + raw;
+}
+
 function ListingsPage() {
   const route = useRoute();
   const listings = useListings();
@@ -246,8 +256,8 @@ function ListingRow({ listing, odd, onDelete }) {
         }}>
           <div style={{ width: 56, height: 56, overflow: 'hidden',
             background: 'var(--ak-graphite)', borderRadius: 2, position: 'relative', flexShrink: 0 }}>
-            {listing.images && listing.images[listing.mainImage] && (
-              <img src={listing.images[listing.mainImage]} alt=""
+            {listing.images && getImageUrl(listing.images[listing.mainImage]) && (
+              <img src={getImageUrl(listing.images[listing.mainImage])} alt=""
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
                          objectFit: 'cover', filter: 'saturate(.9)' }} />
             )}
@@ -362,8 +372,8 @@ function AdminListingCard({ listing, onDelete }) {
         position: 'relative', aspectRatio: '4/3', overflow: 'hidden', display: 'block',
         textDecoration: 'none',
       }}>
-        {listing.images && listing.images[listing.mainImage] && (
-          <img src={listing.images[listing.mainImage]} alt=""
+        {listing.images && getImageUrl(listing.images[listing.mainImage]) && (
+          <img src={getImageUrl(listing.images[listing.mainImage])} alt=""
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
                      objectFit: 'cover', filter: 'saturate(.9) contrast(1.05)' }} />
         )}
