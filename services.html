@@ -40,11 +40,10 @@
 
     /* ─── HEADER ─── */
     header {
-      position: sticky; top: 0; z-index: 50;
-      min-height: 72px;
-      padding: 0 var(--gutter);
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      padding: clamp(14px,2.2vw,28px) var(--gutter);
       display: flex; align-items: center; gap: 16px;
-      background: rgba(5,5,5,.84);
+      background: rgba(0,0,0,.55);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--hairline);
@@ -55,7 +54,7 @@
       letter-spacing: .18em; font-size: 22px;
       text-transform: uppercase;
       display: flex; align-items: center; gap: 10px;
-      white-space: nowrap; text-decoration: none;
+      white-space: nowrap;
     }
 
     .red-sq {
@@ -75,137 +74,36 @@
       font-size: 10px; font-weight: 500;
       letter-spacing: .28em; text-transform: uppercase;
       color: var(--fg-2);
-      text-decoration: none;
       transition: color .28s var(--ease);
       position: relative; padding-bottom: 4px;
     }
 
     .header-nav a:hover { color: var(--fg); }
 
-    .header-nav a.active { color: var(--fg); }
+    .header-nav a.active {
+      color: var(--ak-crimson);
+    }
 
     .header-nav a.active::after {
       content: ''; position: absolute;
       left: 0; right: 0; bottom: 0; height: 1px;
-      background: var(--fg);
+      background: var(--ak-crimson);
     }
 
     .header-cta {
-      padding: 10px 18px;
+      padding: 11px 18px;
       background: var(--ak-crimson);
-      color: #fff;
-      font-family: var(--font-body);
-      font-size: 10px; font-weight: 500;
-      letter-spacing: .22em; text-transform: uppercase;
-      text-decoration: none;
-      flex-shrink: 0; white-space: nowrap;
+      color: #fff !important;
+      font-size: 10px !important;
+      letter-spacing: .22em !important;
       transition: background .2s var(--ease);
+      flex-shrink: 0;
     }
 
-    .header-cta:hover { background: #8a1013; color: #fff; }
-
-    .lang-switch { display: flex; align-items: center; gap: 4px; }
-
-    .lang-btn {
-      background: none; border: none; cursor: pointer;
-      font-family: var(--font-body);
-      font-size: 10px; font-weight: 500;
-      letter-spacing: .22em; text-transform: uppercase;
-      color: var(--fg-3); padding: 2px 0;
-      transition: color .2s;
-    }
-
-    .lang-btn:hover { color: var(--fg-2); }
-    .lang-btn.active { color: var(--fg); }
-    .lang-sep { color: var(--fg-3); font-size: 10px; letter-spacing: 0; }
-
-    .hamburger-btn {
-      display: none;
-      background: transparent; border: 0;
-      cursor: pointer; color: var(--fg);
-      flex-direction: column; gap: 5px;
-      width: 40px; height: 40px;
-      align-items: center; justify-content: center;
-      margin-left: auto; flex-shrink: 0; padding: 0;
-    }
-
-    .hamburger-btn .bar {
-      width: 22px; height: 1px;
-      background: currentColor;
-      transition: transform .3s, opacity .2s;
-    }
-
-    .hamburger-btn.open .bar:nth-child(1) { transform: translateY(6px) rotate(45deg); }
-    .hamburger-btn.open .bar:nth-child(2) { opacity: 0; }
-    .hamburger-btn.open .bar:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
-
-    .mobile-sheet {
-      position: fixed; inset: 0; z-index: 49;
-      background: rgba(0,0,0,.96);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      padding: 90px var(--gutter) 40px;
-      display: flex; flex-direction: column;
-      opacity: 0; pointer-events: none;
-      transform: translateY(-8px);
-      transition: opacity .4s, transform .4s;
-      overflow-y: auto;
-    }
-
-    .mobile-sheet.open { opacity: 1; pointer-events: auto; transform: none; }
-
-    .mobile-sheet-head {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 36px; padding-bottom: 18px;
-      border-bottom: 1px solid var(--hairline);
-      font-size: 10px; font-weight: 500;
-      letter-spacing: .28em; text-transform: uppercase;
-      color: var(--fg-2);
-    }
-
-    .mobile-nav-links { display: flex; flex-direction: column; gap: 4px; }
-
-    .mobile-nav-links a {
-      display: flex; align-items: baseline; gap: 16px;
-      text-decoration: none;
-      font-family: var(--font-display); font-weight: 300;
-      font-size: clamp(34px, 9vw, 56px);
-      line-height: 1.1; letter-spacing: .06em;
-      text-transform: uppercase; color: var(--fg);
-      padding: 10px 0;
-      border-bottom: 1px solid var(--hairline);
-    }
-
-    .mobile-nav-links a.cta { color: var(--ak-crimson); }
-
-    .mobile-nav-links .num {
-      font-family: var(--font-body);
-      font-size: 10px; font-weight: 500;
-      letter-spacing: .28em; color: var(--fg-3);
-      min-width: 28px;
-    }
-
-    .mobile-nav-links a.cta .num { color: var(--ak-crimson); }
-
-    .mobile-sheet-foot {
-      margin-top: auto; padding-top: 40px;
-      display: flex; align-items: center; gap: 8px;
-    }
-
-    .mobile-lang-btn {
-      background: none; border: none; cursor: pointer;
-      font-family: var(--font-body);
-      font-size: 10px; font-weight: 500;
-      letter-spacing: .28em; text-transform: uppercase;
-      color: var(--fg-3); padding: 2px 0;
-      transition: color .2s;
-    }
-
-    .mobile-lang-btn.active { color: var(--fg); }
-    .mobile-lang-btn:hover { color: var(--fg-2); }
+    .header-cta:hover { background: #7a0f12 !important; }
 
     /* ─── MAIN ─── */
-    main {}
+    main { padding-top: clamp(80px,12vw,110px); }
 
     /* ─── HERO ─── */
     .hero {
@@ -240,9 +138,55 @@
     }
 
     .hero-sub {
-      max-width: 520px;
+      max-width: 560px;
       color: var(--fg-2);
       font-size: 15px; line-height: 1.75; font-weight: 300;
+    }
+
+    .hero-sub strong {
+      display: block;
+      color: var(--fg);
+      font-weight: 400;
+      margin-bottom: 14px;
+    }
+
+    /* ─── INTRO ─── */
+    .intro-section {
+      padding: clamp(64px,8vw,110px) var(--gutter);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .intro-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(0, 2.2fr);
+      gap: clamp(28px,5vw,80px);
+      align-items: start;
+      max-width: 1320px;
+      margin: 0 auto;
+    }
+
+    .intro-label {
+      display: flex; align-items: center; gap: 10px;
+      color: var(--fg-3);
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .28em; text-transform: uppercase;
+    }
+
+    .intro-title {
+      margin: 0 0 24px;
+      font-family: var(--font-display);
+      font-weight: 200;
+      font-size: clamp(36px,5vw,68px);
+      line-height: .98;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .intro-text {
+      margin: 0;
+      color: var(--fg-2);
+      font-size: 16px; line-height: 1.8; font-weight: 300;
+      max-width: 720px;
     }
 
     /* ─── SERVICES ─── */
@@ -267,9 +211,10 @@
     }
 
     .service-card {
-      padding: clamp(32px,4vw,56px);
+      padding: clamp(34px,4vw,56px);
       background: var(--ak-charcoal);
       transition: background .25s var(--ease);
+      display: flex; flex-direction: column; gap: 22px;
     }
 
     .service-card:hover { background: #161616; }
@@ -279,7 +224,6 @@
       font-size: 10px; font-weight: 500;
       letter-spacing: .28em;
       color: var(--ak-crimson);
-      margin-bottom: 20px;
     }
 
     .service-title {
@@ -289,20 +233,161 @@
       letter-spacing: .04em;
       text-transform: uppercase;
       line-height: 1;
-      margin: 0 0 18px;
+      margin: 0;
     }
 
     .service-desc {
       margin: 0;
       color: var(--fg-2);
       font-size: 14px; line-height: 1.75; font-weight: 300;
-      max-width: 380px;
+      max-width: 480px;
+    }
+
+    .service-bullets-label {
+      font-size: 9px; font-weight: 500;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--fg-3);
+      padding-top: 14px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .service-bullets {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+
+    .service-bullets li {
+      position: relative;
+      padding-left: 18px;
+      color: var(--fg-2);
+      font-size: 13px; line-height: 1.65; font-weight: 300;
+    }
+
+    .service-bullets li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 9px;
+      width: 6px; height: 1px;
+      background: var(--ak-crimson);
+    }
+
+    .service-suitable {
+      margin: 0;
+      padding: 14px 16px;
+      border-left: 1px solid var(--ak-crimson);
+      background: rgba(176,24,28,.04);
+      color: var(--fg-2);
+      font-size: 12px; line-height: 1.65; font-weight: 400;
+      font-style: italic;
+    }
+
+    .service-suitable strong {
+      display: block;
+      font-style: normal; font-weight: 500;
+      font-size: 9px; letter-spacing: .28em; text-transform: uppercase;
+      color: var(--ak-crimson);
+      margin-bottom: 6px;
+    }
+
+    /* ─── EDITORIAL ─── */
+    .editorial-section {
+      padding: clamp(64px,9vw,120px) var(--gutter);
+      background: var(--ak-black);
+      border-top: 1px solid var(--hairline);
+    }
+
+    .editorial-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: clamp(28px,5vw,72px);
+      align-items: stretch;
+      max-width: 1320px;
+      margin: 0 auto;
+    }
+
+    .editorial-panel {
+      position: relative;
+      min-height: clamp(360px, 50vw, 540px);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(176,24,28,.16), transparent 60%),
+        linear-gradient(160deg, #1c1c1c 0%, #0a0a0a 100%);
+      border: 1px solid var(--hairline);
+      overflow: hidden;
+    }
+
+    .editorial-panel::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url('assets/grain.svg');
+      background-size: 6px 6px;
+      mix-blend-mode: overlay;
+      opacity: .35;
+      pointer-events: none;
+    }
+
+    .editorial-panel::after {
+      content: '';
+      position: absolute;
+      right: -12%; bottom: -18%;
+      width: 78%; height: 78%;
+      background-image: url('assets/ring.svg');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      opacity: .12;
+      pointer-events: none;
+    }
+
+    .editorial-mono {
+      position: absolute;
+      top: clamp(22px,3vw,32px);
+      left: clamp(22px,3vw,32px);
+      width: clamp(34px,4vw,46px); height: auto;
+      opacity: .55;
+    }
+
+    .editorial-tag {
+      position: absolute;
+      bottom: clamp(22px,3vw,32px);
+      left: clamp(22px,3vw,32px);
+      right: clamp(22px,3vw,32px);
+      display: flex; align-items: center; gap: 10px;
+      font-size: 9px; font-weight: 500;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--fg-2);
+    }
+
+    .editorial-text {
+      display: flex; flex-direction: column; justify-content: center;
+      max-width: 520px;
+    }
+
+    .editorial-text h2 {
+      margin: 18px 0 22px;
+      font-family: var(--font-display);
+      font-weight: 200;
+      font-size: clamp(38px,5.5vw,72px);
+      line-height: .96;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .editorial-text p {
+      margin: 0 0 18px;
+      color: var(--fg-2);
+      font-size: 15px; line-height: 1.8; font-weight: 300;
+    }
+
+    .editorial-text .small {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--fg-3);
     }
 
     /* ─── PROCESS ─── */
     .process-section {
       padding: clamp(64px,9vw,120px) var(--gutter);
-      background: var(--ak-black);
+      background: var(--ak-ink);
       border-top: 1px solid var(--hairline);
     }
 
@@ -316,8 +401,9 @@
     }
 
     .step {
-      padding: clamp(28px,3.5vw,48px) clamp(22px,3vw,40px);
+      padding: clamp(30px,3.6vw,48px) clamp(22px,3vw,40px);
       background: #080808;
+      display: flex; flex-direction: column; gap: 16px;
     }
 
     .step-num {
@@ -325,7 +411,7 @@
       font-size: clamp(52px,7vw,88px);
       font-weight: 200; line-height: 1;
       color: rgba(255,255,255,.06);
-      margin-bottom: 12px;
+      margin: 0;
     }
 
     .step-label {
@@ -334,6 +420,100 @@
       font-size: clamp(18px,2vw,26px);
       letter-spacing: .05em;
       text-transform: uppercase;
+      margin: 0;
+    }
+
+    .step-desc {
+      margin: 0;
+      color: var(--fg-2);
+      font-size: 13px; line-height: 1.65; font-weight: 300;
+    }
+
+    /* ─── FAQ ─── */
+    .faq-section {
+      padding: clamp(64px,9vw,120px) var(--gutter);
+      background: var(--ak-black);
+      border-top: 1px solid var(--hairline);
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(0, 2.2fr);
+      gap: clamp(28px,5vw,80px);
+      max-width: 1320px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    .faq-heading {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 200;
+      font-size: clamp(36px,5vw,68px);
+      line-height: .98;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .faq-list {
+      border-top: 1px solid var(--hairline);
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .faq-item summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 22px 0;
+      display: flex; align-items: center; gap: 16px;
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: clamp(18px,2vw,24px);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--fg);
+      transition: color .2s var(--ease);
+    }
+
+    .faq-item summary::-webkit-details-marker { display: none; }
+
+    .faq-item summary:hover { color: var(--ak-crimson); }
+
+    .faq-marker {
+      flex-shrink: 0;
+      width: 14px; height: 14px;
+      position: relative;
+    }
+
+    .faq-marker::before,
+    .faq-marker::after {
+      content: '';
+      position: absolute;
+      background: var(--ak-crimson);
+      transition: transform .2s var(--ease);
+    }
+
+    .faq-marker::before {
+      left: 0; right: 0; top: 50%;
+      height: 1px; transform: translateY(-50%);
+    }
+
+    .faq-marker::after {
+      top: 0; bottom: 0; left: 50%;
+      width: 1px; transform: translateX(-50%);
+    }
+
+    .faq-item[open] .faq-marker::after { transform: translateX(-50%) scaleY(0); }
+
+    .faq-item p {
+      margin: 0 30px 28px;
+      padding-left: 0;
+      color: var(--fg-2);
+      font-family: var(--font-body);
+      font-size: 14px; line-height: 1.8; font-weight: 300;
+      max-width: 680px;
     }
 
     /* ─── CTA ─── */
@@ -364,7 +544,7 @@
     .cta-section p {
       color: var(--fg-2);
       font-size: 15px; line-height: 1.7; font-weight: 300;
-      max-width: 400px;
+      max-width: 440px;
       margin: 0 auto 40px;
     }
 
@@ -405,17 +585,29 @@
       color: var(--fg-3);
     }
 
-    /* ─── MOBILE ─── */
-    @media (max-width: 768px) {
-      .header-nav { display: none; }
-      .hamburger-btn { display: flex; }
-
-      .services-grid {
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 980px) {
+      .intro-grid,
+      .faq-grid,
+      .editorial-grid {
         grid-template-columns: 1fr;
+      }
+
+      .editorial-panel {
+        min-height: clamp(280px, 60vw, 420px);
+        order: -1;
       }
 
       .process-steps {
         grid-template-columns: repeat(2,1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-nav { display: none; }
+
+      .services-grid {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -429,6 +621,9 @@
       .cta-link { display: block; text-align: center; }
 
       footer { flex-direction: column; align-items: flex-start; gap: 10px; }
+
+      .service-card { padding: 28px 22px; }
+      .faq-item p { margin: 0 0 24px; padding-left: 30px; }
     }
   </style>
 </head>
@@ -440,42 +635,9 @@
     <nav class="header-nav">
       <a href="/listings">Обяви</a>
       <a href="/services" class="active">Услуги</a>
-      <div class="lang-switch">
-        <button class="lang-btn active" data-lang="bg" type="button">BG</button>
-        <span class="lang-sep">/</span>
-        <button class="lang-btn" data-lang="en" type="button">EN</button>
-      </div>
       <a href="mailto:office@akrealestatebg.com" class="header-cta">Свържи се с нас</a>
     </nav>
-    <button class="hamburger-btn" id="hamburger-btn" aria-label="Open menu" type="button">
-      <span class="bar"></span>
-      <span class="bar"></span>
-      <span class="bar"></span>
-    </button>
   </header>
-
-  <div class="mobile-sheet" id="mobile-sheet">
-    <div class="mobile-sheet-head">
-      <span style="width:6px;height:6px;background:var(--ak-crimson);display:inline-block;flex-shrink:0;"></span>
-      Navigation
-    </div>
-    <div class="mobile-nav-links">
-      <a href="/listings">
-        <span class="num">01</span><span>Обяви</span>
-      </a>
-      <a href="/services">
-        <span class="num">02</span><span>Услуги</span>
-      </a>
-      <a href="mailto:office@akrealestatebg.com" class="cta">
-        <span class="num">03</span><span>Свържи се с нас</span>
-      </a>
-    </div>
-    <div class="mobile-sheet-foot">
-      <button class="mobile-lang-btn active" data-lang="bg" type="button">BG</button>
-      <span style="color:var(--fg-3);font-size:10px;">/</span>
-      <button class="mobile-lang-btn" data-lang="en" type="button">EN</button>
-    </div>
-  </div>
 
   <main>
     <!-- HERO -->
@@ -485,7 +647,26 @@
         Services
       </div>
       <h1>Услуги</h1>
-      <p class="hero-sub">Един партньор за целия процес — от финансиране и избор на имот до интериор и ремонт.</p>
+      <p class="hero-sub">
+        <strong>Един партньор за целия процес — от финансиране и избор на имот до интериор, ремонт и финално предаване.</strong>
+        Работим лично, подредено и с внимание към детайла — за да знаете какво следва на всяка стъпка.
+      </p>
+    </section>
+
+    <!-- INTRO -->
+    <section class="intro-section">
+      <div class="intro-grid">
+        <div class="intro-label">
+          <span class="red-sq"></span>
+          Подход
+        </div>
+        <div>
+          <h2 class="intro-title">Цялостен подход<br>към имота</h2>
+          <p class="intro-text">
+            AK Real Estate свързва ключовите етапи около един имот в последователен процес. Помагаме при ориентация, избор, сделка, дизайн и реализация, така че клиентът да не координира всичко сам.
+          </p>
+        </div>
+      </div>
     </section>
 
     <!-- SERVICES GRID -->
@@ -496,28 +677,112 @@
       </div>
 
       <div class="services-grid">
-        <div class="service-card">
+        <article class="service-card">
           <div class="service-num">01</div>
-          <div class="service-title">Кредитен консултант</div>
-          <p class="service-desc">Финансово насочване и съдействие при избор на подходящо кредитиране. Помагаме на клиента да разбере възможностите си, да сравни оферти и да планира покупката реалистично.</p>
-        </div>
+          <h3 class="service-title">Кредитен консултант</h3>
+          <p class="service-desc">Помагаме да разберете реалните си възможности още преди избора на имот.</p>
 
-        <div class="service-card">
+          <div class="service-bullets-label">Как помагаме</div>
+          <ul class="service-bullets">
+            <li>предварителна ориентация за бюджет и месечна вноска</li>
+            <li>сравнение на кредитни предложения</li>
+            <li>подготовка преди кандидатстване</li>
+            <li>координация с банкови партньори при нужда</li>
+          </ul>
+
+          <p class="service-suitable">
+            <strong>Подходящо за</strong>
+            Купувачи, които искат яснота преди да започнат огледи.
+          </p>
+        </article>
+
+        <article class="service-card">
           <div class="service-num">02</div>
-          <div class="service-title">Имотно посредничество</div>
-          <p class="service-desc">Съдействие при намиране, покупка и продажба на недвижим имот. Подбираме подходящи предложения, организираме огледи, сравняваме възможности и водим процеса с яснота до финална сделка.</p>
-        </div>
+          <h3 class="service-title">Имотно посредничество</h3>
+          <p class="service-desc">Съдействаме при намиране, покупка и продажба на недвижим имот с ясен и подреден процес.</p>
 
-        <div class="service-card">
+          <div class="service-bullets-label">Как помагаме</div>
+          <ul class="service-bullets">
+            <li>уточняване на критерии и приоритети</li>
+            <li>подбор на подходящи предложения</li>
+            <li>организация на огледи</li>
+            <li>съдействие при преговори и следващи стъпки до сделка</li>
+          </ul>
+
+          <p class="service-suitable">
+            <strong>Подходящо за</strong>
+            Клиенти, които търсят правилния имот, а не просто следващата обява.
+          </p>
+        </article>
+
+        <article class="service-card">
           <div class="service-num">03</div>
-          <div class="service-title">Интериорен дизайн</div>
-          <p class="service-desc">Концепция, функционално разпределение, материали, цветове, мебели и завършен стил, съобразени с начина на живот на клиента.</p>
+          <h3 class="service-title">Интериорен дизайн</h3>
+          <p class="service-desc">Превръщаме имота в завършено пространство с ясна концепция, функционалност и стил.</p>
+
+          <div class="service-bullets-label">Как помагаме</div>
+          <ul class="service-bullets">
+            <li>функционално разпределение</li>
+            <li>цветова и материална концепция</li>
+            <li>избор на мебели, осветление и детайли</li>
+            <li>визуална посока и координация с изпълнението</li>
+          </ul>
+
+          <p class="service-suitable">
+            <strong>Подходящо за</strong>
+            Нов дом, инвестиционен имот или обновяване на съществуващо пространство.
+          </p>
+        </article>
+
+        <article class="service-card">
+          <div class="service-num">04</div>
+          <h3 class="service-title">Ремонт от А до Я</h3>
+          <p class="service-desc">Организираме процеса от първоначален план до финално предаване, с контрол върху срокове, бюджет и изпълнение.</p>
+
+          <div class="service-bullets-label">Как помагаме</div>
+          <ul class="service-bullets">
+            <li>планиране на обхват и бюджет</li>
+            <li>координация на майстори и доставчици</li>
+            <li>избор и доставка на материали</li>
+            <li>проследяване на изпълнението и финален оглед</li>
+          </ul>
+
+          <p class="service-suitable">
+            <strong>Подходящо за</strong>
+            Клиенти, които искат резултат без ежедневна координация на всеки детайл.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- EDITORIAL -->
+    <section class="editorial-section">
+      <div class="section-label">
+        <span class="red-sq"></span>
+        Един процес
+      </div>
+
+      <div class="editorial-grid">
+        <div class="editorial-panel" aria-hidden="true">
+          <img class="editorial-mono" src="assets/logo-monogram.svg" alt="">
+          <div class="editorial-tag">
+            <span class="red-sq"></span>
+            AK · Studio
+          </div>
         </div>
 
-        <div class="service-card">
-          <div class="service-num">04</div>
-          <div class="service-title">Ремонт от А до Я</div>
-          <p class="service-desc">Планиране, бюджетиране, координация на майстори и доставчици, избор на материали, контрол на изпълнението и финално предаване.</p>
+        <div class="editorial-text">
+          <div class="intro-label">
+            <span class="red-sq"></span>
+            Editorial
+          </div>
+          <h2>От идея<br>до завършен дом</h2>
+          <p>
+            Най-добрият резултат идва, когато изборът на имот, бюджетът, дизайнът и изпълнението се мислят заедно. Така решенията са по-точни, процесът е по-спокоен, а финалът — по-близо до първоначалната визия.
+          </p>
+          <p class="small">
+            Това е причината да предлагаме услугите си като свързани етапи, а не като отделни договори.
+          </p>
         </div>
       </div>
     </section>
@@ -532,19 +797,63 @@
       <div class="process-steps">
         <div class="step">
           <div class="step-num">01</div>
-          <div class="step-label">Консултация</div>
+          <h3 class="step-label">Консултация</h3>
+          <p class="step-desc">Разбираме целта, бюджета и сроковете.</p>
         </div>
         <div class="step">
           <div class="step-num">02</div>
-          <div class="step-label">План</div>
+          <h3 class="step-label">План</h3>
+          <p class="step-desc">Подреждаме стъпките и приоритетите.</p>
         </div>
         <div class="step">
           <div class="step-num">03</div>
-          <div class="step-label">Изпълнение</div>
+          <h3 class="step-label">Изпълнение</h3>
+          <p class="step-desc">Координираме хора, огледи, оферти и действия.</p>
         </div>
         <div class="step">
           <div class="step-num">04</div>
-          <div class="step-label">Финално предаване</div>
+          <h3 class="step-label">Финално предаване</h3>
+          <p class="step-desc">Преглеждаме резултата и затваряме процеса.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+      <div class="faq-grid">
+        <div>
+          <div class="section-label" style="margin-bottom: 22px;">
+            <span class="red-sq"></span>
+            Често задавани
+          </div>
+          <h2 class="faq-heading">Въпроси<br>и отговори</h2>
+        </div>
+
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary><span class="faq-marker"></span>Мога ли да използвам само една услуга?</summary>
+            <p>Да. Всяка услуга може да се ползва самостоятелно — например само кредитен консултант или само интериорен дизайн. Свързваме етапите само ако клиентът има полза от това.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary><span class="faq-marker"></span>Работите ли с имоти извън София?</summary>
+            <p>Да. Основно работим в София и района, но при имоти извън града преценяваме ангажимента според локацията и обхвата на проекта.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary><span class="faq-marker"></span>Може ли да съдействате преди да съм избрал имот?</summary>
+            <p>Точно това е най-добрият момент. Помагаме с финансовата ориентация и критериите за избор, преди да започнат огледите — така решенията са по-спокойни.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary><span class="faq-marker"></span>Поемате ли целия ремонт?</summary>
+            <p>Да. Поемаме планиране, координация на майстори, избор на материали и проследяване на изпълнението до финалния оглед. Клиентът остава информиран, без да координира всеки детайл лично.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary><span class="faq-marker"></span>Как започва процесът?</summary>
+            <p>С кратък разговор. Разказвате какъв имот или проект планирате, ние връщаме ясен първи отговор и предлагаме следваща стъпка — без ангажимент.</p>
+          </details>
         </div>
       </div>
     </section>
@@ -552,7 +861,7 @@
     <!-- CTA -->
     <section class="cta-section">
       <h2>Готови ли сте<br>да започнем?</h2>
-      <p>Разкажете ни какъв имот или проект планирате.</p>
+      <p>Разкажете ни какъв имот или проект планирате. Ще ви върнем ясен първи отговор и следваща стъпка.</p>
       <a class="cta-link" href="mailto:office@akrealestatebg.com">Свържете се с нас</a>
     </section>
   </main>
@@ -563,32 +872,5 @@
     </div>
     <div class="footer-legal">© 2025 AK Real Estate · All rights reserved</div>
   </footer>
-  <script>
-  (function(){
-    var btn = document.getElementById('hamburger-btn');
-    var sheet = document.getElementById('mobile-sheet');
-    btn.addEventListener('click', function(){
-      var isOpen = sheet.classList.toggle('open');
-      btn.classList.toggle('open', isOpen);
-      document.body.style.overflow = isOpen ? 'hidden' : '';
-    });
-    document.addEventListener('keydown', function(e){
-      if(e.key === 'Escape' && sheet.classList.contains('open')){
-        sheet.classList.remove('open');
-        btn.classList.remove('open');
-        document.body.style.overflow = '';
-      }
-    });
-    var allLang = Array.from(document.querySelectorAll('.lang-btn, .mobile-lang-btn'));
-    function setLang(l){
-      allLang.forEach(function(b){ b.classList.toggle('active', b.dataset.lang === l); });
-      try { localStorage.setItem('ak-lang', l); } catch(e){}
-    }
-    allLang.forEach(function(b){
-      b.addEventListener('click', function(){ setLang(b.dataset.lang); });
-    });
-    try { setLang(localStorage.getItem('ak-lang') || 'bg'); } catch(e){ setLang('bg'); }
-  })();
-  </script>
 </body>
 </html>
