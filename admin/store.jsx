@@ -11,36 +11,41 @@ function useListings() {
   return list;
 }
 
-// ----- Hash router -----
-function parseHash() {
-  const raw = (location.hash || '#/dashboard').replace(/^#\/?/, '');
-  const [path, queryString = ''] = raw.split('?');
-  const params = new URLSearchParams(queryString);
-  const search = params.get('search') || '';
+// ----- Clean-path router -----
+// Backward-compat shim: /admin/#/dashboard or /admin/foo#/bar → /admin/dashboard
+if (location.hash && location.hash.startsWith('#/')) {
+  history.replaceState(null, '', '/admin' + location.hash.slice(1));
+}
 
-  const parts = path.split('/').filter(Boolean);
+function parsePath() {
+  const sub = location.pathname.replace(/^\/admin\/?/, '');
+  const search = new URLSearchParams(location.search).get('search') || '';
+  const parts = sub.split('/').filter(Boolean);
 
-  if (parts.length === 0) return { name: 'dashboard', search };
-  if (parts[0] === 'dashboard') return { name: 'dashboard', search };
-  if (parts[0] === 'listings' && parts.length === 1) return { name: 'listings', search };
-  if (parts[0] === 'listings' && parts[1] === 'new') return { name: 'listing-new', search };
+  if (parts.length === 0)                             return { name: 'dashboard',    search };
+  if (parts[0] === 'dashboard')                       return { name: 'dashboard',    search };
+  if (parts[0] === 'listings' && parts.length === 1)  return { name: 'listings',     search };
+  if (parts[0] === 'listings' && parts[1] === 'new')  return { name: 'listing-new',  search };
   if (parts[0] === 'listings' && parts[2] === 'edit') return { name: 'listing-edit', id: parts[1], search };
 
   return { name: 'dashboard', search };
 }
 
 function useRoute() {
-  const [route, setRoute] = React.useState(parseHash());
+  const [route, setRoute] = React.useState(parsePath());
   React.useEffect(() => {
-    const fn = () => setRoute(parseHash());
-    window.addEventListener('hashchange', fn);
-    return () => window.removeEventListener('hashchange', fn);
+    const fn = () => setRoute(parsePath());
+    window.addEventListener('popstate', fn);
+    return () => window.removeEventListener('popstate', fn);
   }, []);
   return route;
 }
 
 function navigate(to) {
-  location.hash = to;
+  const path = to.startsWith('/') ? to : '/' + to;
+  const full = path.startsWith('/admin') ? path : '/admin' + path;
+  history.pushState(null, '', full);
+  window.dispatchEvent(new PopStateEvent('popstate', { state: null }));
 }
 
 // ----- Supabase auth -----
@@ -68,7 +73,7 @@ function useAuth() {
       setSignedIn(hasSession);
       setCheckingAuth(false);
 
-      if (hasSession && (!location.hash || location.hash === '#' || location.hash === '#/login')) {
+      if (hasSession && (location.pathname === '/admin' || location.pathname === '/admin/' || location.pathname === '/admin/login')) {
         navigate('/dashboard');
       }
     }
@@ -78,7 +83,7 @@ function useAuth() {
     const { data: listener } = window.akSupabase.auth.onAuthStateChange((_event, session) => {
       setSignedIn(!!session);
 
-      if (session && (!location.hash || location.hash === '#' || location.hash === '#/login')) {
+      if (session && (location.pathname === '/admin' || location.pathname === '/admin/' || location.pathname === '/admin/login')) {
         navigate('/dashboard');
       }
 
@@ -99,7 +104,7 @@ function useAuth() {
 
     signIn: async () => {
       setSignedIn(true);
-      if (!location.hash || location.hash === '#' || location.hash === '#/login') {
+      if (location.pathname === '/admin' || location.pathname === '/admin/' || location.pathname === '/admin/login') {
         navigate('/dashboard');
       }
     },

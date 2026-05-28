@@ -160,7 +160,7 @@ function Sidebar({ active, onSignOut, onNavigate }) {
 function NavItem({ item, active, onNavigate }) {
   const [hover, setHover] = React.useState(false);
   return (
-    <a href={'#' + item.to}
+    <a href={'/admin' + item.to}
       onClick={() => onNavigate && onNavigate()}
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
       style={{
@@ -213,10 +213,10 @@ function TopBar({ isMobile, isPhone, onMenu }) {
   function submitSearch() {
     const q = search.trim();
     if (!q) {
-      location.hash = '/listings';
+      navigate('/listings');
       return;
     }
-    location.hash = `/listings?search=${encodeURIComponent(q)}`;
+    navigate('/listings?search=' + encodeURIComponent(q));
   }
 
   // Shared search field — reused in both phone and non-phone layouts.
@@ -360,7 +360,7 @@ function Breadcrumbs() {
       {crumbs.map((c, i) => (
         <React.Fragment key={i}>
           {c.to ? (
-            <a href={'#' + c.to} style={{
+            <a href={'/admin' + c.to} style={{
               color: 'var(--fg-2)', textDecoration: 'none',
               transition: 'color .2s var(--ease)', flexShrink: 0,
             }}

@@ -161,7 +161,7 @@ function DashboardPage() {
         label={t('Admin · Overview')}
         title={t('The portfolio,')}
         accent={t('quietly.')}
-        action={<Btn variant="primary" as="a" href="#/listings/new">{t('＋ New Listing')}</Btn>}
+        action={<Btn variant="primary" as="a" href="/admin/listings/new">{t('＋ New Listing')}</Btn>}
       />
 
       {/* stat row */}
@@ -245,7 +245,7 @@ function LatestListings({ listings }) {
       <div style={{ display: 'flex', alignItems: 'end', gap: 16, marginBottom: 18 }}>
         <Eyebrow>{t('Latest Listings')}</Eyebrow>
         <span style={{ flex: 1, height: 1, background: 'var(--hairline-light)' }}></span>
-        <a href="#/listings" style={{
+        <a href="/admin/listings" style={{
           fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
           textTransform: 'uppercase', color: 'var(--fg-2)', textDecoration: 'none',
           borderBottom: '1px solid var(--ak-crimson)', paddingBottom: 2,
@@ -282,7 +282,7 @@ function LatestRow({ listing }) {
 
   if (isPhone) {
     return (
-      <a href={`#/listings/${listing.id}/edit`}
+      <a href={`/admin/listings/${listing.id}/edit`}
         onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
         style={{
           display: 'flex', alignItems: 'center', gap: 12,
@@ -309,7 +309,7 @@ function LatestRow({ listing }) {
   }
 
   return (
-    <a href={`#/listings/${listing.id}/edit`}
+    <a href={`/admin/listings/${listing.id}/edit`}
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
       style={{
         display: 'grid', gridTemplateColumns: '64px 1fr auto auto auto',
@@ -441,7 +441,7 @@ function ActivityPanel({ listings }) {
       )}
 
       <div style={{ marginTop: 18, paddingTop: 18, borderTop: '1px solid var(--hairline-light)' }}>
-        <a href="#/listings" style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
+        <a href="/admin/listings" style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
           textTransform: 'uppercase', color: 'var(--fg-2)', textDecoration: 'none',
           display: 'inline-flex', alignItems: 'center', gap: 8,
           borderBottom: '1px solid var(--ak-crimson)', paddingBottom: 2 }}>

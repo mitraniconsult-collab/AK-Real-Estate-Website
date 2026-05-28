@@ -108,7 +108,7 @@ React.useEffect(() => {
         action={
           <div style={{ display: 'flex', gap: 10 }}>
             <Btn variant="secondary" onClick={handleExportCsv}>↓ Export CSV</Btn>
-            <Btn variant="primary" as="a" href="#/listings/new">＋ New Listing</Btn>
+            <Btn variant="primary" as="a" href="/admin/listings/new">＋ New Listing</Btn>
           </div>
         }
       />
@@ -292,7 +292,7 @@ function ListingRow({ listing, odd, onDelete }) {
         transition: 'background .15s var(--ease)',
       }}>
       <Td>
-        <a href={`#/listings/${listing.id}/edit`} style={{
+        <a href={`/admin/listings/${listing.id}/edit`} style={{
           display: 'flex', alignItems: 'center', gap: 14,
           textDecoration: 'none', color: 'var(--fg)',
         }}>
@@ -354,7 +354,7 @@ function RowActions({ listing, onDelete }) {
     <ActionBtn title="View" href={`/listing?id=${encodeURIComponent(listing.id)}`} disabled={listing.status !== 'Active'}>
         <Icon name="eye" size={14} />
       </ActionBtn>
-      <ActionBtn title="Edit" href={`#/listings/${listing.id}/edit`}>
+      <ActionBtn title="Edit" href={`/admin/listings/${listing.id}/edit`}>
         <Icon name="pencil" size={14} />
       </ActionBtn>
       <ActionBtn title={listing.status === 'Active' ? 'Deactivate' : 'Activate'}
@@ -410,7 +410,7 @@ function AdminListingCard({ listing, onDelete }) {
       display: 'flex', flexDirection: 'column',
       transition: 'border-color .22s var(--ease)',
     }}>
-      <a href={`#/listings/${listing.id}/edit`} style={{
+      <a href={`/admin/listings/${listing.id}/edit`} style={{
         position: 'relative', aspectRatio: '4/3', overflow: 'hidden', display: 'block',
         textDecoration: 'none',
       }}>
@@ -476,7 +476,7 @@ function EmptyState() {
         No listings match the current filters. Adjust your search, or start a new listing —
         we'll keep it as a draft until you're ready to publish.
       </p>
-      <Btn variant="primary" as="a" href="#/listings/new">＋ New Listing</Btn>
+      <Btn variant="primary" as="a" href="/admin/listings/new">＋ New Listing</Btn>
     </div>
   );
 }

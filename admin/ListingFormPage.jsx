@@ -247,7 +247,7 @@ function ListingFormPage({ mode, id }) {
       <div className="ak-rise">
         <SectionTitle label="Edit" title="Not" accent="found." />
         <p style={{ color: 'var(--fg-2)' }}>
-          No listing with id "{id}". <a href="#/listings" style={{ color: 'var(--ak-crimson)' }}>Back to listings</a>.
+          No listing with id "{id}". <a href="/admin/listings" style={{ color: 'var(--ak-crimson)' }}>Back to listings</a>.
         </p>
       </div>
     );
@@ -264,7 +264,7 @@ function ListingFormPage({ mode, id }) {
           /* Desktop only — on tablet/phone the action bar renders at the bottom */
           !isTablet ? (
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', rowGap: 8 }}>
-              <Btn variant="secondary" as="a" href="#/listings">{t('Cancel')}</Btn>
+              <Btn variant="secondary" as="a" href="/admin/listings">{t('Cancel')}</Btn>
               {editing && <Btn variant="danger" onClick={() => setConfirmDel(true)}>{t('Delete')}</Btn>}
               <Btn variant="secondary" onClick={() => save(false)} disabled={imagesUploading}>{saveDraftLabel}</Btn>
               <Btn variant="primary"   onClick={() => save(true)} disabled={imagesUploading}>{publishLabel}</Btn>
@@ -454,7 +454,7 @@ function ListingFormPage({ mode, id }) {
             {saveDraftLabel}
           </Btn>
           <div style={{ display: 'flex', gap: 12 }}>
-            <Btn variant="secondary" as="a" href="#/listings"
+            <Btn variant="secondary" as="a" href="/admin/listings"
               style={{ flex: 1, justifyContent: 'center' }}>
               {t('Cancel')}
             </Btn>
