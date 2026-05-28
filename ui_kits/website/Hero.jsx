@@ -4,7 +4,24 @@
 // Darker, more cinematic interior — restored landmark, low light
 const HERO_IMG = "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=2400&q=80&auto=format&fit=crop";
 
-function Hero() {
+function Hero({ lang = 'bg' }) {
+  const [stats, setStats] = React.useState({ activeCount: 0, offMarketCount: 0, portfolioValue: '€0' });
+
+  React.useEffect(() => {
+    if (!window.AKStore) return;
+    return window.AKStore.on(function(listings) {
+      const active = listings.filter(l => l.status === 'Active');
+      const offMarket = listings.filter(l => l.status !== 'Active' && l.status !== 'Draft');
+      const total = active.reduce((s, l) => s + (Number(l.price) || 0), 0);
+      let val = '€0';
+      if (total >= 1e9) val = '€' + (total / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+      else if (total >= 1e6) val = '€' + (total / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      else if (total >= 1000) val = '€' + Math.round(total / 1000) + 'K';
+      else if (total > 0) val = '€' + total;
+      setStats({ activeCount: active.length, offMarketCount: offMarket.length, portfolioValue: val });
+    });
+  }, []);
+
   return (
     <section style={{
       position: 'relative',
@@ -85,7 +102,9 @@ function Hero() {
       }}>
         <RedSquare size={6} />
         <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--fg-2)' }}>
-          Currently 47 active listings &nbsp;·&nbsp; 12 off-market &nbsp;·&nbsp; $1.2B portfolio value
+          {lang === 'en'
+            ? `${stats.activeCount} active listings · ${stats.offMarketCount} off-market · ${stats.portfolioValue} portfolio value`
+            : `${stats.activeCount} активни имота · ${stats.offMarketCount} скрити оферти · ${stats.portfolioValue} стойност на портфолиото`}
         </span>
         <span style={{ flex: 1, height: 1, background: 'var(--hairline-light)' }}></span>
         <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--fg-2)' }}>
