@@ -40,10 +40,11 @@
 
     /* ─── HEADER ─── */
     header {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-      padding: clamp(14px,2.2vw,28px) var(--gutter);
+      position: sticky; top: 0; z-index: 50;
+      min-height: 72px;
+      padding: 0 var(--gutter);
       display: flex; align-items: center; gap: 16px;
-      background: rgba(0,0,0,.55);
+      background: rgba(5,5,5,.84);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--hairline);
@@ -54,7 +55,7 @@
       letter-spacing: .18em; font-size: 22px;
       text-transform: uppercase;
       display: flex; align-items: center; gap: 10px;
-      white-space: nowrap;
+      white-space: nowrap; text-decoration: none;
     }
 
     .red-sq {
@@ -74,36 +75,137 @@
       font-size: 10px; font-weight: 500;
       letter-spacing: .28em; text-transform: uppercase;
       color: var(--fg-2);
+      text-decoration: none;
       transition: color .28s var(--ease);
       position: relative; padding-bottom: 4px;
     }
 
     .header-nav a:hover { color: var(--fg); }
 
-    .header-nav a.active {
-      color: var(--ak-crimson);
-    }
+    .header-nav a.active { color: var(--fg); }
 
     .header-nav a.active::after {
       content: ''; position: absolute;
       left: 0; right: 0; bottom: 0; height: 1px;
-      background: var(--ak-crimson);
+      background: var(--fg);
     }
 
     .header-cta {
-      padding: 11px 18px;
+      padding: 10px 18px;
       background: var(--ak-crimson);
-      color: #fff !important;
-      font-size: 10px !important;
-      letter-spacing: .22em !important;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .22em; text-transform: uppercase;
+      text-decoration: none;
+      flex-shrink: 0; white-space: nowrap;
       transition: background .2s var(--ease);
-      flex-shrink: 0;
     }
 
-    .header-cta:hover { background: #7a0f12 !important; }
+    .header-cta:hover { background: #8a1013; color: #fff; }
+
+    .lang-switch { display: flex; align-items: center; gap: 4px; }
+
+    .lang-btn {
+      background: none; border: none; cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: var(--fg-3); padding: 2px 0;
+      transition: color .2s;
+    }
+
+    .lang-btn:hover { color: var(--fg-2); }
+    .lang-btn.active { color: var(--fg); }
+    .lang-sep { color: var(--fg-3); font-size: 10px; letter-spacing: 0; }
+
+    .hamburger-btn {
+      display: none;
+      background: transparent; border: 0;
+      cursor: pointer; color: var(--fg);
+      flex-direction: column; gap: 5px;
+      width: 40px; height: 40px;
+      align-items: center; justify-content: center;
+      margin-left: auto; flex-shrink: 0; padding: 0;
+    }
+
+    .hamburger-btn .bar {
+      width: 22px; height: 1px;
+      background: currentColor;
+      transition: transform .3s, opacity .2s;
+    }
+
+    .hamburger-btn.open .bar:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .hamburger-btn.open .bar:nth-child(2) { opacity: 0; }
+    .hamburger-btn.open .bar:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    .mobile-sheet {
+      position: fixed; inset: 0; z-index: 49;
+      background: rgba(0,0,0,.96);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      padding: 90px var(--gutter) 40px;
+      display: flex; flex-direction: column;
+      opacity: 0; pointer-events: none;
+      transform: translateY(-8px);
+      transition: opacity .4s, transform .4s;
+      overflow-y: auto;
+    }
+
+    .mobile-sheet.open { opacity: 1; pointer-events: auto; transform: none; }
+
+    .mobile-sheet-head {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 36px; padding-bottom: 18px;
+      border-bottom: 1px solid var(--hairline);
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--fg-2);
+    }
+
+    .mobile-nav-links { display: flex; flex-direction: column; gap: 4px; }
+
+    .mobile-nav-links a {
+      display: flex; align-items: baseline; gap: 16px;
+      text-decoration: none;
+      font-family: var(--font-display); font-weight: 300;
+      font-size: clamp(34px, 9vw, 56px);
+      line-height: 1.1; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--fg);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .mobile-nav-links a.cta { color: var(--ak-crimson); }
+
+    .mobile-nav-links .num {
+      font-family: var(--font-body);
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .28em; color: var(--fg-3);
+      min-width: 28px;
+    }
+
+    .mobile-nav-links a.cta .num { color: var(--ak-crimson); }
+
+    .mobile-sheet-foot {
+      margin-top: auto; padding-top: 40px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .mobile-lang-btn {
+      background: none; border: none; cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--fg-3); padding: 2px 0;
+      transition: color .2s;
+    }
+
+    .mobile-lang-btn.active { color: var(--fg); }
+    .mobile-lang-btn:hover { color: var(--fg-2); }
 
     /* ─── MAIN ─── */
-    main { padding-top: clamp(80px,12vw,110px); }
+    main {}
 
     /* ─── HERO ─── */
     .hero {
@@ -303,9 +405,10 @@
       color: var(--fg-3);
     }
 
-    /* ─── MOBILE HEADER ─── */
+    /* ─── MOBILE ─── */
     @media (max-width: 768px) {
       .header-nav { display: none; }
+      .hamburger-btn { display: flex; }
 
       .services-grid {
         grid-template-columns: 1fr;
@@ -337,9 +440,42 @@
     <nav class="header-nav">
       <a href="/listings">Обяви</a>
       <a href="/services" class="active">Услуги</a>
+      <div class="lang-switch">
+        <button class="lang-btn active" data-lang="bg" type="button">BG</button>
+        <span class="lang-sep">/</span>
+        <button class="lang-btn" data-lang="en" type="button">EN</button>
+      </div>
       <a href="mailto:office@akrealestatebg.com" class="header-cta">Свържи се с нас</a>
     </nav>
+    <button class="hamburger-btn" id="hamburger-btn" aria-label="Open menu" type="button">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
   </header>
+
+  <div class="mobile-sheet" id="mobile-sheet">
+    <div class="mobile-sheet-head">
+      <span style="width:6px;height:6px;background:var(--ak-crimson);display:inline-block;flex-shrink:0;"></span>
+      Navigation
+    </div>
+    <div class="mobile-nav-links">
+      <a href="/listings">
+        <span class="num">01</span><span>Обяви</span>
+      </a>
+      <a href="/services">
+        <span class="num">02</span><span>Услуги</span>
+      </a>
+      <a href="mailto:office@akrealestatebg.com" class="cta">
+        <span class="num">03</span><span>Свържи се с нас</span>
+      </a>
+    </div>
+    <div class="mobile-sheet-foot">
+      <button class="mobile-lang-btn active" data-lang="bg" type="button">BG</button>
+      <span style="color:var(--fg-3);font-size:10px;">/</span>
+      <button class="mobile-lang-btn" data-lang="en" type="button">EN</button>
+    </div>
+  </div>
 
   <main>
     <!-- HERO -->
@@ -427,5 +563,32 @@
     </div>
     <div class="footer-legal">© 2025 AK Real Estate · All rights reserved</div>
   </footer>
+  <script>
+  (function(){
+    var btn = document.getElementById('hamburger-btn');
+    var sheet = document.getElementById('mobile-sheet');
+    btn.addEventListener('click', function(){
+      var isOpen = sheet.classList.toggle('open');
+      btn.classList.toggle('open', isOpen);
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && sheet.classList.contains('open')){
+        sheet.classList.remove('open');
+        btn.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+    var allLang = Array.from(document.querySelectorAll('.lang-btn, .mobile-lang-btn'));
+    function setLang(l){
+      allLang.forEach(function(b){ b.classList.toggle('active', b.dataset.lang === l); });
+      try { localStorage.setItem('ak-lang', l); } catch(e){}
+    }
+    allLang.forEach(function(b){
+      b.addEventListener('click', function(){ setLang(b.dataset.lang); });
+    });
+    try { setLang(localStorage.getItem('ak-lang') || 'bg'); } catch(e){ setLang('bg'); }
+  })();
+  </script>
 </body>
 </html>

@@ -30,6 +30,9 @@ function Nav({ active = 'listings', onNav }) {
     }
   }, [open]);
 
+  const [lang, setLang] = React.useState(() => (typeof localStorage !== 'undefined' && localStorage.getItem('ak-lang')) || 'bg');
+  const toggleLang = (l) => { setLang(l); if (typeof localStorage !== 'undefined') localStorage.setItem('ak-lang', l); };
+
   const links = [
     { id: 'listings',  label: 'Обяви',  href: '/listings' },
     { id: 'concierge', label: 'Услуги', href: '/services' },
@@ -64,6 +67,23 @@ function Nav({ active = 'listings', onNav }) {
           }}>
             {links.filter(l => !l.cta).map(l => (
               <NavLink key={l.id} active={active === l.id} href={l.href} onClick={() => onPick(l.id)}>{l.label}</NavLink>
+            ))}
+          </div>
+        )}
+
+        {!isMobile && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {['bg','en'].map(l => (
+              <React.Fragment key={l}>
+                {l === 'en' && <span style={{ color: 'var(--fg-3)', fontSize: 10 }}>/</span>}
+                <button onClick={() => toggleLang(l)} style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
+                  letterSpacing: '0.22em', textTransform: 'uppercase',
+                  color: lang === l ? 'var(--fg)' : 'var(--fg-3)', padding: '2px 0',
+                  transition: 'color .2s',
+                }}>{l.toUpperCase()}</button>
+              </React.Fragment>
             ))}
           </div>
         )}
@@ -143,7 +163,7 @@ function Nav({ active = 'listings', onNav }) {
                   fontFamily: 'var(--font-display)', fontWeight: 200,
                   fontSize: 'clamp(34px, 9vw, 56px)', lineHeight: 1.1,
                   letterSpacing: '0.06em', textTransform: 'uppercase',
-                  color: l.cta ? 'var(--ak-crimson)' : (active === l.id ? 'var(--ak-crimson)' : 'var(--fg)'),
+                  color: l.cta ? 'var(--ak-crimson)' : 'var(--fg)',
                   padding: '10px 0',
                   borderBottom: '1px solid var(--hairline-light)',
                 }}>
@@ -158,15 +178,19 @@ function Nav({ active = 'listings', onNav }) {
             ))}
           </div>
 
-          <div style={{ marginTop: 'auto', paddingTop: 40 }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
-              textTransform: 'uppercase', color: 'var(--fg-3)',
-            }}>
-              <span style={{ width: 6, height: 6, background: 'var(--ak-crimson)' }}></span>
-              <span>A. Kane · LA · Montecito</span>
-            </div>
+          <div style={{ marginTop: 'auto', paddingTop: 40, display: 'flex', alignItems: 'center', gap: 8 }}>
+            {['bg','en'].map(l => (
+              <React.Fragment key={l}>
+                {l === 'en' && <span style={{ color: 'var(--fg-3)', fontSize: 10 }}>/</span>}
+                <button onClick={() => toggleLang(l)} style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
+                  letterSpacing: '0.28em', textTransform: 'uppercase',
+                  color: lang === l ? 'var(--fg)' : 'var(--fg-3)', padding: '2px 0',
+                  transition: 'color .2s',
+                }}>{l.toUpperCase()}</button>
+              </React.Fragment>
+            ))}
           </div>
         </div>
       )}
