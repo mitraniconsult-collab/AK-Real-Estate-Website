@@ -13,6 +13,14 @@ function getImageUrl(image) {
   return base + '/storage/v1/object/public/listing-images/' + raw;
 }
 
+function csvEscape(val) {
+  const s = val == null ? '' : String(val);
+  if (s.includes('"') || s.includes(',') || s.includes('\n') || s.includes('\r')) {
+    return '"' + s.replaceAll('"', '""') + '"';
+  }
+  return s;
+}
+
 function ListingsPage() {
   const route = useRoute();
   const listings = useListings();
@@ -59,6 +67,37 @@ React.useEffect(() => {
     return true;
   });
 
+  function handleExportCsv() {
+    const cols = [
+      { header: 'id',           get: l => l.id },
+      { header: 'title',        get: l => l.title },
+      { header: 'status',       get: l => l.status },
+      { header: 'listingType',  get: l => l.listingType },
+      { header: 'propertyType', get: l => l.propertyType },
+      { header: 'city',         get: l => l.city },
+      { header: 'area',         get: l => l.area },
+      { header: 'price',        get: l => l.price },
+      { header: 'currency',     get: l => l.currency },
+      { header: 'bedrooms',     get: l => l.bedrooms },
+      { header: 'bathrooms',    get: l => l.bathrooms },
+      { header: 'sqm',          get: l => l.areaSqm },
+      { header: 'featured',     get: l => l.featured ? 'true' : 'false' },
+      { header: 'createdAt',    get: l => l.createdAt },
+    ];
+    const header = cols.map(c => csvEscape(c.header)).join(',');
+    const rows = filtered.map(l => cols.map(c => csvEscape(c.get(l))).join(','));
+    const csv = '﻿' + [header, ...rows].join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ak-real-estate-listings-' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="ak-rise">
       <SectionTitle
@@ -68,7 +107,7 @@ React.useEffect(() => {
         accent="register."
         action={
           <div style={{ display: 'flex', gap: 10 }}>
-            <Btn variant="secondary">↓ Export CSV</Btn>
+            <Btn variant="secondary" onClick={handleExportCsv}>↓ Export CSV</Btn>
             <Btn variant="primary" as="a" href="#/listings/new">＋ New Listing</Btn>
           </div>
         }
