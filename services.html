@@ -585,6 +585,62 @@
       color: var(--fg-3);
     }
 
+    /* ─── BANNER IMAGES ─── */
+    .banner-image {
+      position: relative;
+      width: 100%;
+      max-width: 1320px;
+      margin: clamp(40px,5vw,64px) auto 0;
+      aspect-ratio: 21 / 9;
+      overflow: hidden;
+      border: 1px solid var(--hairline);
+      background: var(--ak-charcoal);
+    }
+
+    .banner-image img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(.85) contrast(1.06) brightness(.78);
+    }
+
+    .banner-image::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,.22) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,.55) 100%);
+      pointer-events: none;
+    }
+
+    .banner-image .banner-caption {
+      position: absolute;
+      left: clamp(18px,3vw,28px);
+      bottom: clamp(16px,2.5vw,24px);
+      display: flex; align-items: center; gap: 10px;
+      font-size: 9px; font-weight: 500;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--fg-2);
+      z-index: 2;
+    }
+
+    .banner-image.tall { aspect-ratio: 16 / 9; }
+
+    /* ─── EDITORIAL PHOTO ─── */
+    .editorial-photo {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(.82) contrast(1.08) brightness(.62);
+      z-index: 0;
+    }
+
+    .editorial-panel::before,
+    .editorial-panel::after { z-index: 1; }
+
+    .editorial-mono,
+    .editorial-tag { z-index: 2; }
+
     /* ─── RESPONSIVE ─── */
     @media (max-width: 980px) {
       .intro-grid,
@@ -609,6 +665,9 @@
       .services-grid {
         grid-template-columns: 1fr;
       }
+
+      .banner-image,
+      .banner-image.tall { aspect-ratio: 4 / 3; }
     }
 
     @media (max-width: 480px) {
@@ -667,6 +726,15 @@
           </p>
         </div>
       </div>
+
+      <figure class="banner-image">
+        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1800&q=80&auto=format&fit=crop"
+             alt="Изглед на премиум резиденция в спокойна градска среда" loading="lazy">
+        <figcaption class="banner-caption">
+          <span class="red-sq"></span>
+          Имот · подход
+        </figcaption>
+      </figure>
     </section>
 
     <!-- SERVICES GRID -->
@@ -675,6 +743,15 @@
         <span class="red-sq"></span>
         Какво предлагаме
       </div>
+
+      <figure class="banner-image" style="margin-top: 0; margin-bottom: clamp(36px,5vw,56px);">
+        <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1800&q=80&auto=format&fit=crop"
+             alt="Светъл лофт интериор — пример за обновен жилищен имот" loading="lazy">
+        <figcaption class="banner-caption">
+          <span class="red-sq"></span>
+          Интериор · детайл
+        </figcaption>
+      </figure>
 
       <div class="services-grid">
         <article class="service-card">
@@ -763,7 +840,10 @@
       </div>
 
       <div class="editorial-grid">
-        <div class="editorial-panel" aria-hidden="true">
+        <div class="editorial-panel">
+          <img class="editorial-photo"
+               src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1800&q=80&auto=format&fit=crop"
+               alt="Завършен интериор с естествена светлина и спокойна материална палитра" loading="lazy">
           <img class="editorial-mono" src="assets/logo-monogram.svg" alt="">
           <div class="editorial-tag">
             <span class="red-sq"></span>
@@ -793,6 +873,15 @@
         <span class="red-sq"></span>
         Как работим
       </div>
+
+      <figure class="banner-image tall" style="margin-top: 0; margin-bottom: clamp(36px,5vw,56px);">
+        <img src="https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=1800&q=80&auto=format&fit=crop"
+             alt="Архитектурен детайл от реновиран имот" loading="lazy">
+        <figcaption class="banner-caption">
+          <span class="red-sq"></span>
+          Реализация · занаят
+        </figcaption>
+      </figure>
 
       <div class="process-steps">
         <div class="step">
