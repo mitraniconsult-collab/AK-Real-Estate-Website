@@ -70,7 +70,7 @@ function Footer() {
           <Eyebrow style={{ marginBottom: 18 }}>AK Real Estate</Eyebrow>
           <p style={{ margin: 0, maxWidth: 360, fontSize: 14, lineHeight: 1.7,
             fontWeight: 300, color: 'var(--fg-2)' }}>
-            AK Real Estate е бутикова консултантска практика за недвижими имоти, създадена през 2026 г.
+            AK Real Estate е бутикова агенция за недвижими имоти, създадена през 2026 г.
             Работим с внимателно подбрани имоти и клиенти, като съчетаваме посредничество, финансиране,
             интериорен дизайн и ремонт в един подреден процес.
           </p>
