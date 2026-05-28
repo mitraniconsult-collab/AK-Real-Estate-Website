@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Общи условия — AK Real Estate</title>
+  <link rel="icon" href="assets/logo-monogram.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@200;300;400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ak-black:   #050505;
+      --ak-ink:     #0a0a0a;
+      --ak-charcoal:#111111;
+      --ak-crimson: #b0181c;
+      --fg:         #ffffff;
+      --fg-2:       #9a9590;
+      --fg-3:       #5a5550;
+      --hairline:   rgba(255,255,255,.08);
+      --font-display: 'Antonio', 'Arial Narrow', sans-serif;
+      --font-body:    'Inter', Arial, sans-serif;
+      --gutter: clamp(24px, 4vw, 64px);
+      --ease: cubic-bezier(.2,.6,.2,1);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--ak-ink);
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      padding: clamp(14px,2.2vw,28px) var(--gutter);
+      display: flex; align-items: center; gap: 16px;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--hairline);
+    }
+    .logo {
+      font-family: var(--font-display);
+      letter-spacing: .18em; font-size: 22px;
+      text-transform: uppercase;
+      display: flex; align-items: center; gap: 10px;
+      white-space: nowrap;
+    }
+    .red-sq {
+      width: 7px; height: 7px;
+      background: var(--ak-crimson);
+      display: inline-block; flex-shrink: 0;
+    }
+    .header-nav {
+      margin-left: auto;
+      display: flex; align-items: center;
+      gap: clamp(18px,2.4vw,36px);
+    }
+    .header-nav a {
+      font-family: var(--font-body);
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--fg-2);
+      transition: color .28s var(--ease);
+      padding-bottom: 4px;
+    }
+    .header-nav a:hover { color: var(--fg); }
+    .header-cta {
+      padding: 11px 18px;
+      background: var(--ak-crimson);
+      color: #fff !important;
+      font-size: 10px !important;
+      letter-spacing: .22em !important;
+      transition: background .2s var(--ease);
+      flex-shrink: 0;
+    }
+    .header-cta:hover { background: #7a0f12 !important; }
+
+    main { padding-top: clamp(80px,12vw,110px); }
+
+    .legal-hero {
+      padding: clamp(56px,9vw,120px) var(--gutter) clamp(40px,6vw,72px);
+      border-bottom: 1px solid var(--hairline);
+      position: relative; overflow: hidden;
+    }
+    .legal-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 75% 40%, rgba(176,24,28,.10), transparent 52%);
+      pointer-events: none;
+    }
+    .eyebrow {
+      display: flex; align-items: center; gap: 10px;
+      color: var(--fg-2);
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .32em; text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 200;
+      font-size: clamp(48px,8vw,108px);
+      line-height: .92;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+    .legal-meta {
+      color: var(--fg-3);
+      font-size: 11px; letter-spacing: .22em;
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-top: 24px;
+    }
+
+    .legal-content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: clamp(48px,7vw,96px) var(--gutter) clamp(64px,9vw,140px);
+    }
+    .legal-note {
+      background: rgba(176,24,28,.04);
+      border-left: 1px solid var(--ak-crimson);
+      padding: 18px 22px;
+      margin-bottom: clamp(40px,5vw,64px);
+      color: var(--fg-2);
+      font-size: 13px; line-height: 1.7; font-weight: 300;
+      font-style: italic;
+    }
+    .legal-section {
+      padding: clamp(28px,3.5vw,40px) 0;
+      border-top: 1px solid var(--hairline);
+    }
+    .legal-section:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+    .legal-section h2 {
+      margin: 0 0 18px;
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: clamp(22px,2.8vw,32px);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      line-height: 1.05;
+      display: flex; align-items: baseline; gap: 14px;
+    }
+    .legal-section h2 .num {
+      font-family: var(--font-body);
+      font-size: 11px; font-weight: 500;
+      letter-spacing: .28em;
+      color: var(--ak-crimson);
+      flex-shrink: 0;
+    }
+    .legal-section p {
+      margin: 0 0 14px;
+      color: var(--fg-2);
+      font-size: 15px; line-height: 1.8; font-weight: 300;
+    }
+    .legal-section p:last-child { margin-bottom: 0; }
+    .legal-section ul {
+      margin: 8px 0 14px;
+      padding-left: 0;
+      list-style: none;
+    }
+    .legal-section li {
+      position: relative;
+      padding-left: 20px;
+      color: var(--fg-2);
+      font-size: 15px; line-height: 1.75; font-weight: 300;
+      margin-bottom: 8px;
+    }
+    .legal-section li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 14px;
+      width: 8px; height: 1px;
+      background: var(--ak-crimson);
+    }
+    .legal-section strong {
+      color: var(--fg);
+      font-weight: 500;
+    }
+    .legal-contact-block {
+      padding: 18px 22px;
+      border: 1px solid var(--hairline);
+      background: var(--ak-charcoal);
+      margin-top: 14px;
+      font-size: 14px; line-height: 1.7;
+    }
+    .legal-contact-block a { color: var(--fg-2); }
+    .legal-contact-block a:hover { color: var(--ak-crimson); }
+
+    /* FOOTER */
+    .ak-footer {
+      background: #050505;
+      padding: clamp(80px,8vw,140px) var(--gutter) 36px;
+      color: var(--fg);
+      border-top: 1px solid var(--hairline);
+    }
+    .ak-footer-head {
+      display: flex; align-items: center; gap: 32px;
+      margin-bottom: clamp(56px,6vw,96px);
+      padding-bottom: 36px;
+      border-bottom: 1px solid var(--hairline);
+    }
+    .ak-footer-logo {
+      font-family: var(--font-display);
+      font-size: clamp(20px,2.6vw,32px);
+      letter-spacing: .18em; text-transform: uppercase;
+      text-decoration: none; color: var(--fg);
+      display: flex; align-items: center; gap: 12px;
+      white-space: nowrap;
+    }
+    .ak-footer-rule { flex: 1; height: 1px; background: var(--hairline); }
+    .ak-footer-grid {
+      display: grid;
+      grid-template-columns: 1.6fr repeat(4, 1fr);
+      gap: clamp(24px,3vw,56px);
+      margin-bottom: 64px;
+    }
+    .ak-footer-eyebrow {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--fg); margin-bottom: 18px;
+    }
+    .ak-footer-desc {
+      margin: 0; max-width: 360px;
+      color: var(--fg-2);
+      font-size: 14px; line-height: 1.7; font-weight: 300;
+    }
+    .ak-footer-col-head {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 18px;
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--fg);
+    }
+    .ak-footer-dot {
+      width: 5px; height: 5px;
+      background: var(--ak-crimson);
+      display: inline-block; flex: 0 0 auto;
+    }
+    .ak-footer-list {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .ak-footer-list li {
+      color: var(--fg-2);
+      font-size: 13px; font-weight: 300;
+      letter-spacing: .02em; line-height: 1.5;
+    }
+    .ak-footer-list a {
+      color: var(--fg-2);
+      text-decoration: none;
+      transition: color .2s var(--ease);
+    }
+    .ak-footer-list a:hover { color: var(--ak-crimson); }
+    .ak-footer-legal {
+      display: flex; align-items: center; gap: 18px;
+      padding-top: 24px;
+      border-top: 1px solid var(--hairline);
+      flex-wrap: wrap;
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: var(--fg-3);
+    }
+    .ak-footer-legal a {
+      color: var(--fg-3); text-decoration: none;
+      transition: color .2s var(--ease);
+    }
+    .ak-footer-legal a:hover { color: var(--ak-crimson); }
+    .ak-footer-legal-mark { color: var(--ak-crimson); }
+    .ak-footer-legal-spacer { flex: 1; }
+
+    @media (max-width: 980px) {
+      .ak-footer-grid { grid-template-columns: 1fr 1fr; }
+      .ak-footer-brand { grid-column: 1 / -1; }
+    }
+    @media (max-width: 768px) {
+      .header-nav { display: none; }
+    }
+    @media (max-width: 640px) {
+      .ak-footer { padding-top: clamp(56px,12vw,80px); }
+      .ak-footer-rule { display: none; }
+      .ak-footer-grid { grid-template-columns: 1fr; gap: 36px; }
+      .ak-footer-legal { font-size: 9px; gap: 14px; }
+      .ak-footer-legal-spacer { display: none; }
+      h1 { font-size: clamp(40px,12vw,72px); }
+      .legal-section h2 { font-size: 22px; flex-direction: column; gap: 4px; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="/">
+      AK <span class="red-sq"></span> Real Estate
+    </a>
+    <nav class="header-nav">
+      <a href="/listings">Обяви</a>
+      <a href="/services">Услуги</a>
+      <a href="mailto:office@akrealestatebg.com" class="header-cta">Свържи се с нас</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="legal-hero">
+      <div class="eyebrow"><span class="red-sq"></span> Правна информация</div>
+      <h1>Общи условия</h1>
+      <div class="legal-meta">АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452</div>
+    </section>
+
+    <section class="legal-content">
+      <div class="legal-note">
+        Този текст е информационен шаблон и може да бъде допълнително прегледан и адаптиран според конкретните нужди на дружеството.
+      </div>
+
+      <article class="legal-section">
+        <h2><span class="num">01</span><span>Въведение</span></h2>
+        <p>Тези общи условия описват реда и условията за използване на уебсайта на АК РИЙЛ ЕСТЕЙТ. Чрез достъп до сайта приемаме, че сте се запознали с условията по-долу.</p>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">02</span><span>За сайта</span></h2>
+        <p>Уебсайтът представя информация за дружеството <strong>АК РИЙЛ ЕСТЕЙТ</strong>, ЕИК 208779452, със седалище ул. Димитър Хаджикоцев 15, Лозенец, София. Целта на сайта е да предостави информация за нашите услуги и за подбрани имоти, които предлагаме.</p>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">03</span><span>Услуги</span></h2>
+        <p>Чрез сайта представяме услугите си в областта на:</p>
+        <ul>
+          <li>посредничество при покупка, продажба и наем на недвижими имоти</li>
+          <li>кредитно консултиране</li>
+          <li>интериорен дизайн</li>
+          <li>ремонтни дейности и координация на изпълнение</li>
+        </ul>
+        <p>Конкретният обхват и условията по всяка услуга се уточняват индивидуално с клиента преди започване на работа.</p>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">04</span><span>Информация за имоти</span></h2>
+        <p>Информацията за имотите, публикувана на сайта, има информационен характер и може да бъде актуализирана или премахната по всяко време. Цените и характеристиките се уточняват при директна комуникация и могат да бъдат предмет на договаряне.</p>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">05</span><span>Запитвания и комуникация</span></h2>
+        <p>Можете да се свържете с нас чрез посочените контакти на сайта. Информацията, която ни предоставяте при запитване, се използва единствено за обработката му и за последваща комуникация.</p>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">06</span><span>Отговорност</span></h2>
+        <p>Полагаме разумни усилия информацията на сайта да бъде точна и актуална. АК РИЙЛ ЕСТЕЙТ не носи отговорност за евентуални неточности, технически грешки или временна недостъпност на сайта. Това не ограничава отговорността ни към клиентите по индивидуалните договори за услуга.</p>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">07</span><span>Интелектуална собственост</span></h2>
+        <p>Съдържанието на сайта — включително текст, изображения, лого и дизайн — е собственост на АК РИЙЛ ЕСТЕЙТ или се използва с разрешение. Не се допуска копиране, разпространение или употреба с търговска цел без предварително писмено съгласие.</p>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">08</span><span>Промени в условията</span></h2>
+        <p>АК РИЙЛ ЕСТЕЙТ си запазва правото да актуализира тези общи условия. Актуалната версия е достъпна винаги на тази страница.</p>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">09</span><span>Контакти</span></h2>
+        <p>За въпроси относно общите условия можете да се свържете с нас:</p>
+        <div class="legal-contact-block">
+          <div><strong>АК РИЙЛ ЕСТЕЙТ</strong></div>
+          <div>ЕИК: 208779452</div>
+          <div>ул. Димитър Хаджикоцев 15, Лозенец, София</div>
+          <div><a href="tel:+359879684460">+359 87 968 4460</a></div>
+          <div><a href="mailto:office@akrealestatebg.com">office@akrealestatebg.com</a></div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="ak-footer">
+    <div class="ak-footer-head">
+      <a class="ak-footer-logo" href="/">
+        AK <span class="red-sq"></span> Real Estate
+      </a>
+      <span class="ak-footer-rule"></span>
+    </div>
+
+    <div class="ak-footer-grid">
+      <div class="ak-footer-brand">
+        <div class="ak-footer-eyebrow">AK Real Estate</div>
+        <p class="ak-footer-desc">
+          AK Real Estate е бутикова консултантска практика за недвижими имоти, създадена през 2026 г. Работим с внимателно подбрани имоти и клиенти, като съчетаваме посредничество, финансиране, интериорен дизайн и ремонт в един подреден процес.
+        </p>
+      </div>
+      <div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Навигация</div>
+        <ul class="ak-footer-list">
+          <li><a href="/">Начало</a></li>
+          <li><a href="/listings">Обяви</a></li>
+          <li><a href="/services">Услуги</a></li>
+          <li><a href="mailto:office@akrealestatebg.com">Свържи се с нас</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Услуги</div>
+        <ul class="ak-footer-list">
+          <li><a href="/services">Кредитен консултант</a></li>
+          <li><a href="/services">Имотно посредничество</a></li>
+          <li><a href="/services">Интериорен дизайн</a></li>
+          <li><a href="/services">Ремонт от А до Я</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Компания</div>
+        <ul class="ak-footer-list">
+          <li>АК РИЙЛ ЕСТЕЙТ</li>
+          <li>ЕИК: 208779452</li>
+          <li>ул. Димитър Хаджикоцев 15,<br>Лозенец, София</li>
+          <li><a href="tel:+359879684460">+359 87 968 4460</a></li>
+          <li><a href="mailto:office@akrealestatebg.com">office@akrealestatebg.com</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Правна информация</div>
+        <ul class="ak-footer-list">
+          <li><a href="/terms">Общи условия</a></li>
+          <li><a href="/privacy">Политика за поверителност</a></li>
+          <li><a href="/cookies">Политика за бисквитки</a></li>
+          <li><a href="/privacy">Защита на личните данни</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ak-footer-legal">
+      <span>© 2026 AK Real Estate. Всички права запазени.</span>
+      <span class="ak-footer-legal-mark">▪</span>
+      <span>АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452</span>
+      <span class="ak-footer-legal-spacer"></span>
+      <a href="/terms">Общи условия</a>
+      <a href="/privacy">Политика за поверителност</a>
+      <a href="/cookies">Бисквитки</a>
+    </div>
+  </footer>
+</body>
+</html>

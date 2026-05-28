@@ -14,10 +14,10 @@ function Footer() {
     { label: 'Ремонт от А до Я',       href: '/services' },
   ];
   const legalLinks = [
-    { label: 'Общи условия',                 href: '#' },
-    { label: 'Политика за поверителност',    href: '#' },
-    { label: 'Политика за бисквитки',        href: '#' },
-    { label: 'Защита на личните данни',      href: '#' },
+    { label: 'Общи условия',                 href: '/terms' },
+    { label: 'Политика за поверителност',    href: '/privacy' },
+    { label: 'Политика за бисквитки',        href: '/cookies' },
+    { label: 'Защита на личните данни',      href: '/privacy' },
   ];
 
   const linkStyle = {
@@ -119,9 +119,9 @@ function Footer() {
         <span style={{ color: 'var(--ak-crimson)' }}>▪</span>
         <span>АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452</span>
         <span className="r-spacer" style={{ flex: 1 }}></span>
-        <a href="#" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>Общи условия</a>
-        <a href="#" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>Политика за поверителност</a>
-        <a href="#" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>Бисквитки</a>
+        <a href="/terms" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>Общи условия</a>
+        <a href="/privacy" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>Политика за поверителност</a>
+        <a href="/cookies" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>Бисквитки</a>
       </div>
     </footer>
   );
