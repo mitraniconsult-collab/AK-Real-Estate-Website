@@ -541,6 +541,103 @@
     padding: 14px 12px;
   }
 }
+
+/* ─── FOOTER ─── */
+.ak-footer {
+  background: #050505;
+  padding: clamp(80px,8vw,140px) clamp(20px,4vw,64px) 36px;
+  color: var(--fg);
+  border-top: 1px solid var(--hairline);
+}
+.ak-footer-head {
+  display: flex; align-items: center; gap: 32px;
+  margin-bottom: clamp(56px,6vw,96px);
+  padding-bottom: 36px;
+  border-bottom: 1px solid var(--hairline);
+}
+.ak-footer-logo {
+  font-family: var(--font-display);
+  font-size: clamp(20px,2.6vw,32px);
+  letter-spacing: .18em; text-transform: uppercase;
+  text-decoration: none; color: var(--fg);
+  display: flex; align-items: center; gap: 12px;
+  white-space: nowrap;
+}
+.ak-footer-rule {
+  flex: 1; height: 1px;
+  background: var(--hairline);
+}
+.ak-footer-grid {
+  display: grid;
+  grid-template-columns: 1.6fr repeat(4, 1fr);
+  gap: clamp(24px,3vw,56px);
+  margin-bottom: 64px;
+}
+.ak-footer-eyebrow {
+  font-size: 10px; font-weight: 500;
+  letter-spacing: .28em; text-transform: uppercase;
+  color: var(--fg);
+  margin-bottom: 18px;
+}
+.ak-footer-desc {
+  margin: 0; max-width: 360px;
+  color: var(--fg-2);
+  font-size: 14px; line-height: 1.7; font-weight: 300;
+}
+.ak-footer-col-head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 18px;
+  font-size: 10px; font-weight: 500;
+  letter-spacing: .28em; text-transform: uppercase;
+  color: var(--fg);
+}
+.ak-footer-dot {
+  width: 5px; height: 5px;
+  background: var(--ak-crimson);
+  display: inline-block; flex: 0 0 auto;
+}
+.ak-footer-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.ak-footer-list li {
+  color: var(--fg-2);
+  font-size: 13px; font-weight: 300;
+  letter-spacing: .02em; line-height: 1.5;
+}
+.ak-footer-list a {
+  color: var(--fg-2);
+  text-decoration: none;
+  transition: color .2s ease;
+}
+.ak-footer-list a:hover { color: var(--ak-crimson); }
+.ak-footer-legal {
+  display: flex; align-items: center; gap: 18px;
+  padding-top: 24px;
+  border-top: 1px solid var(--hairline);
+  flex-wrap: wrap;
+  font-size: 10px; font-weight: 500;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--fg-3);
+}
+.ak-footer-legal a {
+  color: var(--fg-3); text-decoration: none;
+  transition: color .2s ease;
+}
+.ak-footer-legal a:hover { color: var(--ak-crimson); }
+.ak-footer-legal-mark { color: var(--ak-crimson); }
+.ak-footer-legal-spacer { flex: 1; }
+@media (max-width: 980px) {
+  .ak-footer-grid { grid-template-columns: 1fr 1fr; }
+  .ak-footer-brand { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .ak-footer { padding-top: clamp(56px,12vw,80px); }
+  .ak-footer-rule { display: none; }
+  .ak-footer-grid { grid-template-columns: 1fr; gap: 36px; }
+  .ak-footer-legal { font-size: 9px; gap: 14px; }
+  .ak-footer-legal-spacer { display: none; }
+}
   </style>
 </head>
 
@@ -594,6 +691,75 @@
       <div class="loading">Loading listing…</div>
     </main>
   </div>
+
+  <footer class="ak-footer">
+    <div class="ak-footer-head">
+      <a class="ak-footer-logo" href="/">
+        AK <span class="red-square"></span> Real Estate
+      </a>
+      <span class="ak-footer-rule"></span>
+    </div>
+
+    <div class="ak-footer-grid">
+      <div class="ak-footer-brand">
+        <div class="ak-footer-eyebrow">AK Real Estate</div>
+        <p class="ak-footer-desc">
+          AK Real Estate е бутикова консултантска практика за недвижими имоти, създадена през 2026 г. Работим с внимателно подбрани имоти и клиенти, като съчетаваме посредничество, финансиране, интериорен дизайн и ремонт в един подреден процес.
+        </p>
+      </div>
+
+      <div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Навигация</div>
+        <ul class="ak-footer-list">
+          <li><a href="/">Начало</a></li>
+          <li><a href="/listings">Обяви</a></li>
+          <li><a href="/services">Услуги</a></li>
+          <li><a href="mailto:office@akrealestatebg.com">Свържи се с нас</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Услуги</div>
+        <ul class="ak-footer-list">
+          <li><a href="/services">Кредитен консултант</a></li>
+          <li><a href="/services">Имотно посредничество</a></li>
+          <li><a href="/services">Интериорен дизайн</a></li>
+          <li><a href="/services">Ремонт от А до Я</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Компания</div>
+        <ul class="ak-footer-list">
+          <li>АК РИЙЛ ЕСТЕЙТ</li>
+          <li>ЕИК: 208779452</li>
+          <li>ул. Димитър Хаджикоцев 15,<br>Лозенец, София</li>
+          <li><a href="tel:+359879684460">+359 87 968 4460</a></li>
+          <li><a href="mailto:office@akrealestatebg.com">office@akrealestatebg.com</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Правна информация</div>
+        <ul class="ak-footer-list">
+          <li><a href="#">Общи условия</a></li>
+          <li><a href="#">Политика за поверителност</a></li>
+          <li><a href="#">Политика за бисквитки</a></li>
+          <li><a href="#">Защита на личните данни</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ak-footer-legal">
+      <span>© 2026 AK Real Estate. Всички права запазени.</span>
+      <span class="ak-footer-legal-mark">▪</span>
+      <span>АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452</span>
+      <span class="ak-footer-legal-spacer"></span>
+      <a href="#">Общи условия</a>
+      <a href="#">Политика за поверителност</a>
+      <a href="#">Бисквитки</a>
+    </div>
+  </footer>
 
   <script>
     const SUPABASE_URL = "https://ylyilqwoiyirodigshgd.supabase.co";
