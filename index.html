@@ -178,15 +178,18 @@
     const { Nav, Hero, Listings, Concierge, Editorial, Journal, Contact, Footer } = window;
     function App() {
       const [active, setActive] = React.useState('listings');
-      const [lang, setLang] = React.useState('bg');
+      const [lang, setLang] = React.useState(
+        () => (typeof localStorage !== 'undefined' && localStorage.getItem('ak-lang')) || 'bg'
+      );
+      const handleLang = (l) => { setLang(l); try { localStorage.setItem('ak-lang', l); } catch(e) {} };
       React.useEffect(() => { window.AK_LANG = lang; }, [lang]);
       return (
         <>
-          <Nav active={active} onNav={setActive} lang={lang} onLang={setLang} />
+          <Nav active={active} onNav={setActive} lang={lang} onLang={handleLang} />
           <main>
             <Hero lang={lang} />
             <Listings featuredOnly={true} />
-            <Concierge />
+            <Concierge lang={lang} />
             <Editorial />
             <Journal />
             <Contact />

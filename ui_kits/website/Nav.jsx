@@ -2,7 +2,7 @@
 // On phone, the link list collapses into a hamburger that opens a full-bleed
 // dark sheet. On desktop the original horizontal layout shows.
 
-function Nav({ active = 'listings', onNav }) {
+function Nav({ active = 'listings', onNav, onLang }) {
   const [scrolled, setScrolled] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(
@@ -31,7 +31,7 @@ function Nav({ active = 'listings', onNav }) {
   }, [open]);
 
   const [lang, setLang] = React.useState(() => (typeof localStorage !== 'undefined' && localStorage.getItem('ak-lang')) || 'bg');
-  const toggleLang = (l) => { setLang(l); if (typeof localStorage !== 'undefined') localStorage.setItem('ak-lang', l); };
+  const toggleLang = (l) => { setLang(l); if (typeof localStorage !== 'undefined') localStorage.setItem('ak-lang', l); onLang && onLang(l); };
 
   const links = [
     { id: 'listings',  label: 'Обяви',  href: '/listings' },
@@ -62,37 +62,37 @@ function Nav({ active = 'listings', onNav }) {
 
         {!isMobile && (
           <div style={{
-            marginLeft: 'auto', display: 'flex', gap: 'clamp(18px, 2.4vw, 36px)', alignItems: 'center',
-            flexShrink: 0,
+            marginLeft: 'auto', display: 'flex', alignItems: 'center',
+            gap: 'clamp(18px, 2.4vw, 32px)', flexShrink: 0,
           }}>
             {links.filter(l => !l.cta).map(l => (
               <NavLink key={l.id} active={active === l.id} href={l.href} onClick={() => onPick(l.id)}>{l.label}</NavLink>
             ))}
-          </div>
-        )}
 
-        {!isMobile && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {['bg','en'].map(l => (
-              <React.Fragment key={l}>
-                {l === 'en' && <span style={{ color: 'var(--fg-3)', fontSize: 10 }}>/</span>}
-                <button onClick={() => toggleLang(l)} style={{
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
-                  letterSpacing: '0.22em', textTransform: 'uppercase',
-                  color: lang === l ? 'var(--fg)' : 'var(--fg-3)', padding: '2px 0',
-                  transition: 'color .2s',
-                }}>{l.toUpperCase()}</button>
-              </React.Fragment>
-            ))}
-          </div>
-        )}
+            {/* BG/EN language switch */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              {['bg','en'].map(l => (
+                <React.Fragment key={l}>
+                  {l === 'en' && <span style={{ color: 'var(--fg-3)', fontSize: 10 }}>/</span>}
+                  <button onClick={() => toggleLang(l)} style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
+                    letterSpacing: '0.22em', textTransform: 'uppercase',
+                    color: lang === l ? 'var(--fg)' : 'var(--fg-3)', padding: '2px 0',
+                    transition: 'color .2s',
+                  }}>{l.toUpperCase()}</button>
+                </React.Fragment>
+              ))}
+            </div>
 
-        {!isMobile && (
-          <Btn variant="primary" as="a" href="mailto:office@akrealestatebg.com"
-            style={{ padding: '11px 18px', fontSize: 10, textDecoration: 'none', flexShrink: 0 }}>
-            Свържи се с нас
-          </Btn>
+            {/* thin hairline separates lang switch from CTA */}
+            <span style={{ width: 1, height: 16, background: 'var(--fg-3)', opacity: .28, flexShrink: 0 }}></span>
+
+            <Btn variant="primary" as="a" href="mailto:office@akrealestatebg.com"
+              style={{ padding: '11px 18px', fontSize: 10, textDecoration: 'none', flexShrink: 0 }}>
+              Свържи се с нас
+            </Btn>
+          </div>
         )}
 
         {isMobile && (

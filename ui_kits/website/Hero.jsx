@@ -66,7 +66,9 @@ function Hero({ lang = 'bg' }) {
 
         {/* headline block, right-justified */}
         <div className="ak-rise r-text-left-mobile" style={{ textAlign: 'right', maxWidth: 960, justifySelf: 'end' }}>
-          <Eyebrow style={{ marginBottom: 28 }}>Since 2014 · Los Angeles · Off-Market</Eyebrow>
+          <Eyebrow style={{ marginBottom: 28 }}>
+            {lang === 'en' ? 'Sofia · Bulgaria · Boutique real estate agency' : 'София · България · Бутикова агенция за недвижими имоти'}
+          </Eyebrow>
           <h1 style={{
             margin: 0,
             fontFamily: 'var(--font-display)', fontWeight: 200,

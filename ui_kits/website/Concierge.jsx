@@ -1,6 +1,4 @@
-// Concierge — dark cinematic section, three-service grid + supporting image.
-
-const CONCIERGE_IMG = "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=2000&q=80&auto=format&fit=crop";
+// Concierge — dark cinematic section, four-service grid + editorial panel.
 
 const SERVICES = [
   { n: '01', title: 'Кредитен консултант',    body: 'Финансово насочване и съдействие при избор на подходящо кредитиране.' },
@@ -9,7 +7,7 @@ const SERVICES = [
   { n: '04', title: 'Ремонт от А до Я',        body: 'Организация и управление на ремонтния процес от първия оглед до финалното предаване.' },
 ];
 
-function Concierge() {
+function Concierge({ lang = 'bg' }) {
   return (
     <section style={{ background: 'var(--ak-black)', color: 'var(--fg)',
       padding: 'var(--section-y) var(--gutter)', position: 'relative', overflow: 'hidden' }}>
@@ -42,7 +40,10 @@ function Concierge() {
               <h2 style={{ margin: '24px 0 0', fontFamily: 'var(--font-display)', fontWeight: 200,
                 fontSize: 'clamp(40px, 5vw, 92px)', lineHeight: 0.96,
                 letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                Four services.<br/>One <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>handshake.</em>
+                {lang === 'en'
+                  ? <>Four services.<br/>One <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>handshake.</em></>
+                  : <>Четири услуги.<br/>Един <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>процес.</em></>
+                }
               </h2>
             </div>
             <p style={{ margin: '70px 0 0', maxWidth: 460, alignSelf: 'end',
@@ -58,18 +59,40 @@ function Concierge() {
               gap: 'clamp(24px, 3vw, 56px) clamp(24px, 3vw, 48px)' }}>
               {SERVICES.map(s => <ServiceTile key={s.n} {...s} />)}
             </div>
-            <div style={{ position: 'relative', minHeight: 480, borderRadius: 4, overflow: 'hidden' }}>
-              <img src={CONCIERGE_IMG} alt=""
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
-                         objectFit: 'cover', filter: 'saturate(.85) contrast(1.06)' }} />
-              <div style={{ position: 'absolute', inset: 0,
-                background: 'linear-gradient(180deg, rgba(0,0,0,.15) 0%, rgba(0,0,0,.65) 100%)' }}></div>
-              <div style={{ position: 'absolute', left: 24, bottom: 24 }}>
-                <Eyebrow style={{ marginBottom: 14 }}>A Private Showing</Eyebrow>
+            {/* Editorial placeholder panel — local assets only, no hotlinks */}
+            <div style={{
+              position: 'relative', minHeight: 480, overflow: 'hidden',
+              background: 'radial-gradient(circle at 28% 28%, rgba(176,24,28,.18), transparent 58%), linear-gradient(160deg, #1c1c1c 0%, #080808 100%)',
+              border: '1px solid var(--hairline-light)',
+            }}>
+              {/* grain overlay */}
+              <div style={{
+                position: 'absolute', inset: 0, pointerEvents: 'none',
+                backgroundImage: "url('assets/grain.svg')", backgroundSize: '6px 6px',
+                mixBlendMode: 'overlay', opacity: .35,
+              }}></div>
+              {/* decorative ring */}
+              <div style={{
+                position: 'absolute', right: '-14%', bottom: '-20%',
+                width: '80%', height: '80%',
+                backgroundImage: "url('assets/ring.svg')", backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center', backgroundSize: 'contain', opacity: .10,
+              }}></div>
+              {/* monogram */}
+              <img src="assets/logo-monogram.svg" alt=""
+                style={{ position: 'absolute', top: 28, left: 28, width: 42, height: 'auto', opacity: .48 }} />
+              {/* caption */}
+              <div style={{ position: 'absolute', left: 24, bottom: 24, right: 24 }}>
+                <Eyebrow style={{ marginBottom: 14 }}>
+                  {lang === 'en' ? 'AK · Services' : 'AK · Услуги'}
+                </Eyebrow>
                 <div style={{ fontFamily: 'var(--font-display)', fontWeight: 200,
                   fontSize: 28, letterSpacing: '0.08em', textTransform: 'uppercase',
                   color: '#fff', lineHeight: 1 }}>
-                  By appointment.<br/>Never in <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>groups.</em>
+                  {lang === 'en'
+                    ? <>Personal.<br/>Not <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>delegated.</em></>
+                    : <>Лично.<br/>Не <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>прехвърлено.</em></>
+                  }
                 </div>
               </div>
             </div>
