@@ -2,12 +2,17 @@
 
 const CONTACT_IMG = "https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=2200&q=80&auto=format&fit=crop";
 
-function Contact() {
+function Contact({ lang = 'bg' }) {
+  const isBg = lang !== 'en';
   const [sent, setSent] = React.useState(false);
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
-  const [interest, setInterest] = React.useState('Acquisition');
+  const [interest, setInterest] = React.useState(isBg ? 'Покупка на имот' : 'Buying property');
   const [message, setMessage] = React.useState('');
+
+  const interestOptions = isBg
+    ? ['Покупка на имот', 'Продажба на имот', 'Кредитен консултант', 'Интериорен дизайн', 'Ремонт от А до Я']
+    : ['Buying property', 'Selling property', 'Credit consultation', 'Interior design', 'Renovation'];
 
   return (
     <section style={{ position: 'relative', background: 'var(--ak-black)', color: 'var(--fg)',
@@ -26,23 +31,30 @@ function Contact() {
         alignItems: 'start' }}>
         {/* left — headline */}
         <div>
-          <Eyebrow style={{ marginBottom: 28 }}>Begin a Conversation</Eyebrow>
+          <Eyebrow style={{ marginBottom: 28 }}>
+            {isBg ? 'Свържете се с нас' : 'Begin a Conversation'}
+          </Eyebrow>
           <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 200,
             fontSize: 'clamp(48px, 7vw, 140px)', lineHeight: 0.92,
             letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-            Quietly.<br/>By <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>introduction.</em>
+            {isBg
+              ? <>Започнете<br/>с <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>разговор.</em></>
+              : <>Quietly.<br/>By <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>introduction.</em></>
+            }
           </h2>
           <p style={{ marginTop: 32, maxWidth: 460, fontSize: 16, lineHeight: 1.7,
             fontWeight: 300, color: 'var(--fg-2)' }}>
-            We respond to every message within one business day. No assistants, no automations.
-            For press, please write to <span style={{ color: 'var(--fg)' }}>press@ak.realestate</span>.
+            {isBg
+              ? 'Разкажете ни какъв имот или проект планирате. Ще ви върнем ясен първи отговор и следваща стъпка.'
+              : 'We respond to every message within one business day. No assistants, no automations.'
+            }
           </p>
 
           <div style={{ marginTop: 56, display: 'flex', flexDirection: 'column', gap: 22 }}>
-            <ContactLine label="Los Angeles"   value="9000 Sunset Boulevard, West Hollywood, CA 90069" />
-            <ContactLine label="Montecito"     value="By appointment — 805 555 0142" />
-            <ContactLine label="Direct"        value="a.kane@ak.realestate" />
-            <ContactLine label="Press"         value="press@ak.realestate" />
+            <ContactLine label={isBg ? 'София'    : 'Sofia'}  value="ул. Димитър Хаджикоцев 15, Лозенец" />
+            <ContactLine label={isBg ? 'Телефон'  : 'Phone'}  value="+359 87 968 4460" />
+            <ContactLine label={isBg ? 'Имейл'    : 'Email'}  value="office@akrealestatebg.com" />
+            <ContactLine label="ЕИК" value="208779452" />
           </div>
         </div>
 
@@ -55,18 +67,20 @@ function Contact() {
             <RedSquare />
             <span style={{ fontFamily: 'var(--font-display)', fontWeight: 300,
               fontSize: 22, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
-              Request Access
+              {isBg ? 'Запитване' : 'Request Access'}
             </span>
           </div>
 
           {!sent && <>
-            <Field label="Full name" value={name} onChange={setName} placeholder="Your name" />
-            <Field label="Email" value={email} onChange={setEmail} placeholder="you@private.estate" />
+            <Field label={isBg ? 'Три имена' : 'Full name'} value={name} onChange={setName}
+              placeholder={isBg ? 'Вашето име' : 'Your name'} />
+            <Field label={isBg ? 'Имейл' : 'Email'} value={email} onChange={setEmail}
+              placeholder="office@example.com" />
 
             <div>
-              <label style={fieldLabelStyle}>Area of Interest</label>
+              <label style={fieldLabelStyle}>{isBg ? 'Тема' : 'Area of Interest'}</label>
               <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {['Acquisition', 'Discreet Sale', 'Concierge', 'Press'].map(opt => (
+                {interestOptions.map(opt => (
                   <button key={opt} type="button" onClick={() => setInterest(opt)}
                     style={{
                       background: interest === opt ? 'var(--ak-crimson)' : 'transparent',
@@ -81,14 +95,19 @@ function Contact() {
               </div>
             </div>
 
-            <Field label="A note" value={message} onChange={setMessage}
-              placeholder="A quiet street, a stone wall, a garden." textarea />
+            <Field label={isBg ? 'Съобщение' : 'A note'} value={message} onChange={setMessage}
+              placeholder={isBg
+                ? 'Разкажете ни за вашия проект или запитване...'
+                : 'A quiet street, a stone wall, a garden.'
+              } textarea />
 
             <div className="r-flex-wrap" style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 8 }}>
-              <Btn variant="primary" as="button" type="submit">Send Request</Btn>
+              <Btn variant="primary" as="button" type="submit">
+                {isBg ? 'Изпрати' : 'Send Request'}
+              </Btn>
               <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
                 textTransform: 'uppercase', color: 'var(--fg-2)' }}>
-                ▪ Responded to within one business day
+                ▪ {isBg ? 'Отговаряме в работния ден' : 'Responded to within one business day'}
               </span>
             </div>
           </>}
@@ -98,10 +117,13 @@ function Contact() {
               <RedSquare style={{ display: 'block', margin: '0 auto 18px' }} />
               <div style={{ fontFamily: 'var(--font-display)', fontWeight: 300,
                 fontSize: 32, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                Quietly received.
+                {isBg ? 'Получено.' : 'Quietly received.'}
               </div>
               <p style={{ marginTop: 16, fontSize: 14, color: 'var(--fg-2)' }}>
-                A principal will be in touch within one business day, {name || 'friend'}.
+                {isBg
+                  ? `Ще се свържем с теб скоро${name ? ', ' + name : ''}.`
+                  : `A principal will be in touch within one business day${name ? ', ' + name : ', friend'}.`
+                }
               </p>
             </div>
           )}

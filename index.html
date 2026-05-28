@@ -170,12 +170,11 @@
   <script type="text/babel" src="ui_kits/website/Listings.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Concierge.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Editorial.jsx"></script>
-  <script type="text/babel" src="ui_kits/website/Journal.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Contact.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Footer.jsx"></script>
 
   <script type="text/babel">
-    const { Nav, Hero, Listings, Concierge, Editorial, Journal, Contact, Footer } = window;
+    const { Nav, Hero, Listings, Concierge, Editorial, Contact, Footer } = window;
     function App() {
       const [active, setActive] = React.useState('listings');
       const [lang, setLang] = React.useState(
@@ -188,13 +187,12 @@
           <Nav active={active} onNav={setActive} lang={lang} onLang={handleLang} />
           <main>
             <Hero lang={lang} />
-            <Listings featuredOnly={true} />
+            <Listings featuredOnly={true} lang={lang} />
             <Concierge lang={lang} />
-            <Editorial />
-            <Journal />
-            <Contact />
+            <Editorial lang={lang} />
+            <Contact lang={lang} />
           </main>
-          <Footer />
+          <Footer lang={lang} />
         </>
       );
     }

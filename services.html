@@ -734,6 +734,18 @@
       }
     }
 
+    .lang-switch { display: flex; align-items: center; gap: 4px; }
+    .lang-btn {
+      background: none; border: none; cursor: pointer;
+      font-family: var(--font-body); font-size: 10px; font-weight: 500;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: var(--fg-3); padding: 2px 0;
+      transition: color .2s var(--ease);
+    }
+    .lang-btn.active { color: var(--fg); }
+    .lang-btn:hover { color: var(--fg-2); }
+    .lang-sep { color: var(--fg-3); font-size: 10px; letter-spacing: 0; }
+
     @media (max-width: 768px) {
       .header-nav { display: none; }
 
@@ -764,9 +776,14 @@
       AK <span class="red-sq"></span> Real Estate
     </a>
     <nav class="header-nav">
-      <a href="/listings">Обяви</a>
-      <a href="/services" class="active">Услуги</a>
-      <a href="mailto:office@akrealestatebg.com" class="header-cta">Свържи се с нас</a>
+      <a href="/listings" data-t="nav_listings">Обяви</a>
+      <a href="/services" class="active" data-t="nav_services">Услуги</a>
+      <div class="lang-switch">
+        <button class="lang-btn active" data-lang="bg" type="button">BG</button>
+        <span class="lang-sep">/</span>
+        <button class="lang-btn" data-lang="en" type="button">EN</button>
+      </div>
+      <a href="mailto:office@akrealestatebg.com" class="header-cta" data-t="nav_contact">Свържи се с нас</a>
     </nav>
   </header>
 
@@ -1122,5 +1139,346 @@
       <a href="/cookies">Бисквитки</a>
     </div>
   </footer>
+
+  <script>
+  (function() {
+    var T = {
+      bg: {
+        nav_listings: 'Обяви', nav_services: 'Услуги', nav_contact: 'Свържи се с нас',
+        hero_eyebrow: 'Services', hero_title: 'Услуги',
+        hero_lead: 'Един партньор за целия процес — от финансиране и избор на имот до интериор, ремонт и финално предаване.',
+        hero_sub: 'Работим лично, подредено и с внимание към детайла — за да знаете какво следва на всяка стъпка.',
+        intro_label: 'Подход',
+        intro_title: 'Цялостен подход към имота',
+        intro_text: 'AK Real Estate свързва ключовите етапи около един имот в последователен процес. Помагаме при ориентация, избор, сделка, дизайн и реализация, така че клиентът да не координира всичко сам.',
+        services_label: 'Какво предлагаме',
+        s1_num: '01', s1_title: 'Кредитен консултант',
+        s1_desc: 'Помагаме да разберете реалните си възможности още преди избора на имот.',
+        s1_how: 'Как помагаме',
+        s1_b1: 'предварителна ориентация за бюджет и месечна вноска',
+        s1_b2: 'сравнение на кредитни предложения',
+        s1_b3: 'подготовка преди кандидатстване',
+        s1_b4: 'координация с банкови партньори при нужда',
+        s1_for_label: 'Подходящо за',
+        s1_for: 'Купувачи, които искат яснота преди да започнат огледи.',
+        s2_num: '02', s2_title: 'Имотно посредничество',
+        s2_desc: 'Съдействаме при намиране, покупка и продажба на недвижим имот с ясен и подреден процес.',
+        s2_how: 'Как помагаме',
+        s2_b1: 'уточняване на критерии и приоритети',
+        s2_b2: 'подбор на подходящи предложения',
+        s2_b3: 'организация на огледи',
+        s2_b4: 'съдействие при преговори и следващи стъпки до сделка',
+        s2_for_label: 'Подходящо за',
+        s2_for: 'Клиенти, които търсят правилния имот, а не просто следващата обява.',
+        s3_num: '03', s3_title: 'Интериорен дизайн',
+        s3_desc: 'Превръщаме имота в завършено пространство с ясна концепция, функционалност и стил.',
+        s3_how: 'Как помагаме',
+        s3_b1: 'функционално разпределение',
+        s3_b2: 'цветова и материална концепция',
+        s3_b3: 'избор на мебели, осветление и детайли',
+        s3_b4: 'визуална посока и координация с изпълнението',
+        s3_for_label: 'Подходящо за',
+        s3_for: 'Нов дом, инвестиционен имот или обновяване на съществуващо пространство.',
+        s4_num: '04', s4_title: 'Ремонт от А до Я',
+        s4_desc: 'Организираме процеса от първоначален план до финално предаване, с контрол върху срокове, бюджет и изпълнение.',
+        s4_how: 'Как помагаме',
+        s4_b1: 'планиране на обхват и бюджет',
+        s4_b2: 'координация на майстори и доставчици',
+        s4_b3: 'избор и доставка на материали',
+        s4_b4: 'проследяване на изпълнението и финален оглед',
+        s4_for_label: 'Подходящо за',
+        s4_for: 'Клиенти, които искат резултат без ежедневна координация на всеки детайл.',
+        ed_label: 'Един процес',
+        ed_tag: 'AK · Услуги',
+        ed_title: 'От идея до завършен дом',
+        ed_p1: 'Най-добрият резултат идва, когато изборът на имот, бюджетът, дизайнът и изпълнението се мислят заедно. Така решенията са по-точни, процесът е по-спокоен, а финалът — по-близо до първоначалната визия.',
+        ed_p2: 'Това е причината да предлагаме услугите си като свързани етапи, а не като отделни договори.',
+        proc_label: 'Как работим',
+        p1_num: '01', p1_title: 'Консултация', p1_desc: 'Разбираме целта, бюджета и сроковете.',
+        p2_num: '02', p2_title: 'План',         p2_desc: 'Подреждаме стъпките и приоритетите.',
+        p3_num: '03', p3_title: 'Изпълнение',   p3_desc: 'Координираме хора, огледи, оферти и действия.',
+        p4_num: '04', p4_title: 'Финално предаване', p4_desc: 'Преглеждаме резултата и затваряме процеса.',
+        faq_label: 'Често задавани',
+        faq_head: 'Въпроси и отговори',
+        q1: 'Мога ли да използвам само една услуга?',
+        a1: 'Да. Всяка услуга може да се ползва самостоятелно — например само кредитен консултант или само интериорен дизайн. Свързваме етапите само ако клиентът има полза от това.',
+        q2: 'Работите ли с имоти извън София?',
+        a2: 'Да. Основно работим в София и района, но при имоти извън града преценяваме ангажимента според локацията и обхвата на проекта.',
+        q3: 'Може ли да съдействате преди да съм избрал имот?',
+        a3: 'Точно това е най-добрият момент. Помагаме с финансовата ориентация и критериите за избор, преди да започнат огледите — така решенията са по-спокойни.',
+        q4: 'Поемате ли целия ремонт?',
+        a4: 'Да. Поемаме планиране, координация на майстори, избор на материали и проследяване на изпълнението до финалния оглед. Клиентът остава информиран, без да координира всеки детайл лично.',
+        q5: 'Как започва процесът?',
+        a5: 'С кратък разговор. Разказвате какъв имот или проект планирате, ние връщаме ясен първи отговор и предлагаме следваща стъпка — без ангажимент.',
+        cta_title: 'Готови ли сте да започнем?',
+        cta_text: 'Разкажете ни какъв имот или проект планирате. Ще ви върнем ясен първи отговор и следваща стъпка.',
+        cta_btn: 'Свържете се с нас',
+        footer_nav: 'Навигация', footer_services: 'Услуги', footer_company: 'Компания', footer_legal: 'Правна информация',
+        fn_home: 'Начало', fn_listings: 'Обяви', fn_services: 'Услуги', fn_contact: 'Свържи се с нас',
+        fs1: 'Кредитен консултант', fs2: 'Имотно посредничество', fs3: 'Интериорен дизайн', fs4: 'Ремонт от А до Я',
+        fl_terms: 'Общи условия', fl_privacy: 'Политика за поверителност', fl_cookies: 'Политика за бисквитки', fl_data: 'Защита на личните данни',
+        fl_strip_terms: 'Общи условия', fl_strip_privacy: 'Политика за поверителност', fl_strip_cookies: 'Бисквитки',
+        copyright: '© 2026 AK Real Estate. Всички права запазени.',
+        footer_desc: 'AK Real Estate е бутикова агенция за недвижими имоти, създадена през 2026 г. Работим с внимателно подбрани имоти и клиенти, като съчетаваме посредничество, финансиране, интериорен дизайн и ремонт в един подреден процес.',
+      },
+      en: {
+        nav_listings: 'Listings', nav_services: 'Services', nav_contact: 'Contact',
+        hero_eyebrow: 'Services', hero_title: 'Services',
+        hero_lead: 'One partner for the whole process — from financing and property selection to interior design, renovation and final handover.',
+        hero_sub: 'We work personally, in an orderly fashion and with attention to detail — so you know what comes next at every step.',
+        intro_label: 'Approach',
+        intro_title: 'A holistic approach to property',
+        intro_text: 'AK Real Estate connects the key stages around a property into a sequential process. We help with orientation, selection, transaction, design and execution, so the client does not have to coordinate everything on their own.',
+        services_label: 'What we offer',
+        s1_num: '01', s1_title: 'Credit Consulting',
+        s1_desc: 'We help you understand your real options before choosing a property.',
+        s1_how: 'How we help',
+        s1_b1: 'initial budget and monthly payment orientation',
+        s1_b2: 'comparison of loan offers',
+        s1_b3: 'preparation before application',
+        s1_b4: 'coordination with banking partners if needed',
+        s1_for_label: 'Best suited for',
+        s1_for: 'Buyers who want clarity before starting viewings.',
+        s2_num: '02', s2_title: 'Real Estate Agency',
+        s2_desc: 'We assist in finding, buying and selling property with a clear, orderly process.',
+        s2_how: 'How we help',
+        s2_b1: 'clarifying criteria and priorities',
+        s2_b2: 'selection of suitable properties',
+        s2_b3: 'organisation of viewings',
+        s2_b4: 'support during negotiations and next steps to deal',
+        s2_for_label: 'Best suited for',
+        s2_for: 'Clients looking for the right property, not just the next listing.',
+        s3_num: '03', s3_title: 'Interior Design',
+        s3_desc: 'We turn the property into a finished space with a clear concept, functionality and style.',
+        s3_how: 'How we help',
+        s3_b1: 'functional layout',
+        s3_b2: 'colour and material concept',
+        s3_b3: 'selection of furniture, lighting and details',
+        s3_b4: 'visual direction and coordination with execution',
+        s3_for_label: 'Best suited for',
+        s3_for: 'A new home, investment property or renovation of an existing space.',
+        s4_num: '04', s4_title: 'Full Renovation',
+        s4_desc: 'We organise the process from the initial plan to final handover, with control over deadlines, budget and execution.',
+        s4_how: 'How we help',
+        s4_b1: 'scope and budget planning',
+        s4_b2: 'coordination of contractors and suppliers',
+        s4_b3: 'selection and delivery of materials',
+        s4_b4: 'monitoring execution and final inspection',
+        s4_for_label: 'Best suited for',
+        s4_for: 'Clients who want results without daily coordination of every detail.',
+        ed_label: 'One process',
+        ed_tag: 'AK · Services',
+        ed_title: 'From idea to a finished home',
+        ed_p1: 'The best result comes when property selection, budget, design and execution are considered together. This makes decisions more precise, the process calmer, and the outcome closer to the original vision.',
+        ed_p2: 'That is why we offer our services as connected stages, not as separate contracts.',
+        proc_label: 'How we work',
+        p1_num: '01', p1_title: 'Consultation', p1_desc: 'We understand the goal, budget and timeline.',
+        p2_num: '02', p2_title: 'Plan',          p2_desc: 'We arrange the steps and priorities.',
+        p3_num: '03', p3_title: 'Execution',     p3_desc: 'We coordinate people, viewings, offers and actions.',
+        p4_num: '04', p4_title: 'Final handover', p4_desc: 'We review the outcome and close the process.',
+        faq_label: 'Frequently asked',
+        faq_head: 'Questions & Answers',
+        q1: 'Can I use just one service?',
+        a1: 'Yes. Each service can be used independently — for example, just credit consulting or just interior design. We connect the stages only when the client benefits from it.',
+        q2: 'Do you work with properties outside Sofia?',
+        a2: 'Yes. We primarily work in Sofia and the surrounding area, but for properties outside the city we assess the commitment based on location and project scope.',
+        q3: 'Can you assist before I have chosen a property?',
+        a3: 'That is the best moment. We help with financial orientation and selection criteria before viewings begin — so decisions are more informed.',
+        q4: 'Do you manage the entire renovation?',
+        a4: 'Yes. We handle planning, contractor coordination, material selection and monitoring execution through to the final inspection. The client stays informed without personally coordinating every detail.',
+        q5: 'How does the process begin?',
+        a5: 'With a short conversation. You tell us what property or project you are planning, we return a clear first response and propose a next step — no commitment required.',
+        cta_title: 'Ready to get started?',
+        cta_text: 'Tell us what property or project you are planning. We will send you a clear first response and next step.',
+        cta_btn: 'Get in Touch',
+        footer_nav: 'Navigation', footer_services: 'Services', footer_company: 'Company', footer_legal: 'Legal',
+        fn_home: 'Home', fn_listings: 'Listings', fn_services: 'Services', fn_contact: 'Contact',
+        fs1: 'Credit Consulting', fs2: 'Real Estate Agency', fs3: 'Interior Design', fs4: 'Full Renovation',
+        fl_terms: 'Terms of Use', fl_privacy: 'Privacy Policy', fl_cookies: 'Cookie Policy', fl_data: 'Data Protection',
+        fl_strip_terms: 'Terms', fl_strip_privacy: 'Privacy', fl_strip_cookies: 'Cookies',
+        copyright: '© 2026 AK Real Estate. All rights reserved.',
+        footer_desc: 'AK Real Estate is a boutique real estate agency founded in 2026. We work with carefully selected properties and clients, combining brokerage, financing, interior design and renovation in one clear process.',
+      }
+    };
+
+    function set(sel, key, html) {
+      var el = document.querySelector(sel);
+      if (!el) return;
+      var val = T[window._svcLang][key] || T.bg[key] || '';
+      if (html) el.innerHTML = val; else el.textContent = val;
+    }
+    function setText(el, val) { if (el) el.textContent = val; }
+    function setAll(sel, vals) {
+      var els = document.querySelectorAll(sel);
+      vals.forEach(function(v, i) { if (els[i]) els[i].textContent = v; });
+    }
+
+    function applyLang(l) {
+      window._svcLang = l;
+      var D = T[l] || T.bg;
+      // data-t fallback
+      document.querySelectorAll('[data-t]').forEach(function(el) {
+        el.textContent = D[el.dataset.t] || T.bg[el.dataset.t] || el.dataset.t;
+      });
+      // Hero
+      setText(document.querySelector('.hero h1'), D.hero_title);
+      var heroStrong = document.querySelector('.hero-sub strong');
+      if (heroStrong) heroStrong.textContent = D.hero_lead;
+      var heroSub = document.querySelector('.hero-sub');
+      if (heroSub) {
+        var tn = Array.from(heroSub.childNodes).find(function(n){ return n.nodeType === 3 && n.textContent.trim(); });
+        if (tn) tn.textContent = ' ' + D.hero_sub;
+      }
+      // Intro
+      var introLabel = document.querySelector('.intro-section .intro-label');
+      if (introLabel) {
+        var sq = introLabel.querySelector('.red-sq');
+        introLabel.textContent = '';
+        if (sq) introLabel.appendChild(sq);
+        introLabel.appendChild(document.createTextNode(' ' + D.intro_label));
+      }
+      setText(document.querySelector('.intro-title'), D.intro_title);
+      setText(document.querySelector('.intro-text'), D.intro_text);
+      // Services section label
+      var svcLabel = document.querySelector('.services-section .section-label');
+      if (svcLabel) {
+        var sq2 = svcLabel.querySelector('.red-sq');
+        svcLabel.textContent = '';
+        if (sq2) svcLabel.appendChild(sq2);
+        svcLabel.appendChild(document.createTextNode(' ' + D.services_label));
+      }
+      // Service cards
+      var cards = document.querySelectorAll('.service-card');
+      [['s1','s2','s3','s4']].flat().forEach(function(prefix, i) {
+        var card = cards[i];
+        if (!card) return;
+        var numEl = card.querySelector('.service-num');
+        var titleEl = card.querySelector('.service-title');
+        var descEl = card.querySelector('.service-desc');
+        var howLabel = card.querySelector('.service-bullets-label');
+        var bullets = card.querySelectorAll('.service-bullets li');
+        var forEl = card.querySelector('.service-suitable');
+        if (numEl) numEl.textContent = D[prefix + '_num'];
+        if (titleEl) titleEl.textContent = D[prefix + '_title'];
+        if (descEl) descEl.textContent = D[prefix + '_desc'];
+        if (howLabel) howLabel.textContent = D[prefix + '_how'];
+        [1,2,3,4].forEach(function(n, j) { if (bullets[j]) bullets[j].textContent = D[prefix + '_b' + n]; });
+        if (forEl) {
+          var forStrong = forEl.querySelector('strong');
+          if (forStrong) forStrong.textContent = D[prefix + '_for_label'];
+          var forTn = Array.from(forEl.childNodes).find(function(n){ return n.nodeType === 3 && n.textContent.trim(); });
+          if (forTn) forTn.textContent = D[prefix + '_for'];
+        }
+      });
+      // Editorial section
+      var edLabel = document.querySelector('.editorial-section .section-label');
+      if (edLabel) {
+        var sq3 = edLabel.querySelector('.red-sq');
+        edLabel.textContent = '';
+        if (sq3) edLabel.appendChild(sq3);
+        edLabel.appendChild(document.createTextNode(' ' + D.ed_label));
+      }
+      setText(document.querySelector('.editorial-tag'), D.ed_tag);
+      var edTextH2 = document.querySelector('.editorial-text h2');
+      if (edTextH2) edTextH2.innerHTML = D.ed_title.replace('\n', '<br>');
+      var edPs = document.querySelectorAll('.editorial-text p');
+      if (edPs[0]) edPs[0].textContent = D.ed_p1;
+      if (edPs[1]) edPs[1].textContent = D.ed_p2;
+      // Process
+      var procLabel = document.querySelector('.process-section .section-label');
+      if (procLabel) {
+        var sq4 = procLabel.querySelector('.red-sq');
+        procLabel.textContent = '';
+        if (sq4) procLabel.appendChild(sq4);
+        procLabel.appendChild(document.createTextNode(' ' + D.proc_label));
+      }
+      var steps = document.querySelectorAll('.step');
+      [['p1','p2','p3','p4']].flat().forEach(function(prefix, i) {
+        var step = steps[i];
+        if (!step) return;
+        setText(step.querySelector('.step-num'), D[prefix + '_num']);
+        setText(step.querySelector('.step-label'), D[prefix + '_title']);
+        setText(step.querySelector('.step-desc'), D[prefix + '_desc']);
+      });
+      // FAQ
+      var faqLabel = document.querySelector('.faq-section .section-label');
+      if (faqLabel) {
+        var sq5 = faqLabel.querySelector('.red-sq');
+        faqLabel.textContent = '';
+        if (sq5) faqLabel.appendChild(sq5);
+        faqLabel.appendChild(document.createTextNode(' ' + D.faq_label));
+      }
+      setText(document.querySelector('.faq-heading'), D.faq_head);
+      var faqItems = document.querySelectorAll('.faq-item');
+      [['q1','q2','q3','q4','q5']].flat().forEach(function(qkey, i) {
+        var item = faqItems[i];
+        if (!item) return;
+        var summary = item.querySelector('summary');
+        var marker = summary && summary.querySelector('.faq-marker');
+        if (summary) {
+          summary.textContent = '';
+          if (marker) summary.appendChild(marker);
+          summary.appendChild(document.createTextNode(D[qkey]));
+        }
+        var p = item.querySelector('p');
+        var akey = 'a' + (i + 1);
+        if (p) p.textContent = D[akey];
+      });
+      // CTA
+      var ctaH2 = document.querySelector('.cta-section h2');
+      if (ctaH2) ctaH2.innerHTML = D.cta_title.replace('\n', '<br>');
+      setText(document.querySelector('.cta-section p'), D.cta_text);
+      setText(document.querySelector('.cta-link'), D.cta_btn);
+      // Footer
+      var fdesc = document.querySelector('.ak-footer-desc');
+      if (fdesc) fdesc.textContent = D.footer_desc;
+      var fcolHeads = document.querySelectorAll('.ak-footer-col-head');
+      [D.footer_nav, D.footer_services, D.footer_company, D.footer_legal].forEach(function(v, i) {
+        var h = fcolHeads[i];
+        if (!h) return;
+        var dot = h.querySelector('.ak-footer-dot');
+        h.textContent = '';
+        if (dot) h.appendChild(dot);
+        h.appendChild(document.createTextNode(v));
+      });
+      var flinks = document.querySelectorAll('.ak-footer-grid .ak-footer-list:first-of-type a');
+      // nav links
+      var navCols = document.querySelectorAll('.ak-footer-grid > div');
+      if (navCols[1]) {
+        var as = navCols[1].querySelectorAll('a');
+        [D.fn_home, D.fn_listings, D.fn_services, D.fn_contact].forEach(function(v,i){ if(as[i]) as[i].textContent = v; });
+      }
+      if (navCols[2]) {
+        var as2 = navCols[2].querySelectorAll('a');
+        [D.fs1, D.fs2, D.fs3, D.fs4].forEach(function(v,i){ if(as2[i]) as2[i].textContent = v; });
+      }
+      if (navCols[4]) {
+        var as4 = navCols[4].querySelectorAll('a');
+        [D.fl_terms, D.fl_privacy, D.fl_cookies, D.fl_data].forEach(function(v,i){ if(as4[i]) as4[i].textContent = v; });
+      }
+      // Legal strip
+      var legalSpans = document.querySelectorAll('.ak-footer-legal > span:not(.ak-footer-legal-mark):not(.ak-footer-legal-spacer)');
+      if (legalSpans[0]) legalSpans[0].textContent = D.copyright;
+      var legalAs = document.querySelectorAll('.ak-footer-legal a');
+      if (legalAs[0]) legalAs[0].textContent = D.fl_strip_terms;
+      if (legalAs[1]) legalAs[1].textContent = D.fl_strip_privacy;
+      if (legalAs[2]) legalAs[2].textContent = D.fl_strip_cookies;
+    }
+
+    var allLang = Array.from(document.querySelectorAll('.lang-btn'));
+    function setLang(l) {
+      allLang.forEach(function(b){ b.classList.toggle('active', b.dataset.lang === l); });
+      try { localStorage.setItem('ak-lang', l); } catch(e){}
+      applyLang(l);
+    }
+    allLang.forEach(function(b){
+      b.addEventListener('click', function(){ setLang(b.dataset.lang); });
+    });
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'ak-lang' && e.newValue) setLang(e.newValue);
+    });
+    try { setLang(localStorage.getItem('ak-lang') || 'bg'); } catch(e){ setLang('bg'); }
+  })();
+  </script>
 </body>
 </html>

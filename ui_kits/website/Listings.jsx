@@ -35,18 +35,20 @@ function useStoreListings() {
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
-function Listings({ featuredOnly = false }) {
+function Listings({ featuredOnly = false, lang = 'bg' }) {
   const all = useStoreListings();
+  const isBg = lang !== 'en';
 
-  // Filter chips — used only when featuredOnly=false
-  const [filter, setFilter] = React.useState('All');
+  // Filter definitions — id is the key, label is the translated display text
   const filters = [
-    { id: 'All',           test: () => true },
-    { id: 'For Sale',      test: l => l.listingType === 'Sale' },
-    { id: 'For Rent',      test: l => l.listingType === 'Rent' },
-    { id: 'Featured',      test: l => l.featured },
-    { id: 'Recently Sold', test: l => l.status === 'Sold' || l.status === 'Rented' },
+    { id: 'All',           label: isBg ? 'Всички'      : 'All',           test: () => true },
+    { id: 'For Sale',      label: isBg ? 'Продажба'    : 'For Sale',      test: l => l.listingType === 'Sale' },
+    { id: 'For Rent',      label: isBg ? 'Под наем'    : 'For Rent',      test: l => l.listingType === 'Rent' },
+    { id: 'Featured',      label: isBg ? 'Препоръчани' : 'Featured',      test: l => l.featured },
+    { id: 'Recently Sold', label: isBg ? 'Продадени'   : 'Recently Sold', test: l => l.status === 'Sold' || l.status === 'Rented' },
   ];
+
+  const [filter, setFilter] = React.useState('All');
 
   // Supabase featured fetch — only active when featuredOnly=true
   const [sbList,  setSbList]  = React.useState(null);
@@ -124,13 +126,16 @@ function Listings({ featuredOnly = false }) {
       <header className="r-stack-640" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 32,
         alignItems: 'end', marginBottom: 'clamp(48px, 6vw, 96px)' }}>
         <div>
-          <SectionNumeral n="01" label="Featured Portfolio" />
+          <SectionNumeral n="01" label={isBg ? 'Избрани имоти' : 'Featured Portfolio'} />
           <h2 style={{
             margin: '24px 0 0', fontFamily: 'var(--font-display)', fontWeight: 200,
             fontSize: 'clamp(40px, 6vw, 96px)', lineHeight: 0.96,
             letterSpacing: '0.06em', textTransform: 'uppercase', maxWidth: 900,
           }}>
-            Houses that<br />find their <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>people.</em>
+            {isBg
+              ? <>Имоти, които<br/>намират своите <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>хора.</em></>
+              : <>Houses that<br />find their <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>people.</em></>
+            }
           </h2>
         </div>
 
@@ -138,7 +143,7 @@ function Listings({ featuredOnly = false }) {
         {!featuredOnly && (
           <div style={{ display: 'flex', gap: 24, paddingBottom: 12, flexWrap: 'wrap' }}>
             {filters.map(f => (
-              <FilterChip key={f.id} active={filter === f.id} onClick={() => setFilter(f.id)}>{f.id}</FilterChip>
+              <FilterChip key={f.id} active={filter === f.id} onClick={() => setFilter(f.id)}>{f.label}</FilterChip>
             ))}
           </div>
         )}
@@ -154,14 +159,16 @@ function Listings({ featuredOnly = false }) {
           <div style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: 28,
             letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>
             {featuredOnly
-              ? 'No featured properties at this time.'
-              : 'The portfolio is quiet at the moment.'}
+              ? (isBg ? 'Няма препоръчани имоти в момента.' : 'No featured properties at this time.')
+              : (isBg ? 'Портфолиото е тихо за момента.'   : 'The portfolio is quiet at the moment.')}
           </div>
           <p style={{ margin: '0 auto', maxWidth: 460, fontSize: 13, color: 'var(--fg-2)',
             fontWeight: 300, lineHeight: 1.6 }}>
             {featuredOnly
-              ? 'New residences are curated continuously. Write to receive the next dispatch.'
-              : 'No residences match this filter. New listings are released by invitation — write to receive the next dispatch.'}
+              ? (isBg ? 'Нови имоти се добавят редовно. Напишете ни, за да получавате актуална информация.'
+                      : 'New residences are curated continuously. Write to receive the next dispatch.')
+              : (isBg ? 'Няма имоти, отговарящи на избрания филтър. Свържете се с нас за актуална информация.'
+                      : 'No residences match this filter. New listings are released by invitation — write to receive the next dispatch.')}
           </p>
         </div>
       )}
@@ -175,7 +182,7 @@ function Listings({ featuredOnly = false }) {
           gap: 'clamp(12px, 1.6vw, 22px)',
         }}>
           {top.map((l, i) => (
-            <PropertyCard key={l.id} listing={l}
+            <PropertyCard key={l.id} listing={l} lang={lang}
               cols={spans[i % spans.length].cols}
               rows={spans[i % spans.length].rows} />
           ))}
@@ -191,7 +198,7 @@ function Listings({ featuredOnly = false }) {
           gap: 'clamp(12px, 1.6vw, 22px)',
         }}>
           {rest.map(l => (
-            <PropertyCard key={l.id} listing={l} compact />
+            <PropertyCard key={l.id} listing={l} lang={lang} compact />
           ))}
         </div>
       )}
@@ -201,10 +208,14 @@ function Listings({ featuredOnly = false }) {
         alignItems: 'center', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
         <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.28em',
           textTransform: 'uppercase', color: 'var(--fg-2)' }}>
-          ▪ {activeCount} {featuredOnly ? 'featured' : 'active'} &nbsp;·&nbsp; updated continuously
+          ▪ {activeCount} {featuredOnly
+            ? (isBg ? 'препоръчани · актуализирано' : 'featured · updated continuously')
+            : (isBg ? 'активни · актуализирано'     : 'active · updated continuously')}
         </span>
         <span style={{ flex: 1, height: 1, background: 'var(--hairline-light)', minWidth: 40 }}></span>
-        <Btn variant="secondary" as="a" href="/listings">All Listings →</Btn>
+        <Btn variant="secondary" as="a" href="/listings">
+          {isBg ? 'Всички имоти →' : 'All Listings →'}
+        </Btn>
       </div>
     </section>
   );
@@ -242,19 +253,20 @@ function getImageUrl(image) {
   return base + '/storage/v1/object/public/listing-images/' + raw;
 }
 
-function PropertyCard({ listing, cols, rows, compact }) {
+function PropertyCard({ listing, cols, rows, compact, lang = 'bg' }) {
   const [hover, setHover] = React.useState(false);
   const img = getImageUrl((listing.images && listing.images[listing.mainImage]) || (listing.images && listing.images[0]));
   const isClosed = listing.status === 'Sold' || listing.status === 'Rented';
+  const isBg = lang !== 'en';
 
   let tag = null;
-  if (listing.status === 'Sold')        tag = { label: 'Sold',     bg: 'rgba(176,24,28,.92)', fg: '#fff' };
-  else if (listing.status === 'Rented') tag = { label: 'Rented',   bg: 'rgba(0,0,0,.65)',    fg: '#fff' };
-  else if (listing.featured)            tag = { label: 'Featured', bg: 'var(--ak-crimson)',   fg: '#fff' };
+  if (listing.status === 'Sold')        tag = { label: isBg ? 'Продаден'  : 'Sold',     bg: 'rgba(176,24,28,.92)', fg: '#fff' };
+  else if (listing.status === 'Rented') tag = { label: isBg ? 'Отдаден'   : 'Rented',   bg: 'rgba(0,0,0,.65)',    fg: '#fff' };
+  else if (listing.featured)            tag = { label: isBg ? 'Препоръчан': 'Featured',  bg: 'var(--ak-crimson)',  fg: '#fff' };
 
   const isRecent = listing.createdAt && (Date.now() - new Date(listing.createdAt).getTime() < 30 * 86400000);
   if (!tag && isRecent && listing.status === 'Active') {
-    tag = { label: 'New', bg: 'var(--ak-crimson)', fg: '#fff' };
+    tag = { label: isBg ? 'Нов' : 'New', bg: 'var(--ak-crimson)', fg: '#fff' };
   }
 
   return (
@@ -290,7 +302,7 @@ function PropertyCard({ listing, cols, rows, compact }) {
           fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 14,
           letterSpacing: '0.18em', textTransform: 'uppercase',
           border: '1px solid rgba(255,255,255,.20)', pointerEvents: 'none',
-        }}>{listing.status}</span>
+        }}>{listing.status === 'Sold' ? (isBg ? 'Продаден' : 'Sold') : (isBg ? 'Отдаден' : 'Rented')}</span>
       )}
 
       {/* corner tag */}
@@ -301,7 +313,7 @@ function PropertyCard({ listing, cols, rows, compact }) {
           textTransform: 'uppercase', padding: '5px 10px', borderRadius: 0,
           display: 'inline-flex', alignItems: 'center', gap: 6,
         }}>
-          {listing.featured && tag.label === 'Featured' && <span>★</span>}
+          {listing.featured && tag.label === (isBg ? 'Препоръчан' : 'Featured') && <span>★</span>}
           {tag.label}
         </span>
       )}

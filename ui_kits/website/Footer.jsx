@@ -1,31 +1,56 @@
 // Footer — dark, five-column sitemap with real AK Real Estate company info.
 
-function Footer() {
-  const navLinks = [
-    { label: 'Начало',            href: '/' },
-    { label: 'Обяви',             href: '/listings' },
-    { label: 'Услуги',            href: '/services' },
-    { label: 'Свържи се с нас',   href: 'mailto:office@akrealestatebg.com' },
-  ];
-  const serviceLinks = [
-    { label: 'Кредитен консултант',    href: '/services' },
-    { label: 'Имотно посредничество',  href: '/services' },
-    { label: 'Интериорен дизайн',      href: '/services' },
-    { label: 'Ремонт от А до Я',       href: '/services' },
-  ];
-  const legalLinks = [
-    { label: 'Общи условия',                 href: '/terms' },
-    { label: 'Политика за поверителност',    href: '/privacy' },
-    { label: 'Политика за бисквитки',        href: '/cookies' },
-    { label: 'Защита на личните данни',      href: '/privacy' },
-  ];
+function Footer({ lang = 'bg' }) {
+  const isBg = lang !== 'en';
+
+  const navLinks = isBg
+    ? [
+        { label: 'Начало',            href: '/' },
+        { label: 'Обяви',             href: '/listings' },
+        { label: 'Услуги',            href: '/services' },
+        { label: 'Свържи се с нас',   href: 'mailto:office@akrealestatebg.com' },
+      ]
+    : [
+        { label: 'Home',     href: '/' },
+        { label: 'Listings', href: '/listings' },
+        { label: 'Services', href: '/services' },
+        { label: 'Contact',  href: 'mailto:office@akrealestatebg.com' },
+      ];
+
+  const serviceLinks = isBg
+    ? [
+        { label: 'Кредитен консултант',   href: '/services' },
+        { label: 'Имотно посредничество', href: '/services' },
+        { label: 'Интериорен дизайн',     href: '/services' },
+        { label: 'Ремонт от А до Я',      href: '/services' },
+      ]
+    : [
+        { label: 'Credit Consulting',  href: '/services' },
+        { label: 'Real Estate Agency', href: '/services' },
+        { label: 'Interior Design',    href: '/services' },
+        { label: 'Full Renovation',    href: '/services' },
+      ];
+
+  const legalLinks = isBg
+    ? [
+        { label: 'Общи условия',              href: '/terms' },
+        { label: 'Политика за поверителност', href: '/privacy' },
+        { label: 'Политика за бисквитки',     href: '/cookies' },
+        { label: 'Защита на личните данни',   href: '/privacy' },
+      ]
+    : [
+        { label: 'Terms of Use',     href: '/terms' },
+        { label: 'Privacy Policy',   href: '/privacy' },
+        { label: 'Cookie Policy',    href: '/cookies' },
+        { label: 'Data Protection',  href: '/privacy' },
+      ];
 
   const linkStyle = {
     fontSize: 13, fontWeight: 300, color: 'var(--fg-2)',
     textDecoration: 'none', letterSpacing: '0.02em',
     transition: 'color .2s var(--ease)',
   };
-  const onHover = (e) => e.currentTarget.style.color = 'var(--ak-crimson)';
+  const onHover  = (e) => e.currentTarget.style.color = 'var(--ak-crimson)';
   const offHover = (e) => e.currentTarget.style.color = 'var(--fg-2)';
 
   const ColHead = ({ children }) => (
@@ -70,27 +95,28 @@ function Footer() {
           <Eyebrow style={{ marginBottom: 18 }}>AK Real Estate</Eyebrow>
           <p style={{ margin: 0, maxWidth: 360, fontSize: 14, lineHeight: 1.7,
             fontWeight: 300, color: 'var(--fg-2)' }}>
-            AK Real Estate е бутикова агенция за недвижими имоти, създадена през 2026 г.
-            Работим с внимателно подбрани имоти и клиенти, като съчетаваме посредничество, финансиране,
-            интериорен дизайн и ремонт в един подреден процес.
+            {isBg
+              ? 'AK Real Estate е бутикова агенция за недвижими имоти, създадена през 2026 г. Работим с внимателно подбрани имоти и клиенти, като съчетаваме посредничество, финансиране, интериорен дизайн и ремонт в един подреден процес.'
+              : 'AK Real Estate is a boutique real estate agency founded in 2026. We work with carefully selected properties and clients, combining brokerage, financing, interior design and renovation in one clear process.'
+            }
           </p>
         </div>
 
         {/* Column 2 — navigation */}
         <div>
-          <ColHead>Навигация</ColHead>
+          <ColHead>{isBg ? 'Навигация' : 'Navigation'}</ColHead>
           <LinkList items={navLinks} />
         </div>
 
         {/* Column 3 — services */}
         <div>
-          <ColHead>Услуги</ColHead>
+          <ColHead>{isBg ? 'Услуги' : 'Services'}</ColHead>
           <LinkList items={serviceLinks} />
         </div>
 
         {/* Column 4 — company */}
         <div>
-          <ColHead>Компания</ColHead>
+          <ColHead>{isBg ? 'Компания' : 'Company'}</ColHead>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0,
             display: 'flex', flexDirection: 'column', gap: 10,
             fontSize: 13, fontWeight: 300, color: 'var(--fg-2)',
@@ -105,7 +131,7 @@ function Footer() {
 
         {/* Column 5 — legal */}
         <div>
-          <ColHead>Правна информация</ColHead>
+          <ColHead>{isBg ? 'Правна информация' : 'Legal'}</ColHead>
           <LinkList items={legalLinks} />
         </div>
       </div>
@@ -115,13 +141,13 @@ function Footer() {
         borderTop: '1px solid var(--hairline-light)', flexWrap: 'wrap',
         fontSize: 10, fontWeight: 500, letterSpacing: '0.22em', textTransform: 'uppercase',
         color: 'var(--fg-3)' }}>
-        <span>© 2026 AK Real Estate. Всички права запазени.</span>
+        <span>{isBg ? '© 2026 AK Real Estate. Всички права запазени.' : '© 2026 AK Real Estate. All rights reserved.'}</span>
         <span style={{ color: 'var(--ak-crimson)' }}>▪</span>
         <span>АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452</span>
         <span className="r-spacer" style={{ flex: 1 }}></span>
-        <a href="/terms" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>Общи условия</a>
-        <a href="/privacy" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>Политика за поверителност</a>
-        <a href="/cookies" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>Бисквитки</a>
+        <a href="/terms"   style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>{isBg ? 'Общи условия'             : 'Terms'}</a>
+        <a href="/privacy" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>{isBg ? 'Политика за поверителност' : 'Privacy'}</a>
+        <a href="/cookies" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>{isBg ? 'Бисквитки'                 : 'Cookies'}</a>
       </div>
     </footer>
   );

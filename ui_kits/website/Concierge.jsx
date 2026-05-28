@@ -1,13 +1,22 @@
 // Concierge — dark cinematic section, four-service grid + editorial panel.
 
-const SERVICES = [
-  { n: '01', title: 'Кредитен консултант',    body: 'Финансово насочване и съдействие при избор на подходящо кредитиране.' },
-  { n: '02', title: 'Имотно посредничество',  body: 'Съдействие при намиране, покупка и продажба на имот според нуждите на клиента.' },
-  { n: '03', title: 'Интериорен дизайн',       body: 'Концепция, стил и завършен интериор, съобразен с начина на живот.' },
-  { n: '04', title: 'Ремонт от А до Я',        body: 'Организация и управление на ремонтния процес от първия оглед до финалното предаване.' },
+const SERVICES_BG = [
+  { n: '01', title: 'Кредитен консултант',   body: 'Финансово насочване и съдействие при избор на подходящо кредитиране.' },
+  { n: '02', title: 'Имотно посредничество', body: 'Съдействие при намиране, покупка и продажба на имот според нуждите на клиента.' },
+  { n: '03', title: 'Интериорен дизайн',     body: 'Концепция, стил и завършен интериор, съобразен с начина на живот.' },
+  { n: '04', title: 'Ремонт от А до Я',      body: 'Организация и управление на ремонтния процес от първия оглед до финалното предаване.' },
+];
+
+const SERVICES_EN = [
+  { n: '01', title: 'Credit Consulting',  body: 'Financial guidance and support in choosing the right mortgage and financing solution.' },
+  { n: '02', title: 'Real Estate Agency', body: 'Assistance finding, buying and selling property — tailored process from first viewing to signed deal.' },
+  { n: '03', title: 'Interior Design',    body: 'Concept, style and a finished interior matched precisely to your way of life.' },
+  { n: '04', title: 'Full Renovation',    body: 'Organisation and management of the renovation process from first visit to final handover.' },
 ];
 
 function Concierge({ lang = 'bg' }) {
+  const isBg = lang !== 'en';
+  const SERVICES = isBg ? SERVICES_BG : SERVICES_EN;
   return (
     <section style={{ background: 'var(--ak-black)', color: 'var(--fg)',
       padding: 'var(--section-y) var(--gutter)', position: 'relative', overflow: 'hidden' }}>
@@ -36,7 +45,7 @@ function Concierge({ lang = 'bg' }) {
           <header className="r-stack-640" style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr',
             gap: 'clamp(32px, 6vw, 96px)', marginBottom: 'clamp(60px, 7vw, 110px)' }}>
             <div>
-              <SectionNumeral n="03" label="The Practice" />
+              <SectionNumeral n="03" label={isBg ? 'Услуги' : 'The Practice'} />
               <h2 style={{ margin: '24px 0 0', fontFamily: 'var(--font-display)', fontWeight: 200,
                 fontSize: 'clamp(40px, 5vw, 92px)', lineHeight: 0.96,
                 letterSpacing: '0.06em', textTransform: 'uppercase' }}>
@@ -48,8 +57,10 @@ function Concierge({ lang = 'bg' }) {
             </div>
             <p style={{ margin: '70px 0 0', maxWidth: 460, alignSelf: 'end',
               fontSize: 16, lineHeight: 1.7, fontWeight: 300, color: 'var(--fg-2)' }}>
-              От първата консултация до финалното предаване — един принципал до вас.
-              Не прехвърляме клиенти на екип. Услугата е лична.
+              {isBg
+                ? 'От първата консултация до финалното предаване — един екип до вас. Подреждаме процеса ясно, лично и без излишно усложняване.'
+                : 'From first consultation to final handover — one team beside you. We keep the process clear, personal and free of unnecessary complexity.'
+              }
             </p>
           </header>
 
@@ -106,10 +117,12 @@ function Concierge({ lang = 'bg' }) {
             <span style={{ fontFamily: 'var(--font-display)', fontWeight: 300,
               fontSize: 'clamp(22px, 2.4vw, 32px)', letterSpacing: '0.06em',
               textTransform: 'uppercase' }}>
-              Begin a quiet conversation.
+              {isBg ? 'Започнете разговор.' : 'Begin a quiet conversation.'}
             </span>
             <span style={{ flex: 1 }}></span>
-            <Btn variant="secondary">Request Consultation →</Btn>
+            <Btn variant="secondary" as="a" href="mailto:office@akrealestatebg.com" style={{ textDecoration: 'none' }}>
+              {isBg ? 'Запитване →' : 'Request Consultation →'}
+            </Btn>
           </div>
         </div>
       </div>

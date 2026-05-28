@@ -33,10 +33,11 @@ function Nav({ active = 'listings', onNav, onLang }) {
   const [lang, setLang] = React.useState(() => (typeof localStorage !== 'undefined' && localStorage.getItem('ak-lang')) || 'bg');
   const toggleLang = (l) => { setLang(l); if (typeof localStorage !== 'undefined') localStorage.setItem('ak-lang', l); onLang && onLang(l); };
 
+  const isBg = lang !== 'en';
   const links = [
-    { id: 'listings',  label: 'Обяви',  href: '/listings' },
-    { id: 'concierge', label: 'Услуги', href: '/services' },
-    { id: 'contact',   label: 'Свържи се с нас', cta: true },
+    { id: 'listings',  label: isBg ? 'Обяви'           : 'Listings',  href: '/listings' },
+    { id: 'concierge', label: isBg ? 'Услуги'          : 'Services',  href: '/services' },
+    { id: 'contact',   label: isBg ? 'Свържи се с нас' : 'Contact',   cta: true },
   ];
 
   const onPick = (id) => {
@@ -149,7 +150,7 @@ function Nav({ active = 'listings', onNav, onLang }) {
             <span style={{
               fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
               textTransform: 'uppercase', color: 'var(--fg-2)',
-            }}>Navigation</span>
+            }}>{isBg ? 'Навигация' : 'Navigation'}</span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

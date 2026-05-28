@@ -1,9 +1,10 @@
-// Editorial — light section, lifestyle/architecture full-bleed half, editorial columns half.
+// Editorial — light section, interior/architecture image pair + editorial columns.
 
 const ED_IMG_HERO  = "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1800&q=80&auto=format&fit=crop";
 const ED_IMG_INSET = "https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=900&q=80&auto=format&fit=crop";
 
-function Editorial() {
+function Editorial({ lang = 'bg' }) {
+  const isBg = lang !== 'en';
   return (
     <section style={{ background: 'var(--ak-bone)', color: 'var(--fg-on-light)',
       padding: 'var(--section-y) var(--gutter)', position: 'relative' }}>
@@ -12,20 +13,27 @@ function Editorial() {
         gap: 'clamp(24px,5vw,80px)', alignItems: 'end',
         marginBottom: 'clamp(48px,5vw,80px)' }}>
         <div>
-          <SectionNumeral n="04" label="Lifestyle Magazine Feature" light />
+          <SectionNumeral n="04" label={isBg ? 'Завършен проект' : 'Completed Project'} light />
           <h2 style={{ margin: '24px 0 0', fontFamily: 'var(--font-display)', fontWeight: 200,
             fontSize: 'clamp(48px, 7vw, 124px)', lineHeight: 0.92,
             letterSpacing: '0.06em', textTransform: 'uppercase',
             color: 'var(--fg-on-light)' }}>
-            The quieter<br/>the street,<br/>the louder<br/>the <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>house.</em>
+            {isBg
+              ? <>По-тихата улица,<br/>по-силен<br/>е <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>домът.</em></>
+              : <>The quieter<br/>the street,<br/>the louder<br/>the <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>house.</em></>
+            }
           </h2>
         </div>
         <div style={{ alignSelf: 'end', paddingBottom: 8 }}>
-          <Eyebrow light style={{ marginBottom: 14 }}>Issue 07 — Spring 2026</Eyebrow>
+          <Eyebrow light style={{ marginBottom: 14 }}>
+            {isBg ? 'AK Studio · 2025' : 'AK Studio · 2025'}
+          </Eyebrow>
           <p style={{ margin: 0, maxWidth: 420, fontSize: 16, lineHeight: 1.7,
             fontWeight: 300, color: 'var(--ak-pewter)' }}>
-            Photographs and a long read from inside the seven-year restoration of an estate
-            in Montecito's avocado country — by writer L. Verriér and photographer S. Demir.
+            {isBg
+              ? 'Снимки и детайлен материал за завършен ремонт и интериор — материали, процес и финален резултат.'
+              : 'Photographs and an in-depth piece on a completed renovation and interior — materials, process and the final result.'
+            }
           </p>
         </div>
       </header>
@@ -43,7 +51,7 @@ function Editorial() {
             <RedSquare size={6} />
             <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
               textTransform: 'uppercase', color: '#fff' }}>
-              Villa di Pietra · Montecito · Restored 2024
+              {isBg ? 'Интериор · Лозенец · 2025' : 'Interior · Lozenets · 2025'}
             </span>
           </figcaption>
         </figure>
@@ -57,13 +65,16 @@ function Editorial() {
 
           <div className="r-edit-inset-copy" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28 }}>
             <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, fontWeight: 300, color: 'var(--ak-pewter)' }}>
-              For four years the house was empty. The orchard was not. Through three drought
-              seasons a single caretaker walked it twice a week and decided which trees were
-              worth the water.
+              {isBg
+                ? 'Четири месеца планиране, материали и координация. Когато ремонтът приключи, пространството беше преобразено до неузнаваемост.'
+                : 'Four months of planning, materials and coordination. When the renovation was complete, the space was transformed beyond recognition.'
+              }
             </p>
             <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, fontWeight: 300, color: 'var(--ak-pewter)' }}>
-              When the new owner finally arrived in late October, the avocados were still on
-              the branch. <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic' }}>"They waited," she said.</em>
+              {isBg
+                ? <>Клиентът влезе в деня на предаването. <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic' }}>"Точно това исках", каза тя.</em> Оттам нататък всяко решение придоби смисъл.</>
+                : <>The client walked in on handover day. <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic' }}>"This is exactly what I wanted," she said.</em> And from that point, every decision made sense.</>
+              }
             </p>
           </div>
         </div>
@@ -74,10 +85,12 @@ function Editorial() {
         <RedLine />
         <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.28em',
           textTransform: 'uppercase', color: 'var(--fg-on-light-3)' }}>
-          4,800 words · 22 photographs · The AK Journal
+          {isBg ? 'Завършен проект · Лозенец · 2025' : 'Completed project · Lozenets · 2025'}
         </span>
         <span style={{ flex: 1 }}></span>
-        <Btn variant="primary">Read the Feature</Btn>
+        <Btn variant="primary" as="a" href="/services" style={{ textDecoration: 'none' }}>
+          {isBg ? 'Виж услугите' : 'View Services'}
+        </Btn>
       </div>
     </section>
   );

@@ -5,6 +5,7 @@
 const HERO_IMG = "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=2400&q=80&auto=format&fit=crop";
 
 function Hero({ lang = 'bg' }) {
+  const isBg = lang !== 'en';
   const [stats, setStats] = React.useState({ activeCount: 0, offMarketCount: 0, portfolioValue: '€0' });
 
   React.useEffect(() => {
@@ -59,7 +60,7 @@ function Hero({ lang = 'bg' }) {
         <div className="r-edge-label" style={{ display: 'flex', alignItems: 'flex-end', height: '100%', paddingBottom: 20 }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
             <div style={{ width: 1, height: 60, background: 'var(--ak-crimson)' }}></div>
-            <VLabel>§ 01 — A Private Portfolio</VLabel>
+            <VLabel>§ 01 — {isBg ? 'Частно портфолио' : 'A Private Portfolio'}</VLabel>
             <div style={{ width: 1, height: 80, background: 'rgba(245,241,234,.20)' }}></div>
           </div>
         </div>
@@ -76,23 +77,30 @@ function Hero({ lang = 'bg' }) {
             letterSpacing: '0.08em', textTransform: 'uppercase',
             color: 'var(--fg)',
           }}>
-            A quieter<br/>kind of <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>luxury.</em>
+            {isBg
+              ? <>По-спокоен<br/>вид <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>лукс.</em></>
+              : <>A quieter<br/>kind of <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>luxury.</em></>
+            }
           </h1>
           <p style={{
             marginTop: 36, marginLeft: 'auto', maxWidth: 460,
             fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 300, lineHeight: 1.7,
             color: 'var(--fg-2)',
           }}>
-            A private portfolio of residences for those who would rather not be seen looking.
-            Off-market listings, restored landmarks, and the kind of houses found by being told.
+            {isBg
+              ? 'Бутиково портфолио от имоти и услуги за клиенти, които търсят подреден процес, внимание към детайла и лично отношение.'
+              : 'A private portfolio of residences for those who would rather not be seen looking. Off-market listings, restored landmarks, and the kind of houses found by being told.'
+            }
           </p>
           <div style={{ marginTop: 40, display: 'flex', gap: 24, justifyContent: 'flex-end', alignItems: 'center' }}>
-            <a href="#" style={{
+            <a href="/listings" style={{
               fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
               letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--fg)',
               textDecoration: 'none', borderBottom: '1px solid var(--ak-crimson)', paddingBottom: 4,
-            }}>View Portfolio</a>
-            <Btn variant="primary">Request Private Access</Btn>
+            }}>{isBg ? 'Виж обявите' : 'View Listings'}</a>
+            <Btn variant="primary" as="a" href="mailto:office@akrealestatebg.com" style={{ textDecoration: 'none' }}>
+              {isBg ? 'Свържи се с нас' : 'Get in Touch'}
+            </Btn>
           </div>
         </div>
       </div>

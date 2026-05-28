@@ -648,14 +648,14 @@
         AK <span class="red-square"></span> Real Estate
       </a>
       <nav class="header-nav">
-        <a href="/listings">Обяви</a>
-        <a href="/services">Услуги</a>
+        <a href="/listings" data-t="nav_listings">Обяви</a>
+        <a href="/services" data-t="nav_services">Услуги</a>
         <div class="lang-switch">
           <button class="lang-btn active" data-lang="bg" type="button">BG</button>
           <span class="lang-sep">/</span>
           <button class="lang-btn" data-lang="en" type="button">EN</button>
         </div>
-        <a href="mailto:office@akrealestatebg.com" class="header-cta">Свържи се с нас</a>
+        <a href="mailto:office@akrealestatebg.com" class="header-cta" data-t="nav_contact">Свържи се с нас</a>
       </nav>
       <button class="hamburger-btn" id="hamburger-btn" aria-label="Open menu" type="button">
         <span class="bar"></span>
@@ -688,7 +688,7 @@
     </div>
 
     <main id="app">
-      <div class="loading">Loading listing…</div>
+      <div class="loading" id="loading-msg">Loading listing…</div>
     </main>
   </div>
 
@@ -806,37 +806,26 @@
       return base + '/storage/v1/object/public/listing-images/' + raw;
     }
 
+    window._lang = 'bg';
+    function isBg() { return window._lang !== 'en'; }
+
     function translateStatus(status) {
-  const map = {
-    Active: "Активен",
-    Sold: "Продаден",
-    Rented: "Отдаден",
-    Draft: "Чернова"
-  };
+      if (!isBg()) return escapeHtml(status || "—");
+      const map = { Active: "Активен", Sold: "Продаден", Rented: "Отдаден", Draft: "Чернова" };
+      return escapeHtml(map[status] || status || "—");
+    }
 
-  return escapeHtml(map[status] || status || "—");
-}
+    function translateListingType(type) {
+      if (!isBg()) return escapeHtml(type || "—");
+      const map = { Sale: "Продажба", Rent: "Наем" };
+      return escapeHtml(map[type] || type || "—");
+    }
 
-function translateListingType(type) {
-  const map = {
-    Sale: "Продажба",
-    Rent: "Наем"
-  };
-
-  return escapeHtml(map[type] || type || "—");
-}
-
-function translatePropertyType(type) {
-  const map = {
-    Apartment: "Апартамент",
-    House: "Къща",
-    Villa: "Вила",
-    Office: "Офис",
-    Land: "Парцел"
-  };
-
-  return escapeHtml(map[type] || type || "—");
-}
+    function translatePropertyType(type) {
+      if (!isBg()) return escapeHtml(type || "—");
+      const map = { Apartment: "Апартамент", House: "Къща", Villa: "Вила", Office: "Офис", Land: "Парцел" };
+      return escapeHtml(map[type] || type || "—");
+    }
 
     function renderNotFound() {
       app.innerHTML = `
@@ -891,12 +880,12 @@ function translatePropertyType(type) {
             </div>
 
             <div class="meta">
-            <div><span>Спални</span><strong>${escapeHtml(listing.bedrooms || "—")}</strong></div>
-            <div><span>Бани</span><strong>${escapeHtml(listing.bathrooms || "—")}</strong></div>
-            <div><span>Площ</span><strong>${escapeHtml(listing.area_sqm || "—")} m²</strong></div>
-            <div><span>Тип имот</span><strong>${translatePropertyType(listing.property_type)}</strong></div>
-            <div><span>Сделка</span><strong>${translateListingType(listing.listing_type)}</strong></div>
-            <div><span>Статус</span><strong>${translateStatus(listing.status)}</strong></div>
+            <div><span>${isBg() ? 'Спални'   : 'Bedrooms'}</span><strong>${escapeHtml(listing.bedrooms || "—")}</strong></div>
+            <div><span>${isBg() ? 'Бани'     : 'Bathrooms'}</span><strong>${escapeHtml(listing.bathrooms || "—")}</strong></div>
+            <div><span>${isBg() ? 'Площ'     : 'Area'}</span><strong>${escapeHtml(listing.area_sqm || "—")} m²</strong></div>
+            <div><span>${isBg() ? 'Тип имот' : 'Type'}</span><strong>${translatePropertyType(listing.property_type)}</strong></div>
+            <div><span>${isBg() ? 'Сделка'   : 'Listing'}</span><strong>${translateListingType(listing.listing_type)}</strong></div>
+            <div><span>${isBg() ? 'Статус'   : 'Status'}</span><strong>${translateStatus(listing.status)}</strong></div>
             </div>
 
             ${listing.description ? `<div class="description">${escapeHtml(listing.description)}</div>` : ""}
@@ -904,8 +893,8 @@ function translatePropertyType(type) {
             ${listing.features ? `<div class="features">${escapeHtml(listing.features)}</div>` : ""}
 
             <div class="actions">
-              <a class="btn primary" href="/#contact">Заявете достъп</a>
-              <a class="btn secondary" href="/">Назад</a>
+              <a class="btn primary" href="/#contact">${isBg() ? 'Заявете достъп' : 'Request Viewing'}</a>
+              <a class="btn secondary" href="/">${isBg() ? 'Назад' : 'Back'}</a>
             </div>
           </aside>
         </div>
@@ -940,6 +929,7 @@ function translatePropertyType(type) {
         return;
       }
 
+      window._currentListing = data;
       renderListing(data);
     }
 
@@ -963,12 +953,30 @@ function translatePropertyType(type) {
       }
     });
     var allLang = Array.from(document.querySelectorAll('.lang-btn, .mobile-lang-btn'));
+    var LISTING_T = {
+      bg: { nav_listings: 'Обяви', nav_services: 'Услуги', nav_contact: 'Свържи се с нас' },
+      en: { nav_listings: 'Listings', nav_services: 'Services', nav_contact: 'Contact' }
+    };
+    function applyLang(l) {
+      window._lang = l;
+      document.querySelectorAll('[data-t]').forEach(function(el) {
+        var key = el.dataset.t;
+        el.textContent = (LISTING_T[l] && LISTING_T[l][key]) || (LISTING_T.bg && LISTING_T.bg[key]) || key;
+      });
+      var loadingEl = document.getElementById('loading-msg');
+      if (loadingEl) loadingEl.textContent = l === 'en' ? 'Loading listing…' : 'Зареждане…';
+      if (typeof renderListing === 'function' && window._currentListing) renderListing(window._currentListing);
+    }
     function setLang(l){
       allLang.forEach(function(b){ b.classList.toggle('active', b.dataset.lang === l); });
       try { localStorage.setItem('ak-lang', l); } catch(e){}
+      applyLang(l);
     }
     allLang.forEach(function(b){
       b.addEventListener('click', function(){ setLang(b.dataset.lang); });
+    });
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'ak-lang' && e.newValue) setLang(e.newValue);
     });
     try { setLang(localStorage.getItem('ak-lang') || 'bg'); } catch(e){ setLang('bg'); }
   })();
