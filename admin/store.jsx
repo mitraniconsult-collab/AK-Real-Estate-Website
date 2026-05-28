@@ -18,15 +18,24 @@ if (location.hash && location.hash.startsWith('#/')) {
 }
 
 function parsePath() {
-  const sub = location.pathname.replace(/^\/admin\/?/, '');
+  const raw = location.pathname;
+  // Explicit prefix strip — avoids any regex ambiguity with optional slashes.
+  let sub = '';
+  if (raw === '/admin' || raw === '/admin/') {
+    sub = '';
+  } else if (raw.startsWith('/admin/')) {
+    sub = raw.slice(7); // '/admin/'.length === 7
+  }
+
   const search = new URLSearchParams(location.search).get('search') || '';
   const parts = sub.split('/').filter(Boolean);
 
-  if (parts.length === 0)                             return { name: 'dashboard',    search };
-  if (parts[0] === 'dashboard')                       return { name: 'dashboard',    search };
-  if (parts[0] === 'listings' && parts.length === 1)  return { name: 'listings',     search };
-  if (parts[0] === 'listings' && parts[1] === 'new')  return { name: 'listing-new',  search };
-  if (parts[0] === 'listings' && parts[2] === 'edit') return { name: 'listing-edit', id: parts[1], search };
+  if (parts.length === 0)                                         return { name: 'dashboard',    search };
+  if (parts[0] === 'dashboard')                                   return { name: 'dashboard',    search };
+  if (parts[0] === 'login')                                       return { name: 'login',        search };
+  if (parts[0] === 'listings' && parts.length === 1)              return { name: 'listings',     search };
+  if (parts[0] === 'listings' && parts[1] === 'new')              return { name: 'listing-new',  search };
+  if (parts[0] === 'listings' && parts[1] && parts[2] === 'edit') return { name: 'listing-edit', id: parts[1], search };
 
   return { name: 'dashboard', search };
 }
