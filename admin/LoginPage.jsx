@@ -8,6 +8,8 @@ function LoginPage({ onSubmit }) {
   const [remember, setRemember] = React.useState(true);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
+  const [resetLoading, setResetLoading] = React.useState(false);
+  const [notice, setNotice] = React.useState(null); // { type: 'success' | 'error', text }
 
   const submit = async (e) => {
   e.preventDefault();
@@ -23,6 +25,7 @@ function LoginPage({ onSubmit }) {
   }
 
   setError('');
+  setNotice(null);
   setLoading(true);
 
   const { data, error } = await window.akSupabase.auth.signInWithPassword({
@@ -39,6 +42,40 @@ function LoginPage({ onSubmit }) {
 
   onSubmit(email, password, data);
 };
+
+  const handleForgot = async (e) => {
+    e.preventDefault();
+    setError('');
+    setNotice(null);
+
+    if (!email) {
+      setNotice({ type: 'error', text: 'Въведете имейл адрес, за да възстановите паролата.' });
+      return;
+    }
+
+    if (!window.akSupabase) {
+      setNotice({ type: 'error', text: 'Authentication service is not configured.' });
+      return;
+    }
+
+    setResetLoading(true);
+
+    // redirectTo resolves to the production origin in deployment
+    // (https://akrealestatebg.com/admin/login) and must be in Supabase's
+    // allowed redirect URLs.
+    const redirectTo = window.location.origin + '/admin/login';
+
+    const { error } = await window.akSupabase.auth.resetPasswordForEmail(email, { redirectTo });
+
+    setResetLoading(false);
+
+    if (error) {
+      setNotice({ type: 'error', text: error.message || 'Неуспешно изпращане на имейл. Опитайте отново.' });
+      return;
+    }
+
+    setNotice({ type: 'success', text: 'Изпратихме имейл за възстановяване на паролата.' });
+  };
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden',
@@ -137,6 +174,18 @@ function LoginPage({ onSubmit }) {
             </div>
           )}
 
+          {notice && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10,
+              padding: '12px 14px',
+              background: notice.type === 'success' ? 'rgba(245,241,234,.06)' : 'rgba(176,24,28,.10)',
+              border: '1px solid ' + (notice.type === 'success' ? 'var(--hairline-light)' : 'rgba(176,24,28,.40)'),
+              fontSize: 11, fontWeight: 500, letterSpacing: '0.16em',
+              lineHeight: 1.5,
+              color: notice.type === 'success' ? 'var(--fg)' : 'var(--ak-crimson-bright)' }}>
+              <RedSquare size={6} /> {notice.text}
+            </div>
+          )}
+
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <label style={{ display: 'inline-flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
               <span style={{
@@ -151,11 +200,14 @@ function LoginPage({ onSubmit }) {
               <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.22em',
                 textTransform: 'uppercase', color: 'var(--fg-2)' }}>Remember me</span>
             </label>
-            <a href="#" style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.22em',
-              textTransform: 'uppercase', color: 'var(--fg-2)', textDecoration: 'none',
-              borderBottom: '1px solid var(--ak-crimson)', paddingBottom: 2 }}>
-              Forgot?
-            </a>
+            <button type="button" onClick={handleForgot} disabled={resetLoading}
+              style={{ background: 'none', border: 0, cursor: resetLoading ? 'default' : 'pointer',
+              fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, letterSpacing: '0.22em',
+              textTransform: 'uppercase', color: 'var(--fg-2)',
+              borderBottom: '1px solid var(--ak-crimson)', paddingBottom: 2, padding: '0 0 2px',
+              opacity: resetLoading ? 0.6 : 1 }}>
+              {resetLoading ? 'Sending…' : 'Forgot?'}
+            </button>
           </div>
 
           <Btn type="submit" variant="primary" disabled={loading} style={{
