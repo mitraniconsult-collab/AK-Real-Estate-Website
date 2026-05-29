@@ -89,9 +89,9 @@ function Nav({ active = 'listings', onNav, onLang }) {
             {/* thin hairline separates lang switch from CTA */}
             <span style={{ width: 1, height: 16, background: 'var(--fg-3)', opacity: .28, flexShrink: 0 }}></span>
 
-            <Btn variant="primary" as="a" href="mailto:office@akrealestatebg.com"
+            <Btn variant="primary" as="a" href="/#contact"
               style={{ padding: '11px 18px', fontSize: 10, textDecoration: 'none', flexShrink: 0 }}>
-              Свържи се с нас
+              {isBg ? 'Запази оглед' : 'Book a viewing'}
             </Btn>
           </div>
         )}
@@ -156,7 +156,7 @@ function Nav({ active = 'listings', onNav, onLang }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {links.map((l, i) => (
               <a key={l.id}
-                href={l.cta ? 'mailto:office@akrealestatebg.com' : (l.href || '#')}
+                href={l.cta ? '/#contact' : (l.href || '#')}
                 onClick={l.cta ? () => setOpen(false) : undefined}
                 style={{
                   display: 'flex', alignItems: 'baseline', gap: 16,

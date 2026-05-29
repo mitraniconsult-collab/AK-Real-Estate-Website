@@ -880,6 +880,7 @@
 
     let allListings = [];
     let activeFilter = "All";
+    let activeTypeFilter = "";
 
     function getImageUrl(image) {
       if (!image) return '';
@@ -922,9 +923,15 @@
     }
 
     function matchesFilter(listing) {
-      if (activeFilter === "All") return true;
-      if (activeFilter === "Sale" || activeFilter === "Rent") return listing.listing_type === activeFilter;
-      return listing.status === activeFilter;
+      if (activeFilter !== "All") {
+        if (activeFilter === "Sale" || activeFilter === "Rent") {
+          if (listing.listing_type !== activeFilter) return false;
+        } else {
+          if (listing.status !== activeFilter) return false;
+        }
+      }
+      if (activeTypeFilter && listing.property_type !== activeTypeFilter) return false;
+      return true;
     }
 
     function matchesSearch(listing) {
@@ -1012,6 +1019,31 @@
     });
 
     search.addEventListener("input", render);
+
+    // Apply URL query params from QuickSearch redirect
+    (function applyUrlParams() {
+      var p = new URLSearchParams(window.location.search);
+      var paramSearch = p.get('search') || '';
+      var paramDeal   = p.get('deal')   || '';
+      var paramType   = p.get('type')   || '';
+
+      if (paramSearch) {
+        search.value = paramSearch;
+      }
+
+      var validDeal = ['Sale', 'Rent'];
+      if (validDeal.indexOf(paramDeal) !== -1) {
+        activeFilter = paramDeal;
+        filterButtons.forEach(function(btn) {
+          btn.classList.toggle('active', btn.dataset.filter === paramDeal);
+        });
+      }
+
+      var validTypes = ['Apartment', 'House', 'Villa', 'Office', 'Land'];
+      if (validTypes.indexOf(paramType) !== -1) {
+        activeTypeFilter = paramType;
+      }
+    })();
 
     loadListings();
   </script>

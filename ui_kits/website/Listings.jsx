@@ -253,7 +253,7 @@ function getImageUrl(image) {
   return base + '/storage/v1/object/public/listing-images/' + raw;
 }
 
-function PropertyCard({ listing, cols, rows, compact, lang = 'bg' }) {
+function PropertyCard({ listing, cols, rows, compact, lang = 'bg', 'aria-label': ariaLabel }) {
   const [hover, setHover] = React.useState(false);
   const img = getImageUrl((listing.images && listing.images[listing.mainImage]) || (listing.images && listing.images[0]));
   const isClosed = listing.status === 'Sold' || listing.status === 'Rented';
@@ -272,6 +272,7 @@ function PropertyCard({ listing, cols, rows, compact, lang = 'bg' }) {
   return (
     <a href={'/listing?id=' + listing.id}
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+      aria-label={`${listing.title}${listing.area ? ', ' + listing.area : ''}${listing.city ? ', ' + listing.city : ''}`}
       style={{
         gridColumn: cols, gridRow: rows,
         position: 'relative', overflow: 'hidden', borderRadius: 4,
@@ -320,29 +321,57 @@ function PropertyCard({ listing, cols, rows, compact, lang = 'bg' }) {
 
       {/* meta block */}
       <div style={{ position: 'absolute', left: 18, right: 18, bottom: 18 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-          <RedSquare size={6} />
-          <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
-            textTransform: 'uppercase', color: 'var(--fg-2)' }}>{listing.area || listing.city}</span>
+        {/* location + listing type */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <RedSquare size={6} />
+            <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
+              textTransform: 'uppercase', color: 'var(--fg-2)' }}>{listing.area || listing.city || '—'}</span>
+          </div>
+          {listing.listingType && (
+            <span style={{
+              fontSize: 8, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase',
+              padding: '3px 7px', border: '1px solid rgba(245,241,234,.25)', color: 'var(--fg-2)',
+            }}>
+              {listing.listingType === 'Rent'
+                ? (isBg ? 'Наем' : 'For Rent')
+                : (isBg ? 'Продажба' : 'For Sale')}
+            </span>
+          )}
         </div>
+
         <h3 style={{
           margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300,
           fontSize: compact ? 'clamp(20px,1.8vw,26px)' : 'clamp(22px, 2.6vw, 38px)', lineHeight: 1.0,
           letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--fg)',
-        }}>{listing.title}</h3>
+        }}>{listing.title || '—'}</h3>
+
         <div style={{ display: 'flex', alignItems: 'flex-end', marginTop: 12,
           paddingTop: 12, borderTop: '1px solid rgba(245,241,234,.20)' }}>
-          <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.14em',
-            textTransform: 'uppercase', color: 'var(--fg-2)', flex: 1 }}>
-            {listing.bedrooms || '—'} BR &nbsp;·&nbsp; {listing.bathrooms || '—'} BA &nbsp;·&nbsp; {listing.areaSqm ? listing.areaSqm + ' m²' : '—'}
-          </span>
-          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 300,
-            fontSize: compact ? 16 : 'clamp(18px, 1.8vw, 24px)', color: 'var(--fg)',
-            letterSpacing: '0.04em', textDecoration: isClosed ? 'line-through' : 'none',
-            textDecorationColor: 'rgba(255,255,255,.35)' }}>
-            {window.formatPrice(listing.price, listing.currency, listing.listingType)}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.14em',
+              textTransform: 'uppercase', color: 'var(--fg-2)' }}>
+              {listing.bedrooms ? `${listing.bedrooms} ${isBg ? 'ст' : 'br'}` : '—'}
+              {' · '}
+              {listing.areaSqm ? `${listing.areaSqm} m²` : '—'}
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 300,
+              fontSize: compact ? 16 : 'clamp(18px, 1.8vw, 24px)', color: 'var(--fg)',
+              letterSpacing: '0.04em', marginTop: 4,
+              textDecoration: isClosed ? 'line-through' : 'none',
+              textDecorationColor: 'rgba(255,255,255,.35)' }}>
+              {window.formatPrice(listing.price, listing.currency, listing.listingType)}
+            </div>
+          </div>
+          <span style={{
+            fontSize: 9, fontWeight: 500, letterSpacing: '0.22em', textTransform: 'uppercase',
+            color: hover ? 'var(--ak-crimson)' : 'var(--fg-3)',
+            transition: 'color .3s var(--ease)', flexShrink: 0, marginLeft: 12,
+          }}>
+            {isBg ? 'Виж →' : 'View →'}
           </span>
         </div>
+
         {/* hover crimson hairline */}
         <span style={{ position: 'absolute', left: 0, bottom: -8, height: 1,
           width: hover ? '28%' : 0, background: 'var(--ak-crimson)',

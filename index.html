@@ -1,14 +1,23 @@
 <!doctype html>
-<html lang="en">
+<html lang="bg">
 <head>
 <meta charset="utf-8">
-<title>AK Real Estate — A Quieter Kind of Luxury</title>
+<title>AK Real Estate — Бутикова агенция за недвижими имоти, София</title>
+<meta name="description" content="AK Real Estate — бутикова агенция за недвижими имоти в София. Имоти за продажба и наем, кредитен консултант, интериорен дизайн и ремонт от А до Я.">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="assets/logo-monogram.svg">
+<meta property="og:title" content="AK Real Estate — Бутикова агенция за недвижими имоти">
+<meta property="og:description" content="Подбрани имоти, кредитен консултант, интериорен дизайн и ремонт. Личен подход, подреден процес.">
+<meta property="og:type" content="website">
 <link rel="stylesheet" href="colors_and_type.css">
 <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
 <style>
+  html { scroll-behavior: smooth; }
   html, body { margin: 0; padding: 0; }
+  :focus-visible {
+    outline: 2px solid var(--ak-crimson);
+    outline-offset: 3px;
+  }
   body {
     background: var(--ak-ink);
     color: var(--fg);
@@ -167,6 +176,7 @@
   <script type="text/babel" src="ui_kits/website/atoms.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Nav.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Hero.jsx"></script>
+  <script type="text/babel" src="ui_kits/website/QuickSearch.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Listings.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Concierge.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Editorial.jsx"></script>
@@ -174,7 +184,7 @@
   <script type="text/babel" src="ui_kits/website/Footer.jsx"></script>
 
   <script type="text/babel">
-    const { Nav, Hero, Listings, Concierge, Editorial, Contact, Footer } = window;
+    const { Nav, Hero, QuickSearch, Listings, Concierge, Editorial, Contact, Footer } = window;
     function App() {
       const [active, setActive] = React.useState('listings');
       const [lang, setLang] = React.useState(
@@ -187,6 +197,7 @@
           <Nav active={active} onNav={setActive} lang={lang} onLang={handleLang} />
           <main>
             <Hero lang={lang} />
+            <QuickSearch lang={lang} />
             <Listings featuredOnly={true} lang={lang} />
             <Concierge lang={lang} />
             <Editorial lang={lang} />

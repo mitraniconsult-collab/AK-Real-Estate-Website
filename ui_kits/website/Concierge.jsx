@@ -37,7 +37,7 @@ function Concierge({ lang = 'bg' }) {
         <div className="r-edge-label" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
           gap: 18, paddingTop: 60 }}>
           <div style={{ width: 1, height: 80, background: 'var(--ak-crimson)' }}></div>
-          <VLabel>§ 03 — Why Work With Us</VLabel>
+          <VLabel>{isBg ? '§ 03 — Защо AK' : '§ 03 — Why AK'}</VLabel>
         </div>
 
         <div>
@@ -120,9 +120,14 @@ function Concierge({ lang = 'bg' }) {
               {isBg ? 'Започнете разговор.' : 'Begin a quiet conversation.'}
             </span>
             <span style={{ flex: 1 }}></span>
-            <Btn variant="secondary" as="a" href="mailto:office@akrealestatebg.com" style={{ textDecoration: 'none' }}>
-              {isBg ? 'Запитване →' : 'Request Consultation →'}
-            </Btn>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <Btn variant="primary" as="a" href="/services" style={{ textDecoration: 'none' }}>
+                {isBg ? 'Всички услуги →' : 'All services →'}
+              </Btn>
+              <Btn variant="secondary" as="a" href="/#contact" style={{ textDecoration: 'none' }}>
+                {isBg ? 'Запитване' : 'Get in touch'}
+              </Btn>
+            </div>
           </div>
         </div>
       </div>

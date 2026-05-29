@@ -6,7 +6,8 @@ function Contact({ lang = 'bg' }) {
   const isBg = lang !== 'en';
   const [sent, setSent] = React.useState(false);
   const [name, setName] = React.useState('');
-  const [email, setEmail] = React.useState('');
+  const [phone, setPhone] = React.useState('');
+  const [budget, setBudget] = React.useState('');
   const [interest, setInterest] = React.useState(isBg ? 'Покупка на имот' : 'Buying property');
   const [message, setMessage] = React.useState('');
 
@@ -15,7 +16,7 @@ function Contact({ lang = 'bg' }) {
     : ['Buying property', 'Selling property', 'Credit consultation', 'Interior design', 'Renovation'];
 
   return (
-    <section style={{ position: 'relative', background: 'var(--ak-black)', color: 'var(--fg)',
+    <section id="contact" style={{ position: 'relative', background: 'var(--ak-black)', color: 'var(--fg)',
       overflow: 'hidden' }}>
       <img src={CONTACT_IMG} alt=""
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
@@ -51,10 +52,39 @@ function Contact({ lang = 'bg' }) {
           </p>
 
           <div style={{ marginTop: 56, display: 'flex', flexDirection: 'column', gap: 22 }}>
-            <ContactLine label={isBg ? 'София'    : 'Sofia'}  value="ул. Димитър Хаджикоцев 15, Лозенец" />
-            <ContactLine label={isBg ? 'Телефон'  : 'Phone'}  value="+359 87 968 4460" />
-            <ContactLine label={isBg ? 'Имейл'    : 'Email'}  value="office@akrealestatebg.com" />
-            <ContactLine label="ЕИК" value="208779452" />
+            <ContactLine label={isBg ? 'София' : 'Sofia'} value="ул. Димитър Хаджикоцев 15, Лозенец" />
+            <ContactLine label={isBg ? 'Телефон' : 'Phone'}
+              value={<a href="tel:+359879684460" style={{ color: 'var(--fg)', textDecoration: 'none' }}>+359 87 968 4460</a>} />
+            <ContactLine label={isBg ? 'Имейл' : 'Email'}
+              value={<a href="mailto:office@akrealestatebg.com" style={{ color: 'var(--fg)', textDecoration: 'none' }}>office@akrealestatebg.com</a>} />
+          </div>
+
+          {/* Direct action links */}
+          <div style={{ marginTop: 32, display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+            <a href="tel:+359879684460" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '10px 16px', border: '1px solid var(--hairline-light)',
+              fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
+              letterSpacing: '0.22em', textTransform: 'uppercase',
+              color: 'var(--fg-2)', textDecoration: 'none',
+              transition: 'border-color .2s var(--ease), color .2s var(--ease)',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ak-crimson)'; e.currentTarget.style.color = 'var(--fg)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--hairline-light)'; e.currentTarget.style.color = 'var(--fg-2)'; }}>
+              ☎ {isBg ? 'Обади се' : 'Call us'}
+            </a>
+            <a href="mailto:office@akrealestatebg.com" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '10px 16px', border: '1px solid var(--hairline-light)',
+              fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
+              letterSpacing: '0.22em', textTransform: 'uppercase',
+              color: 'var(--fg-2)', textDecoration: 'none',
+              transition: 'border-color .2s var(--ease), color .2s var(--ease)',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ak-crimson)'; e.currentTarget.style.color = 'var(--fg)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--hairline-light)'; e.currentTarget.style.color = 'var(--fg-2)'; }}>
+              ✉ {isBg ? 'Пиши ни' : 'Email us'}
+            </a>
           </div>
         </div>
 
@@ -67,15 +97,17 @@ function Contact({ lang = 'bg' }) {
             <RedSquare />
             <span style={{ fontFamily: 'var(--font-display)', fontWeight: 300,
               fontSize: 22, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
-              {isBg ? 'Запитване' : 'Request Access'}
+              {isBg ? 'Изпрати запитване' : 'Send inquiry'}
             </span>
           </div>
 
           {!sent && <>
-            <Field label={isBg ? 'Три имена' : 'Full name'} value={name} onChange={setName}
-              placeholder={isBg ? 'Вашето име' : 'Your name'} />
-            <Field label={isBg ? 'Имейл' : 'Email'} value={email} onChange={setEmail}
-              placeholder="office@example.com" />
+            <Field label={isBg ? 'Вашето име' : 'Your name'} value={name} onChange={setName}
+              placeholder={isBg ? 'Три имена' : 'Full name'} />
+            <Field label={isBg ? 'Телефон' : 'Phone'} value={phone} onChange={setPhone}
+              placeholder={isBg ? '+359 …' : '+1 / +44 …'} type="tel" />
+            <Field label={isBg ? 'Бюджет (ориентировъчно)' : 'Budget (approx.)'} value={budget} onChange={setBudget}
+              placeholder={isBg ? 'напр. 150 000 €' : 'e.g. €150,000'} />
 
             <div>
               <label style={fieldLabelStyle}>{isBg ? 'Тема' : 'Area of Interest'}</label>
@@ -103,7 +135,7 @@ function Contact({ lang = 'bg' }) {
 
             <div className="r-flex-wrap" style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 8 }}>
               <Btn variant="primary" as="button" type="submit">
-                {isBg ? 'Изпрати' : 'Send Request'}
+                {isBg ? 'Изпрати запитване' : 'Send inquiry'}
               </Btn>
               <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
                 textTransform: 'uppercase', color: 'var(--fg-2)' }}>
@@ -139,13 +171,14 @@ const fieldLabelStyle = {
   color: 'var(--fg-2)',
 };
 
-function Field({ label, value, onChange, placeholder, textarea }) {
+function Field({ label, value, onChange, placeholder, textarea, type = 'text' }) {
   const Tag = textarea ? 'textarea' : 'input';
   return (
     <div>
       <label style={fieldLabelStyle}>{label}</label>
       <Tag
         value={value}
+        type={textarea ? undefined : type}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={textarea ? 4 : undefined}
@@ -168,7 +201,7 @@ function ContactLine({ label, value }) {
       borderBottom: '1px solid var(--hairline-light)' }}>
       <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
         textTransform: 'uppercase', color: 'var(--fg-2)' }}>▪ {label}</div>
-      <div style={{ fontSize: 15, fontWeight: 300, color: 'var(--fg)' }}>{value}</div>
+      <div style={{ fontSize: 15, fontWeight: 300, color: 'var(--fg)', lineHeight: 1.5 }}>{value}</div>
     </div>
   );
 }

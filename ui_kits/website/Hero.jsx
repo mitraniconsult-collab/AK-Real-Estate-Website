@@ -24,7 +24,7 @@ function Hero({ lang = 'bg' }) {
   }, []);
 
   return (
-    <section style={{
+    <section aria-label={isBg ? 'Начална страница' : 'Homepage'} style={{
       position: 'relative',
       minHeight: 'min(92vh, 820px)',
       background: 'var(--ak-black)',
@@ -88,19 +88,26 @@ function Hero({ lang = 'bg' }) {
             color: 'var(--fg-2)',
           }}>
             {isBg
-              ? 'Бутиково портфолио от имоти и услуги за клиенти, които търсят подреден процес, внимание към детайла и лично отношение.'
-              : 'A private portfolio of residences for those who would rather not be seen looking. Off-market listings, restored landmarks, and the kind of houses found by being told.'
+              ? 'Подбрани имоти за продажба и наем, кредитно консултиране, интериорен дизайн и ремонт — всичко в един подреден процес с лично отношение.'
+              : 'Curated properties for sale and rent, credit consulting, interior design and renovation — all in one clear process with a personal touch.'
             }
           </p>
           <div style={{ marginTop: 40, display: 'flex', gap: 24, justifyContent: 'flex-end', alignItems: 'center' }}>
-            <a href="/listings" style={{
+            <Btn variant="primary" as="a" href="/listings"
+              style={{ textDecoration: 'none' }}
+              aria-label={isBg ? 'Виж всички имоти' : 'View all listings'}>
+              {isBg ? 'Виж обявите' : 'View Listings'}
+            </Btn>
+            <a href="/#contact" style={{
               fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
               letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--fg)',
-              textDecoration: 'none', borderBottom: '1px solid var(--ak-crimson)', paddingBottom: 4,
-            }}>{isBg ? 'Виж обявите' : 'View Listings'}</a>
-            <Btn variant="primary" as="a" href="mailto:office@akrealestatebg.com" style={{ textDecoration: 'none' }}>
-              {isBg ? 'Свържи се с нас' : 'Get in Touch'}
-            </Btn>
+              textDecoration: 'none', borderBottom: '1px solid rgba(245,241,234,.35)', paddingBottom: 4,
+              transition: 'border-color .2s var(--ease)',
+            }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--ak-crimson)'}
+            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(245,241,234,.35)'}>
+              {isBg ? 'Запитване за консултация' : 'Request consultation'}
+            </a>
           </div>
         </div>
       </div>
