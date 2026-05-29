@@ -2,18 +2,73 @@
 
 const CONTACT_IMG = "https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=2200&q=80&auto=format&fit=crop";
 
+// Stable, language-neutral interest keys + their displayed labels per language.
+const INTEREST_OPTIONS = [
+  { key: 'buy',        bg: 'Покупка на имот',     en: 'Buying property' },
+  { key: 'sell',       bg: 'Продажба на имот',    en: 'Selling property' },
+  { key: 'credit',     bg: 'Кредитен консултант', en: 'Credit consultation' },
+  { key: 'interior',   bg: 'Интериорен дизайн',   en: 'Interior design' },
+  { key: 'renovation', bg: 'Ремонт от А до Я',    en: 'Renovation' },
+];
+
 function Contact({ lang = 'bg' }) {
   const isBg = lang !== 'en';
   const [sent, setSent] = React.useState(false);
   const [name, setName] = React.useState('');
   const [phone, setPhone] = React.useState('');
   const [budget, setBudget] = React.useState('');
-  const [interest, setInterest] = React.useState(isBg ? 'Покупка на имот' : 'Buying property');
+  const [interest, setInterest] = React.useState('buy'); // stores the stable key
   const [message, setMessage] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(''); // '' | 'validation' | 'network'
+  const [honeypot, setHoneypot] = React.useState(''); // bots fill this; humans never see it
+  const mountedAt = React.useRef(Date.now());
 
-  const interestOptions = isBg
-    ? ['Покупка на имот', 'Продажба на имот', 'Кредитен консултант', 'Интериорен дизайн', 'Ремонт от А до Я']
-    : ['Buying property', 'Selling property', 'Credit consultation', 'Interior design', 'Renovation'];
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    // Spam guard 1 — honeypot filled → silently show success, never insert.
+    if (honeypot.trim()) { setSent(true); return; }
+
+    // Spam guard 2 — submitted suspiciously fast → silently show success, never insert.
+    if (Date.now() - mountedAt.current < 2000) { setSent(true); return; }
+
+    const nm = name.trim();
+    const ph = phone.trim();
+
+    // Validation — require at least name + phone.
+    if (!nm || !ph) { setError('validation'); return; }
+
+    if (!window.akSupabase) { setError('network'); return; }
+
+    const selected = INTEREST_OPTIONS.find(o => o.key === interest) || INTEREST_OPTIONS[0];
+    const interestLabel = isBg ? selected.bg : selected.en;
+
+    setLoading(true);
+    const { error: insErr } = await window.akSupabase
+      .from('contact_inquiries')
+      .insert({
+        name: nm,
+        phone: ph,
+        budget: budget.trim(),
+        interest: selected.key,
+        interest_label: interestLabel,
+        message: message.trim(),
+        lang,
+        source: 'website_contact',
+        user_agent: navigator.userAgent,
+      });
+    setLoading(false);
+
+    if (insErr) {
+      console.error('Contact insert error:', insErr);
+      setError('network'); // form values are preserved
+      return;
+    }
+
+    setSent(true);
+  };
 
   return (
     <section id="contact" style={{ position: 'relative', background: 'var(--ak-black)', color: 'var(--fg)',
@@ -89,7 +144,7 @@ function Contact({ lang = 'bg' }) {
         </div>
 
         {/* right — form */}
-        <form onSubmit={(e) => { e.preventDefault(); setSent(true); }}
+        <form onSubmit={handleSubmit}
           style={{ background: 'rgba(20,20,20,.6)', backdropFilter: 'blur(14px)',
             border: '1px solid var(--hairline-light)', padding: 'clamp(28px,3.2vw,48px)',
             display: 'flex', flexDirection: 'column', gap: 28 }}>
@@ -112,18 +167,22 @@ function Contact({ lang = 'bg' }) {
             <div>
               <label style={fieldLabelStyle}>{isBg ? 'Тема' : 'Area of Interest'}</label>
               <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {interestOptions.map(opt => (
-                  <button key={opt} type="button" onClick={() => setInterest(opt)}
-                    style={{
-                      background: interest === opt ? 'var(--ak-crimson)' : 'transparent',
-                      color: interest === opt ? '#fff' : 'var(--fg)',
-                      border: interest === opt ? 'none' : '1px solid var(--hairline-light)',
-                      padding: '10px 14px', cursor: 'pointer',
-                      fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
-                      letterSpacing: '0.22em', textTransform: 'uppercase', borderRadius: 0,
-                      transition: 'all .2s var(--ease)',
-                    }}>{opt}</button>
-                ))}
+                {INTEREST_OPTIONS.map(opt => {
+                  const label = isBg ? opt.bg : opt.en;
+                  const active = interest === opt.key;
+                  return (
+                    <button key={opt.key} type="button" onClick={() => setInterest(opt.key)}
+                      style={{
+                        background: active ? 'var(--ak-crimson)' : 'transparent',
+                        color: active ? '#fff' : 'var(--fg)',
+                        border: active ? 'none' : '1px solid var(--hairline-light)',
+                        padding: '10px 14px', cursor: 'pointer',
+                        fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
+                        letterSpacing: '0.22em', textTransform: 'uppercase', borderRadius: 0,
+                        transition: 'all .2s var(--ease)',
+                      }}>{label}</button>
+                  );
+                })}
               </div>
             </div>
 
@@ -133,9 +192,53 @@ function Contact({ lang = 'bg' }) {
                 : 'A quiet street, a stone wall, a garden.'
               } textarea />
 
+            {/* Honeypot — hidden from humans; only bots fill it. */}
+            <input
+              type="text"
+              name="company"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
+            />
+
+            {error === 'validation' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10,
+                padding: '12px 14px', background: 'rgba(176,24,28,.10)',
+                border: '1px solid rgba(176,24,28,.40)',
+                fontSize: 11, fontWeight: 500, letterSpacing: '0.16em',
+                textTransform: 'uppercase', color: 'var(--ak-crimson-bright)' }}>
+                <RedSquare size={6} /> {isBg ? 'Моля, попълнете име и телефон.' : 'Please enter your name and phone.'}
+              </div>
+            )}
+
+            {error === 'network' && (
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10,
+                padding: '12px 14px', background: 'rgba(176,24,28,.10)',
+                border: '1px solid rgba(176,24,28,.40)',
+                fontSize: 11, fontWeight: 500, letterSpacing: '0.12em',
+                lineHeight: 1.6, color: 'var(--ak-crimson-bright)' }}>
+                <RedSquare size={6} style={{ marginTop: 4, flexShrink: 0 }} />
+                <span>
+                  {isBg
+                    ? 'Възникна грешка. Опитайте отново или ни пишете директно.'
+                    : 'Something went wrong. Please try again or contact us directly.'}
+                  {' '}
+                  <a href="mailto:office@akrealestatebg.com"
+                    style={{ color: 'var(--fg)', textDecoration: 'underline' }}>
+                    office@akrealestatebg.com
+                  </a>
+                </span>
+              </div>
+            )}
+
             <div className="r-flex-wrap" style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 8 }}>
-              <Btn variant="primary" as="button" type="submit">
-                {isBg ? 'Изпрати запитване' : 'Send inquiry'}
+              <Btn variant="primary" as="button" type="submit" disabled={loading}>
+                {loading
+                  ? (isBg ? 'Изпращане…' : 'Sending…')
+                  : (isBg ? 'Изпрати запитване' : 'Send inquiry')}
               </Btn>
               <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
                 textTransform: 'uppercase', color: 'var(--fg-2)' }}>
