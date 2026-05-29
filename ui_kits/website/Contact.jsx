@@ -78,14 +78,18 @@ function Contact({ lang = 'bg' }) {
       return;
     }
 
+    // interest must always be one of the stable keys the table expects.
+    const VALID_INTEREST = ['buy', 'sell', 'credit', 'interior', 'renovation'];
     const selected = INTEREST_OPTIONS.find(o => o.key === interest) || INTEREST_OPTIONS[0];
+    const interestKey = VALID_INTEREST.includes(selected.key) ? selected.key : 'buy';
     const interestLabel = isBg ? selected.bg : selected.en;
 
+    // Keys here must match the contact_inquiries table columns exactly.
     const payload = {
       name: nm,
       phone: ph,
       budget: budget.trim(),
-      interest: selected.key,
+      interest: interestKey,
       interest_label: interestLabel,
       message: message.trim(),
       lang,
@@ -95,16 +99,21 @@ function Contact({ lang = 'bg' }) {
 
     setLoading(true);
     // No .select() — anon has INSERT but not SELECT; chaining .select() would
-    // trigger an RLS/permission error on an otherwise successful insert.
+    // require a SELECT and fail on an otherwise successful insert.
     const { error: insErr } = await window.akSupabase
       .from('contact_inquiries')
-      .insert(payload);
+      .insert([payload]);
     setLoading(false);
 
     if (insErr) {
-      // Log only non-personal diagnostic fields (no submitted form values).
+      // Sanitized diagnostics only — error metadata + payload field NAMES,
+      // never the submitted values (name/phone/message stay private).
       console.error('Contact insert error:', {
-        code: insErr.code, message: insErr.message, hint: insErr.hint,
+        code: insErr.code,
+        message: insErr.message,
+        details: insErr.details,
+        hint: insErr.hint,
+        payloadKeys: Object.keys(payload),
       });
       setError('network'); // form values are preserved
       setErrorMsg(resolveErrorMsg(insErr)); // '' → generic text shown
