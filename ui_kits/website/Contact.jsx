@@ -94,10 +94,11 @@ function Contact({ lang = 'bg' }) {
     };
 
     setLoading(true);
-    const { data, error: insErr } = await window.akSupabase
+    // No .select() — anon has INSERT but not SELECT; chaining .select() would
+    // trigger an RLS/permission error on an otherwise successful insert.
+    const { error: insErr } = await window.akSupabase
       .from('contact_inquiries')
-      .insert(payload)
-      .select();
+      .insert(payload);
     setLoading(false);
 
     if (insErr) {
