@@ -107,9 +107,10 @@
   <script type="text/babel" src="DashboardPage.jsx"></script>
   <script type="text/babel" src="ListingsPage.jsx"></script>
   <script type="text/babel" src="ListingFormPage.jsx"></script>
+  <script type="text/babel" src="InquiriesPage.jsx"></script>
 
   <script type="text/babel">
-    const { AdminShell, LoginPage, DashboardPage, ListingsPage, ListingFormPage, useRoute, useAuth } = window;
+    const { AdminShell, LoginPage, DashboardPage, ListingsPage, ListingFormPage, InquiriesPage, useRoute, useAuth } = window;
 
     function App() {
       const route = useRoute();
@@ -139,6 +140,7 @@ if (!auth.signedIn) {
 
       let page;
       if (route.name === 'dashboard') page = <DashboardPage />;
+      else if (route.name === 'inquiries') page = <InquiriesPage />;
       else if (route.name === 'listings') page = <ListingsPage />;
       else if (route.name === 'listing-new') page = <ListingFormPage mode="new" />;
       else if (route.name === 'listing-edit') page = <ListingFormPage mode="edit" id={route.id} />;
