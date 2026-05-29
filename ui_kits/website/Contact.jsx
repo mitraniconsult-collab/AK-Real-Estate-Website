@@ -21,12 +21,41 @@ function Contact({ lang = 'bg' }) {
   const [message, setMessage] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(''); // '' | 'validation' | 'network'
+  const [errorMsg, setErrorMsg] = React.useState(''); // specific message; falls back to generic text
   const [honeypot, setHoneypot] = React.useState(''); // bots fill this; humans never see it
   const mountedAt = React.useRef(Date.now());
+
+  // Maps a Supabase/Postgres error to a more specific, user-readable message.
+  // Returns '' when no specific match is found (caller shows the generic text).
+  const resolveErrorMsg = (err) => {
+    const code = err && err.code ? String(err.code) : '';
+    const msg = (err && err.message ? String(err.message) : '').toLowerCase();
+
+    // relation/table missing — 42P01
+    if (code === '42P01' || msg.includes('does not exist') || msg.includes('could not find the table')) {
+      return isBg
+        ? 'Таблицата за запитвания липсва. Моля, свържете се с нас директно.'
+        : 'The inquiries table is missing. Please contact us directly.';
+    }
+    // permission / RLS denied — 42501 or PostgREST RLS message
+    if (code === '42501' || msg.includes('row-level security') || msg.includes('permission denied')) {
+      return isBg
+        ? 'Изпращането не е разрешено в момента. Моля, свържете се с нас директно.'
+        : 'Submission is not permitted right now. Please contact us directly.';
+    }
+    // check constraint violation — 23514
+    if (code === '23514' || msg.includes('check constraint') || msg.includes('violates check')) {
+      return isBg
+        ? 'Някои данни не са валидни. Моля, проверете полетата и опитайте отново.'
+        : 'Some details are invalid. Please check the fields and try again.';
+    }
+    return '';
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setErrorMsg('');
 
     // Spam guard 1 — honeypot filled → silently show success, never insert.
     if (honeypot.trim()) { setSent(true); return; }
@@ -40,30 +69,44 @@ function Contact({ lang = 'bg' }) {
     // Validation — require at least name + phone.
     if (!nm || !ph) { setError('validation'); return; }
 
-    if (!window.akSupabase) { setError('network'); return; }
+    if (!window.akSupabase) {
+      console.error('Contact insert: window.akSupabase is not available.');
+      setError('network');
+      setErrorMsg(isBg
+        ? 'Услугата не е достъпна. Моля, свържете се с нас директно.'
+        : 'Service unavailable. Please contact us directly.');
+      return;
+    }
 
     const selected = INTEREST_OPTIONS.find(o => o.key === interest) || INTEREST_OPTIONS[0];
     const interestLabel = isBg ? selected.bg : selected.en;
 
+    const payload = {
+      name: nm,
+      phone: ph,
+      budget: budget.trim(),
+      interest: selected.key,
+      interest_label: interestLabel,
+      message: message.trim(),
+      lang,
+      source: 'website_contact',
+      user_agent: navigator.userAgent,
+    };
+
     setLoading(true);
-    const { error: insErr } = await window.akSupabase
+    const { data, error: insErr } = await window.akSupabase
       .from('contact_inquiries')
-      .insert({
-        name: nm,
-        phone: ph,
-        budget: budget.trim(),
-        interest: selected.key,
-        interest_label: interestLabel,
-        message: message.trim(),
-        lang,
-        source: 'website_contact',
-        user_agent: navigator.userAgent,
-      });
+      .insert(payload)
+      .select();
     setLoading(false);
 
     if (insErr) {
-      console.error('Contact insert error:', insErr);
+      // Log only non-personal diagnostic fields (no submitted form values).
+      console.error('Contact insert error:', {
+        code: insErr.code, message: insErr.message, hint: insErr.hint,
+      });
       setError('network'); // form values are preserved
+      setErrorMsg(resolveErrorMsg(insErr)); // '' → generic text shown
       return;
     }
 
@@ -222,9 +265,11 @@ function Contact({ lang = 'bg' }) {
                 lineHeight: 1.6, color: 'var(--ak-crimson-bright)' }}>
                 <RedSquare size={6} style={{ marginTop: 4, flexShrink: 0 }} />
                 <span>
-                  {isBg
-                    ? 'Възникна грешка. Опитайте отново или ни пишете директно.'
-                    : 'Something went wrong. Please try again or contact us directly.'}
+                  {errorMsg
+                    ? errorMsg
+                    : (isBg
+                        ? 'Възникна грешка. Опитайте отново или ни пишете директно.'
+                        : 'Something went wrong. Please try again or contact us directly.')}
                   {' '}
                   <a href="mailto:office@akrealestatebg.com"
                     style={{ color: 'var(--fg)', textDecoration: 'underline' }}>
