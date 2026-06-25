@@ -1,4 +1,17 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "akrealestatebg.com"
+        }
+      ],
+      "destination": "https://www.akrealestatebg.com/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/listings",
@@ -27,6 +40,14 @@
     {
       "source": "/cookies",
       "destination": "/cookies.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin/index.html"
+    },
+    {
+      "source": "/admin/",
+      "destination": "/admin/index.html"
     },
     {
       "source": "/admin/:path*",
