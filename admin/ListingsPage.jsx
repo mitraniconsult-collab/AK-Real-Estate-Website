@@ -13,6 +13,36 @@ function getImageUrl(image) {
   return base + '/storage/v1/object/public/listing-images/' + raw;
 }
 
+// Defensive shaping for the listings list view. This is the only admin route that
+// fan-out renders EVERY record, so one malformed row (bad images, null title,
+// out-of-range mainImage, non-numeric price) must not crash the whole page.
+function normalizeListing(l) {
+  const src = (l && typeof l === 'object') ? l : {};
+  const images = Array.isArray(src.images) ? src.images : [];
+
+  let mainImage = Number(src.mainImage);
+  if (!Number.isInteger(mainImage) || mainImage < 0 || mainImage >= images.length) {
+    mainImage = 0;
+  }
+
+  const priceNum = (src.price === '' || src.price == null) ? null : Number(src.price);
+
+  return {
+    ...src,
+    id:           src.id != null ? String(src.id) : '',
+    title:        src.title == null ? '' : String(src.title),
+    city:         src.city == null ? '' : String(src.city),
+    area:         src.area == null ? '' : String(src.area),
+    propertyType: src.propertyType == null ? '' : String(src.propertyType),
+    status:       src.status || 'Draft',
+    listingType:  src.listingType || 'Sale',
+    price:        Number.isNaN(priceNum) ? null : priceNum,
+    featured:     !!src.featured,
+    images,
+    mainImage,
+  };
+}
+
 function csvEscape(val) {
   const s = val == null ? '' : String(val);
   if (s.includes('"') || s.includes(',') || s.includes('\n') || s.includes('\r')) {
@@ -23,7 +53,10 @@ function csvEscape(val) {
 
 function ListingsPage() {
   const route = useRoute();
-  const listings = useListings();
+  const rawListings = useListings();
+  const listings = (Array.isArray(rawListings) ? rawListings : [])
+    .filter(Boolean)
+    .map(normalizeListing);
 
   // On mobile (<1024px) always use card view — table is unusable on small screens.
   const [isMobile, setIsMobile] = React.useState(
