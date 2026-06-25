@@ -4,8 +4,12 @@
 <meta charset="utf-8">
 <title>AK Real Estate — Admin</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="icon" href="../assets/logo-monogram.svg">
-<link rel="stylesheet" href="../colors_and_type.css">
+<!-- Resolves all relative admin assets (JSX scripts) against /admin/ regardless of the
+     clean URL depth (e.g. /admin/listings/new), so Vercel's rewrite to /admin/index.html
+     loads them correctly. Absolute paths (/admin/..., /assets/...) ignore this base. -->
+<base href="/admin/">
+<link rel="icon" href="/assets/logo-monogram.svg">
+<link rel="stylesheet" href="/colors_and_type.css">
 <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
 <style>
   html, body { margin: 0; padding: 0; }
@@ -98,7 +102,7 @@
   );
 </script>
 
-  <script src="../shared/listings-store.js"></script>
+  <script src="/shared/listings-store.js"></script>
 
   <script type="text/babel" src="atoms.jsx"></script>
   <script type="text/babel" src="store.jsx"></script>
