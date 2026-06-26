@@ -667,41 +667,60 @@ function loadImageFromFile(file) {
 
 function drawWatermark(ctx, width, height) {
   const text = 'AK REAL ESTATE';
-  const pad = Math.round(width * 0.03);
-  const fontSize = Math.max(18, Math.round(width * 0.032));
+  const pad = Math.round(width * 0.035);
+  const fontSize = Math.max(22, Math.round(width * 0.04));
 
   ctx.save();
-  ctx.font = '500 ' + fontSize + 'px Arial, Helvetica, sans-serif';
+  ctx.font = '600 ' + fontSize + 'px Arial, Helvetica, sans-serif';
   ctx.textAlign = 'right';
   ctx.textBaseline = 'bottom';
   // Letter-spacing is supported on modern canvas; degrade gracefully where it isn't.
   if ('letterSpacing' in ctx) { try { ctx.letterSpacing = Math.round(fontSize * 0.16) + 'px'; } catch (e) {} }
 
-  const x = width - pad;
-  const y = height - pad;
+  const x = width - pad;            // right edge of the wordmark
+  const y = height - pad;           // bottom (baseline) of the wordmark
   const textW = ctx.measureText(text).width;
 
-  // Wordmark — white, translucent, with a soft dark shadow for legibility on light photos.
-  ctx.shadowColor = 'rgba(0,0,0,.55)';
-  ctx.shadowBlur = Math.round(fontSize * 0.25);
+  const sq = Math.round(fontSize * 0.55);
+  const gap = Math.round(fontSize * 0.5);
+  const sqX = x - textW - gap - sq;
+  const sqY = (y - Math.round(fontSize * 0.35)) - Math.round(sq / 2);
+
+  // Subtle dark backing so the wordmark stays legible on bright/light photos.
+  const bx = Math.round(fontSize * 0.5);
+  const by = Math.round(fontSize * 0.35);
+  let rectX = sqX - bx;
+  let rectY = (y - fontSize) - by;
+  let rectW = (x + bx) - rectX;
+  let rectH = (y + by) - rectY;
+  if (rectX < 0) { rectW += rectX; rectX = 0; }
+  if (rectY < 0) { rectH += rectY; rectY = 0; }
+  if (rectX + rectW > width) rectW = width - rectX;
+  if (rectY + rectH > height) rectH = height - rectY;
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = 'rgba(0,0,0,0.22)';
+  ctx.fillRect(rectX, rectY, rectW, rectH);
+
+  // Wordmark — white, with a soft dark shadow for extra legibility.
+  ctx.shadowColor = 'rgba(0,0,0,.75)';
+  ctx.shadowBlur = Math.round(fontSize * 0.35);
   ctx.shadowOffsetX = 0;
   ctx.shadowOffsetY = Math.round(fontSize * 0.06);
-  ctx.globalAlpha = 0.38;
+  ctx.globalAlpha = 0.50;
   ctx.fillStyle = '#ffffff';
   ctx.fillText(text, x, y);
 
   // Small red accent square just to the left of the wordmark.
-  const sq = Math.round(fontSize * 0.52);
-  const gap = Math.round(fontSize * 0.45);
-  const sqX = x - textW - gap - sq;
-  const sqY = y - Math.round(fontSize * 0.35) - Math.round(sq / 2);
   ctx.shadowColor = 'transparent';
   ctx.shadowBlur = 0;
   ctx.shadowOffsetY = 0;
-  ctx.globalAlpha = 0.42;
+  ctx.globalAlpha = 0.65;
   ctx.fillStyle = '#b0181c';
   ctx.fillRect(sqX, sqY, sq, sq);
 
+  ctx.globalAlpha = 1;
   ctx.restore();
 }
 
@@ -760,6 +779,7 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
     }));
     setPending(prev => [...prev, ...newPending]);
     for (const item of newPending) {
+      let processedUrl = null;
       try {
         // Process + watermark before upload. On failure, skip this image — never
         // fall back to uploading the un-watermarked original.
@@ -769,10 +789,14 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
         } catch (wmErr) {
           console.error('Watermark processing failed:', wmErr);
           alert(t('Could not process watermark for this image. Please try another file.'));
-          setPending(prev => prev.filter(p => p.id !== item.id));
-          URL.revokeObjectURL(item.blobUrl);
-          continue;
+          continue; // cleanup runs in finally
         }
+
+        // Swap the pending thumbnail to the actual watermarked result so the admin
+        // sees the watermark immediately, before the upload even finishes.
+        processedUrl = URL.createObjectURL(processed);
+        setPending(prev => prev.map(p => p.id === item.id ? { ...p, blobUrl: processedUrl } : p));
+
         const path = item.id + '.jpg';
         const { data, error } = await supabase.storage
           .from('listing-images')
@@ -786,9 +810,11 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
         onChange([...curImages, urlData.publicUrl], curImages.length === 0 ? 0 : curMain);
       } catch (err) {
         console.error('Image upload failed:', err);
+      } finally {
+        setPending(prev => prev.filter(p => p.id !== item.id));
+        URL.revokeObjectURL(item.blobUrl);
+        if (processedUrl) URL.revokeObjectURL(processedUrl);
       }
-      setPending(prev => prev.filter(p => p.id !== item.id));
-      URL.revokeObjectURL(item.blobUrl);
     }
   };
 
