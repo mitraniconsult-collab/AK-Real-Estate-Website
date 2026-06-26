@@ -374,13 +374,13 @@ function ListingRow({ listing, odd, onDelete }) {
         </button>
       </Td>
       <Td align="right">
-        <RowActions listing={listing} onDelete={onDelete} />
+        <ListingRowActions listing={listing} onDelete={onDelete} />
       </Td>
     </tr>
   );
 }
 
-function RowActions({ listing, onDelete }) {
+function ListingRowActions({ listing, onDelete }) {
   const next = listing.status === 'Active' ? 'Draft' : 'Active';
   return (
     <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center', justifyContent: 'flex-end' }}>
@@ -486,7 +486,7 @@ function AdminListingCard({ listing, onDelete }) {
         </div>
         <div style={{ display: 'flex', gap: 6, paddingTop: 10,
           borderTop: '1px solid var(--hairline-light)' }}>
-          <RowActions listing={listing} onDelete={onDelete} />
+          <ListingRowActions listing={listing} onDelete={onDelete} />
         </div>
       </div>
     </article>
