@@ -79,6 +79,16 @@
       flex-shrink: 0;
     }
     .header-cta:hover { background: #7a0f12 !important; }
+    .lang-switch { display: flex; align-items: center; gap: 4px; }
+    .lang-btn {
+      background: none; border: none; cursor: pointer;
+      font-family: var(--font-body); font-size: 10px; font-weight: 500;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: var(--fg-3); padding: 2px 0; transition: color .2s var(--ease);
+    }
+    .lang-btn.active { color: var(--fg); }
+    .lang-btn:hover { color: var(--fg-2); }
+    .lang-sep { color: var(--fg-3); font-size: 10px; }
 
     main { padding-top: clamp(80px,12vw,110px); }
 
@@ -300,20 +310,25 @@
       AK <span class="red-sq"></span> Real Estate
     </a>
     <nav class="header-nav">
-      <a href="/listings">Обяви</a>
-      <a href="/services">Услуги</a>
-      <a href="mailto:office@akrealestatebg.com" class="header-cta">Свържи се с нас</a>
+      <a href="/listings" data-t="nav_listings">Обяви</a>
+      <a href="/services" data-t="nav_services">Услуги</a>
+      <div class="lang-switch">
+        <button class="lang-btn active" data-lang="bg" type="button">BG</button>
+        <span class="lang-sep">/</span>
+        <button class="lang-btn" data-lang="en" type="button">EN</button>
+      </div>
+      <a href="mailto:office@akrealestatebg.com" class="header-cta" data-t="nav_contact">Свържи се с нас</a>
     </nav>
   </header>
 
   <main>
     <section class="legal-hero">
-      <div class="eyebrow"><span class="red-sq"></span> Правна информация</div>
-      <h1>Политика за бисквитки</h1>
-      <div class="legal-meta">АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452</div>
+      <div class="eyebrow"><span class="red-sq"></span> <span data-t="hero_eyebrow">Правна информация</span></div>
+      <h1 data-t="hero_title">Политика за бисквитки</h1>
+      <div class="legal-meta" data-t="legal_entity_mark">АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452</div>
     </section>
 
-    <section class="legal-content">
+    <section class="legal-content" id="legal-body">
       <div class="legal-note">
         Този текст е информационен шаблон и може да бъде допълнително прегледан и адаптиран според конкретните нужди на дружеството.
       </div>
@@ -377,58 +392,178 @@
     <div class="ak-footer-grid">
       <div class="ak-footer-brand">
         <div class="ak-footer-eyebrow">AK Real Estate</div>
-        <p class="ak-footer-desc">
+        <p class="ak-footer-desc" data-t="foot_brand_desc">
           AK Real Estate е бутикова агенция за недвижими имоти, създадена през 2026 г. Работим с внимателно подбрани имоти и клиенти, като съчетаваме посредничество, финансиране, интериорен дизайн и ремонт в един подреден процес.
         </p>
       </div>
       <div>
-        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Навигация</div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span><span data-t="foot_nav_head">Навигация</span></div>
         <ul class="ak-footer-list">
-          <li><a href="/">Начало</a></li>
-          <li><a href="/listings">Обяви</a></li>
-          <li><a href="/services">Услуги</a></li>
-          <li><a href="mailto:office@akrealestatebg.com">Свържи се с нас</a></li>
+          <li><a href="/" data-t="foot_home">Начало</a></li>
+          <li><a href="/listings" data-t="nav_listings">Обяви</a></li>
+          <li><a href="/services" data-t="nav_services">Услуги</a></li>
+          <li><a href="mailto:office@akrealestatebg.com" data-t="nav_contact">Свържи се с нас</a></li>
         </ul>
       </div>
       <div>
-        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Услуги</div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span><span data-t="foot_services_head">Услуги</span></div>
         <ul class="ak-footer-list">
-          <li><a href="/services">Кредитен консултант</a></li>
-          <li><a href="/services">Имотно посредничество</a></li>
-          <li><a href="/services">Интериорен дизайн</a></li>
-          <li><a href="/services">Ремонт от А до Я</a></li>
+          <li><a href="/services" data-t="svc_credit">Кредитен консултант</a></li>
+          <li><a href="/services" data-t="svc_broker">Имотно посредничество</a></li>
+          <li><a href="/services" data-t="svc_interior">Интериорен дизайн</a></li>
+          <li><a href="/services" data-t="svc_renovation">Ремонт от А до Я</a></li>
         </ul>
       </div>
       <div>
-        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Компания</div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span><span data-t="foot_company_head">Компания</span></div>
         <ul class="ak-footer-list">
           <li>АК РИЙЛ ЕСТЕЙТ</li>
-          <li>ЕИК: 208779452</li>
+          <li data-t="company_id">ЕИК: 208779452</li>
           <li>ул. Димитър Хаджикоцев 15,<br>Лозенец, София</li>
           <li><a href="tel:+359879684460">+359 87 968 4460</a></li>
           <li><a href="mailto:office@akrealestatebg.com">office@akrealestatebg.com</a></li>
         </ul>
       </div>
       <div>
-        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Правна информация</div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span><span data-t="foot_legal_head">Правна информация</span></div>
         <ul class="ak-footer-list">
-          <li><a href="/terms">Общи условия</a></li>
-          <li><a href="/privacy">Политика за поверителност</a></li>
-          <li><a href="/cookies">Политика за бисквитки</a></li>
-          <li><a href="/privacy">Защита на личните данни</a></li>
+          <li><a href="/terms" data-t="legal_terms">Общи условия</a></li>
+          <li><a href="/privacy" data-t="legal_privacy">Политика за поверителност</a></li>
+          <li><a href="/cookies" data-t="legal_cookies_policy">Политика за бисквитки</a></li>
+          <li><a href="/privacy" data-t="legal_data_protection">Защита на личните данни</a></li>
         </ul>
       </div>
     </div>
 
     <div class="ak-footer-legal">
-      <span>© 2026 AK Real Estate. Всички права запазени.</span>
+      <span data-t="copyright">© 2026 AK Real Estate. Всички права запазени.</span>
       <span class="ak-footer-legal-mark">▪</span>
-      <span>АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452</span>
+      <span data-t="legal_entity_mark">АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452</span>
       <span class="ak-footer-legal-spacer"></span>
-      <a href="/terms">Общи условия</a>
-      <a href="/privacy">Политика за поверителност</a>
-      <a href="/cookies">Бисквитки</a>
+      <a href="/terms" data-t="legal_terms">Общи условия</a>
+      <a href="/privacy" data-t="legal_privacy">Политика за поверителност</a>
+      <a href="/cookies" data-t="legal_cookies_short">Бисквитки</a>
     </div>
   </footer>
+
+  <script>
+  (function(){
+    var T = {
+      bg: {
+        nav_listings: 'Обяви', nav_services: 'Услуги', nav_contact: 'Свържи се с нас',
+        hero_eyebrow: 'Правна информация', hero_title: 'Политика за бисквитки',
+        legal_entity_mark: 'АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452',
+        page_title: 'Политика за бисквитки — AK Real Estate',
+        foot_brand_desc: 'AK Real Estate е бутикова агенция за недвижими имоти, създадена през 2026 г. Работим с внимателно подбрани имоти и клиенти, като съчетаваме посредничество, финансиране, интериорен дизайн и ремонт в един подреден процес.',
+        foot_nav_head: 'Навигация', foot_home: 'Начало',
+        foot_services_head: 'Услуги',
+        svc_credit: 'Кредитен консултант', svc_broker: 'Имотно посредничество',
+        svc_interior: 'Интериорен дизайн', svc_renovation: 'Ремонт от А до Я',
+        foot_company_head: 'Компания', company_id: 'ЕИК: 208779452',
+        foot_legal_head: 'Правна информация',
+        legal_terms: 'Общи условия', legal_privacy: 'Политика за поверителност',
+        legal_cookies_policy: 'Политика за бисквитки', legal_data_protection: 'Защита на личните данни',
+        legal_cookies_short: 'Бисквитки',
+        copyright: '© 2026 AK Real Estate. Всички права запазени.',
+      },
+      en: {
+        nav_listings: 'Listings', nav_services: 'Services', nav_contact: 'Contact',
+        hero_eyebrow: 'Legal', hero_title: 'Cookie Policy',
+        legal_entity_mark: 'AK REAL ESTATE · ID 208779452',
+        page_title: 'Cookie Policy — AK Real Estate',
+        foot_brand_desc: 'AK Real Estate is a boutique real estate agency founded in 2026. We work with carefully selected properties and clients, combining brokerage, financing, interior design and renovation in one orderly process.',
+        foot_nav_head: 'Navigation', foot_home: 'Home',
+        foot_services_head: 'Services',
+        svc_credit: 'Mortgage consulting', svc_broker: 'Real estate brokerage',
+        svc_interior: 'Interior design', svc_renovation: 'Renovation from A to Z',
+        foot_company_head: 'Company', company_id: 'Company ID: 208779452',
+        foot_legal_head: 'Legal',
+        legal_terms: 'Terms', legal_privacy: 'Privacy Policy',
+        legal_cookies_policy: 'Cookie Policy', legal_data_protection: 'Data Protection',
+        legal_cookies_short: 'Cookies',
+        copyright: '© 2026 AK Real Estate. All rights reserved.',
+      }
+    };
+
+    // Faithful English translation of the legal body. The Bulgarian version remains the
+    // authoritative server-rendered markup; English is provided for convenience and should
+    // be reviewed by counsel before being relied upon.
+    var EN_HTML = `
+      <div class="legal-note">
+        This text is an informational template and may be further reviewed and adapted to the specific needs of the company. The Bulgarian version is authoritative.
+      </div>
+
+      <article class="legal-section">
+        <h2><span class="num">01</span><span>What are cookies</span></h2>
+        <p>Cookies are small text files that a website stores in your browser. They help the site work correctly and remember your preferences between visits.</p>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">02</span><span>What cookies we use</span></h2>
+        <p>The AK REAL ESTATE site uses a limited number of cookies. In general they fall into:</p>
+        <ul>
+          <li><strong>essential</strong> — without which the site does not work correctly</li>
+          <li><strong>analytics</strong> — which help us understand how the site is used, if such are added</li>
+        </ul>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">03</span><span>Essential cookies</span></h2>
+        <p>These cookies are used for basic functions — for example to remember the language setting between pages or for forms to work. They cannot be disabled without the site losing part of its functionality.</p>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">04</span><span>Analytics cookies</span></h2>
+        <p>If we add analytics tools in the future, we will use them only for aggregated and anonymous statistics — visits, pages, devices. In that case we will update this policy and offer an option to consent.</p>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">05</span><span>Managing cookies</span></h2>
+        <p>You can manage or delete cookies through your browser settings. Please note that disabling all cookies may affect how the site works.</p>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">06</span><span>Changes to the policy</span></h2>
+        <p>This policy may be updated when new cookies are added or the tools we use change. The current version is always available on this page.</p>
+      </article>
+
+      <article class="legal-section">
+        <h2><span class="num">07</span><span>Contact</span></h2>
+        <p>For questions regarding the cookie policy you can contact us:</p>
+        <div class="legal-contact-block">
+          <div><strong>АК РИЙЛ ЕСТЕЙТ</strong></div>
+          <div>Company ID: 208779452</div>
+          <div>15 Dimitar Hadzhikotsev St, Lozenets, Sofia</div>
+          <div><a href="tel:+359879684460">+359 87 968 4460</a></div>
+          <div><a href="mailto:office@akrealestatebg.com">office@akrealestatebg.com</a></div>
+        </div>
+      </article>
+    `;
+
+    var legalBody = document.getElementById('legal-body');
+    var BG_HTML = legalBody ? legalBody.innerHTML : '';
+
+    function applyLang(l){
+      window._lang = l;
+      document.documentElement.lang = l;
+      var D = T[l] || T.bg;
+      if (D.page_title) document.title = D.page_title;
+      document.querySelectorAll('[data-t]').forEach(function(el){
+        el.textContent = D[el.dataset.t] || T.bg[el.dataset.t] || el.dataset.t;
+      });
+      if (legalBody) legalBody.innerHTML = (l === 'en') ? EN_HTML : BG_HTML;
+    }
+
+    var allLang = Array.from(document.querySelectorAll('.lang-btn'));
+    function setLang(l){
+      allLang.forEach(function(b){ b.classList.toggle('active', b.dataset.lang === l); });
+      try { localStorage.setItem('ak-lang', l); } catch(e){}
+      applyLang(l);
+    }
+    allLang.forEach(function(b){ b.addEventListener('click', function(){ setLang(b.dataset.lang); }); });
+    window.addEventListener('storage', function(e){ if (e.key === 'ak-lang' && e.newValue) setLang(e.newValue); });
+    try { setLang(localStorage.getItem('ak-lang') || 'bg'); } catch(e){ setLang('bg'); }
+  })();
+  </script>
 </body>
 </html>

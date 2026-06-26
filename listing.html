@@ -667,17 +667,17 @@
     <div class="mobile-sheet" id="mobile-sheet">
       <div class="mobile-sheet-head">
         <span style="width:6px;height:6px;background:var(--ak-crimson);display:inline-block;flex-shrink:0;"></span>
-        Navigation
+        <span data-t="nav_label">Навигация</span>
       </div>
       <div class="mobile-nav-links">
         <a href="/listings">
-          <span class="num">01</span><span>Обяви</span>
+          <span class="num">01</span><span data-t="nav_listings">Обяви</span>
         </a>
         <a href="/services">
-          <span class="num">02</span><span>Услуги</span>
+          <span class="num">02</span><span data-t="nav_services">Услуги</span>
         </a>
         <a href="mailto:office@akrealestatebg.com" class="cta">
-          <span class="num">03</span><span>Свържи се с нас</span>
+          <span class="num">03</span><span data-t="nav_contact">Свържи се с нас</span>
         </a>
       </div>
       <div class="mobile-sheet-foot">
@@ -703,36 +703,36 @@
     <div class="ak-footer-grid">
       <div class="ak-footer-brand">
         <div class="ak-footer-eyebrow">AK Real Estate</div>
-        <p class="ak-footer-desc">
+        <p class="ak-footer-desc" data-t="foot_brand_desc">
           AK Real Estate е бутикова агенция за недвижими имоти, създадена през 2026 г. Работим с внимателно подбрани имоти и клиенти, като съчетаваме посредничество, финансиране, интериорен дизайн и ремонт в един подреден процес.
         </p>
       </div>
 
       <div>
-        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Навигация</div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span><span data-t="foot_nav_head">Навигация</span></div>
         <ul class="ak-footer-list">
-          <li><a href="/">Начало</a></li>
-          <li><a href="/listings">Обяви</a></li>
-          <li><a href="/services">Услуги</a></li>
-          <li><a href="mailto:office@akrealestatebg.com">Свържи се с нас</a></li>
+          <li><a href="/" data-t="foot_home">Начало</a></li>
+          <li><a href="/listings" data-t="nav_listings">Обяви</a></li>
+          <li><a href="/services" data-t="nav_services">Услуги</a></li>
+          <li><a href="mailto:office@akrealestatebg.com" data-t="nav_contact">Свържи се с нас</a></li>
         </ul>
       </div>
 
       <div>
-        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Услуги</div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span><span data-t="foot_services_head">Услуги</span></div>
         <ul class="ak-footer-list">
-          <li><a href="/services">Кредитен консултант</a></li>
-          <li><a href="/services">Имотно посредничество</a></li>
-          <li><a href="/services">Интериорен дизайн</a></li>
-          <li><a href="/services">Ремонт от А до Я</a></li>
+          <li><a href="/services" data-t="svc_credit">Кредитен консултант</a></li>
+          <li><a href="/services" data-t="svc_broker">Имотно посредничество</a></li>
+          <li><a href="/services" data-t="svc_interior">Интериорен дизайн</a></li>
+          <li><a href="/services" data-t="svc_renovation">Ремонт от А до Я</a></li>
         </ul>
       </div>
 
       <div>
-        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Компания</div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span><span data-t="foot_company_head">Компания</span></div>
         <ul class="ak-footer-list">
           <li>АК РИЙЛ ЕСТЕЙТ</li>
-          <li>ЕИК: 208779452</li>
+          <li data-t="company_id">ЕИК: 208779452</li>
           <li>ул. Димитър Хаджикоцев 15,<br>Лозенец, София</li>
           <li><a href="tel:+359879684460">+359 87 968 4460</a></li>
           <li><a href="mailto:office@akrealestatebg.com">office@akrealestatebg.com</a></li>
@@ -740,24 +740,24 @@
       </div>
 
       <div>
-        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Правна информация</div>
+        <div class="ak-footer-col-head"><span class="ak-footer-dot"></span><span data-t="foot_legal_head">Правна информация</span></div>
         <ul class="ak-footer-list">
-          <li><a href="/terms">Общи условия</a></li>
-          <li><a href="/privacy">Политика за поверителност</a></li>
-          <li><a href="/cookies">Политика за бисквитки</a></li>
-          <li><a href="/privacy">Защита на личните данни</a></li>
+          <li><a href="/terms" data-t="legal_terms">Общи условия</a></li>
+          <li><a href="/privacy" data-t="legal_privacy">Политика за поверителност</a></li>
+          <li><a href="/cookies" data-t="legal_cookies_policy">Политика за бисквитки</a></li>
+          <li><a href="/privacy" data-t="legal_data_protection">Защита на личните данни</a></li>
         </ul>
       </div>
     </div>
 
     <div class="ak-footer-legal">
-      <span>© 2026 AK Real Estate. Всички права запазени.</span>
+      <span data-t="copyright">© 2026 AK Real Estate. Всички права запазени.</span>
       <span class="ak-footer-legal-mark">▪</span>
-      <span>АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452</span>
+      <span data-t="legal_entity_mark">АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452</span>
       <span class="ak-footer-legal-spacer"></span>
-      <a href="/terms">Общи условия</a>
-      <a href="/privacy">Политика за поверителност</a>
-      <a href="/cookies">Бисквитки</a>
+      <a href="/terms" data-t="legal_terms">Общи условия</a>
+      <a href="/privacy" data-t="legal_privacy">Политика за поверителност</a>
+      <a href="/cookies" data-t="legal_cookies_short">Бисквитки</a>
     </div>
   </footer>
 
@@ -827,17 +827,28 @@
       return escapeHtml(map[type] || type || "—");
     }
 
+    // Prefer the *_en field when EN is selected and present; otherwise fall back to the
+    // base (Bulgarian/default) value. Never mutates the record. Returns a raw value.
+    function localized(listing, field) {
+      if (!isBg()) {
+        var en = listing[field + "_en"];
+        if (en != null && String(en).trim() !== "") return en;
+      }
+      return listing[field];
+    }
+
     function renderNotFound() {
+      window._notFound = true;
       app.innerHTML = `
         <div class="not-found">
           <div>
             <div class="eyebrow" style="justify-content:center;"><span class="red-square"></span> Listing</div>
-            <h1 style="font-size:clamp(42px,8vw,92px);">Not found.</h1>
+            <h1 style="font-size:clamp(42px,8vw,92px);">${isBg() ? 'Не е намерена.' : 'Not found.'}</h1>
             <p style="letter-spacing:.08em;text-transform:none;line-height:1.7;margin-top:20px;">
-              Обявата не е намерена или вече не е активна.
+              ${isBg() ? 'Обявата не е намерена или вече не е активна.' : 'This listing was not found or is no longer active.'}
             </p>
             <div class="actions" style="justify-content:center;">
-              <a class="btn primary" href="/">Към началото</a>
+              <a class="btn primary" href="/">${isBg() ? 'Към началото' : 'Back to home'}</a>
             </div>
           </div>
         </div>
@@ -845,6 +856,7 @@
     }
 
     function renderListing(listing) {
+      window._notFound = false;
       const images = Array.isArray(listing.images) ? listing.images : [];
       const mainIndex = Number(listing.main_image || 0);
       const mainImage = getImageUrl(images[mainIndex] || images[0] || "");
@@ -870,10 +882,10 @@
           <aside class="details">
             <div class="eyebrow">
               <span class="red-square"></span>
-              ${escapeHtml(listing.area || listing.city || "Property")}
+              ${escapeHtml(localized(listing, "area") || localized(listing, "city") || (isBg() ? "Имот" : "Property"))}
             </div>
 
-            <h1>${escapeHtml(listing.title)}</h1>
+            <h1>${escapeHtml(localized(listing, "title"))}</h1>
 
             <div class="price">
               ${formatPrice(listing.price, listing.currency, listing.listing_type)}
@@ -888,9 +900,9 @@
             <div><span>${isBg() ? 'Статус'   : 'Status'}</span><strong>${translateStatus(listing.status)}</strong></div>
             </div>
 
-            ${listing.description ? `<div class="description">${escapeHtml(listing.description)}</div>` : ""}
+            ${localized(listing, "description") ? `<div class="description">${escapeHtml(localized(listing, "description"))}</div>` : ""}
 
-            ${listing.features ? `<div class="features">${escapeHtml(listing.features)}</div>` : ""}
+            ${localized(listing, "features") ? `<div class="features">${escapeHtml(localized(listing, "features"))}</div>` : ""}
 
             <div class="actions">
               <a class="btn primary" href="/#contact">${isBg() ? 'Заявете достъп' : 'Request Viewing'}</a>
@@ -954,11 +966,43 @@
     });
     var allLang = Array.from(document.querySelectorAll('.lang-btn, .mobile-lang-btn'));
     var LISTING_T = {
-      bg: { nav_listings: 'Обяви', nav_services: 'Услуги', nav_contact: 'Свържи се с нас' },
-      en: { nav_listings: 'Listings', nav_services: 'Services', nav_contact: 'Contact' }
+      bg: {
+        nav_listings: 'Обяви', nav_services: 'Услуги', nav_contact: 'Свържи се с нас',
+        nav_label: 'Навигация',
+        foot_brand_desc: 'AK Real Estate е бутикова агенция за недвижими имоти, създадена през 2026 г. Работим с внимателно подбрани имоти и клиенти, като съчетаваме посредничество, финансиране, интериорен дизайн и ремонт в един подреден процес.',
+        foot_nav_head: 'Навигация', foot_home: 'Начало',
+        foot_services_head: 'Услуги',
+        svc_credit: 'Кредитен консултант', svc_broker: 'Имотно посредничество',
+        svc_interior: 'Интериорен дизайн', svc_renovation: 'Ремонт от А до Я',
+        foot_company_head: 'Компания', company_id: 'ЕИК: 208779452',
+        foot_legal_head: 'Правна информация',
+        legal_terms: 'Общи условия', legal_privacy: 'Политика за поверителност',
+        legal_cookies_policy: 'Политика за бисквитки', legal_data_protection: 'Защита на личните данни',
+        legal_cookies_short: 'Бисквитки',
+        copyright: '© 2026 AK Real Estate. Всички права запазени.',
+        legal_entity_mark: 'АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452',
+      },
+      en: {
+        nav_listings: 'Listings', nav_services: 'Services', nav_contact: 'Contact',
+        nav_label: 'Navigation',
+        foot_brand_desc: 'AK Real Estate is a boutique real estate agency founded in 2026. We work with carefully selected properties and clients, combining brokerage, financing, interior design and renovation in one orderly process.',
+        foot_nav_head: 'Navigation', foot_home: 'Home',
+        foot_services_head: 'Services',
+        svc_credit: 'Mortgage consulting', svc_broker: 'Real estate brokerage',
+        svc_interior: 'Interior design', svc_renovation: 'Renovation from A to Z',
+        foot_company_head: 'Company', company_id: 'Company ID: 208779452',
+        foot_legal_head: 'Legal',
+        legal_terms: 'Terms', legal_privacy: 'Privacy Policy',
+        legal_cookies_policy: 'Cookie Policy', legal_data_protection: 'Data Protection',
+        legal_cookies_short: 'Cookies',
+        copyright: '© 2026 AK Real Estate. All rights reserved.',
+        legal_entity_mark: 'AK REAL ESTATE · ID 208779452',
+      }
     };
     function applyLang(l) {
       window._lang = l;
+      document.documentElement.lang = l;
+      document.title = (l === 'en') ? 'Listing — AK Real Estate' : 'Имот — AK Real Estate';
       document.querySelectorAll('[data-t]').forEach(function(el) {
         var key = el.dataset.t;
         el.textContent = (LISTING_T[l] && LISTING_T[l][key]) || (LISTING_T.bg && LISTING_T.bg[key]) || key;
@@ -966,6 +1010,7 @@
       var loadingEl = document.getElementById('loading-msg');
       if (loadingEl) loadingEl.textContent = l === 'en' ? 'Loading listing…' : 'Зареждане…';
       if (typeof renderListing === 'function' && window._currentListing) renderListing(window._currentListing);
+      else if (typeof renderNotFound === 'function' && window._notFound) renderNotFound();
     }
     function setLang(l){
       allLang.forEach(function(b){ b.classList.toggle('active', b.dataset.lang === l); });

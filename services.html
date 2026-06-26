@@ -1152,7 +1152,7 @@
         intro_title: 'Цялостен подход към имота',
         intro_text: 'AK Real Estate свързва ключовите етапи около един имот в последователен процес. Помагаме при ориентация, избор, сделка, дизайн и реализация, така че клиентът да не координира всичко сам.',
         services_label: 'Какво предлагаме',
-        s1_num: '01', s1_title: 'Кредитен консултант',
+        s1_num: '01', s1_title: 'Кредитен консултант', s1_tag: 'Кредитно планиране',
         s1_desc: 'Помагаме да разберете реалните си възможности още преди избора на имот.',
         s1_how: 'Как помагаме',
         s1_b1: 'предварителна ориентация за бюджет и месечна вноска',
@@ -1161,7 +1161,7 @@
         s1_b4: 'координация с банкови партньори при нужда',
         s1_for_label: 'Подходящо за',
         s1_for: 'Купувачи, които искат яснота преди да започнат огледи.',
-        s2_num: '02', s2_title: 'Имотно посредничество',
+        s2_num: '02', s2_title: 'Имотно посредничество', s2_tag: 'Огледи и сделка',
         s2_desc: 'Съдействаме при намиране, покупка и продажба на недвижим имот с ясен и подреден процес.',
         s2_how: 'Как помагаме',
         s2_b1: 'уточняване на критерии и приоритети',
@@ -1170,7 +1170,7 @@
         s2_b4: 'съдействие при преговори и следващи стъпки до сделка',
         s2_for_label: 'Подходящо за',
         s2_for: 'Клиенти, които търсят правилния имот, а не просто следващата обява.',
-        s3_num: '03', s3_title: 'Интериорен дизайн',
+        s3_num: '03', s3_title: 'Интериорен дизайн', s3_tag: 'Материали и стил',
         s3_desc: 'Превръщаме имота в завършено пространство с ясна концепция, функционалност и стил.',
         s3_how: 'Как помагаме',
         s3_b1: 'функционално разпределение',
@@ -1179,7 +1179,7 @@
         s3_b4: 'визуална посока и координация с изпълнението',
         s3_for_label: 'Подходящо за',
         s3_for: 'Нов дом, инвестиционен имот или обновяване на съществуващо пространство.',
-        s4_num: '04', s4_title: 'Ремонт от А до Я',
+        s4_num: '04', s4_title: 'Ремонт от А до Я', s4_tag: 'Ремонтен процес',
         s4_desc: 'Организираме процеса от първоначален план до финално предаване, с контрол върху срокове, бюджет и изпълнение.',
         s4_how: 'Как помагаме',
         s4_b1: 'планиране на обхват и бюджет',
@@ -1230,7 +1230,7 @@
         intro_title: 'A holistic approach to property',
         intro_text: 'AK Real Estate connects the key stages around a property into a sequential process. We help with orientation, selection, transaction, design and execution, so the client does not have to coordinate everything on their own.',
         services_label: 'What we offer',
-        s1_num: '01', s1_title: 'Credit Consulting',
+        s1_num: '01', s1_title: 'Credit Consulting', s1_tag: 'Credit planning',
         s1_desc: 'We help you understand your real options before choosing a property.',
         s1_how: 'How we help',
         s1_b1: 'initial budget and monthly payment orientation',
@@ -1239,7 +1239,7 @@
         s1_b4: 'coordination with banking partners if needed',
         s1_for_label: 'Best suited for',
         s1_for: 'Buyers who want clarity before starting viewings.',
-        s2_num: '02', s2_title: 'Real Estate Agency',
+        s2_num: '02', s2_title: 'Real Estate Agency', s2_tag: 'Viewings & deal',
         s2_desc: 'We assist in finding, buying and selling property with a clear, orderly process.',
         s2_how: 'How we help',
         s2_b1: 'clarifying criteria and priorities',
@@ -1248,7 +1248,7 @@
         s2_b4: 'support during negotiations and next steps to deal',
         s2_for_label: 'Best suited for',
         s2_for: 'Clients looking for the right property, not just the next listing.',
-        s3_num: '03', s3_title: 'Interior Design',
+        s3_num: '03', s3_title: 'Interior Design', s3_tag: 'Materials & style',
         s3_desc: 'We turn the property into a finished space with a clear concept, functionality and style.',
         s3_how: 'How we help',
         s3_b1: 'functional layout',
@@ -1257,7 +1257,7 @@
         s3_b4: 'visual direction and coordination with execution',
         s3_for_label: 'Best suited for',
         s3_for: 'A new home, investment property or renovation of an existing space.',
-        s4_num: '04', s4_title: 'Full Renovation',
+        s4_num: '04', s4_title: 'Full Renovation', s4_tag: 'Renovation process',
         s4_desc: 'We organise the process from the initial plan to final handover, with control over deadlines, budget and execution.',
         s4_how: 'How we help',
         s4_b1: 'scope and budget planning',
@@ -1315,6 +1315,8 @@
 
     function applyLang(l) {
       window._svcLang = l;
+      document.documentElement.lang = l;
+      document.title = (l === 'en') ? 'Services — AK Real Estate' : 'Услуги — AK Real Estate';
       var D = T[l] || T.bg;
       // data-t fallback
       document.querySelectorAll('[data-t]').forEach(function(el) {
@@ -1358,6 +1360,13 @@
         var howLabel = card.querySelector('.service-bullets-label');
         var bullets = card.querySelectorAll('.service-bullets li');
         var forEl = card.querySelector('.service-suitable');
+        var tagEl = card.querySelector('.service-visual-tag');
+        if (tagEl) {
+          var tagSq = tagEl.querySelector('.red-sq');
+          tagEl.textContent = '';
+          if (tagSq) tagEl.appendChild(tagSq);
+          tagEl.appendChild(document.createTextNode(' ' + D[prefix + '_tag']));
+        }
         if (numEl) numEl.textContent = D[prefix + '_num'];
         if (titleEl) titleEl.textContent = D[prefix + '_title'];
         if (descEl) descEl.textContent = D[prefix + '_desc'];
