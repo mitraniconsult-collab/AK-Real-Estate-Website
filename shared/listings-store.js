@@ -110,8 +110,21 @@
     },
   ];
 
+// Optional English fields. Stored as snake_case *_en columns. They are only included
+// in the payload when the admin actually fills them in, so installs whose `listings`
+// table does not yet have these columns continue to save normally; a save that does
+// include them will surface a clear Supabase error if the column is missing.
+const EN_FIELD_MAP = {
+  titleEn: 'title_en',
+  descriptionEn: 'description_en',
+  cityEn: 'city_en',
+  areaEn: 'area_en',
+  addressEn: 'address_en',
+  featuresEn: 'features_en',
+};
+
 function toDb(listing) {
-  return {
+  const row = {
     id: listing.id,
     title: listing.title || '',
     description: listing.description || '',
@@ -146,6 +159,13 @@ function toDb(listing) {
 
     created_at: listing.createdAt || new Date().toISOString().slice(0, 10),
   };
+
+  Object.keys(EN_FIELD_MAP).forEach(function (k) {
+    const v = listing[k];
+    if (v != null && String(v).trim() !== '') row[EN_FIELD_MAP[k]] = String(v);
+  });
+
+  return row;
 }
 
 function fromDb(row) {
@@ -178,6 +198,14 @@ function fromDb(row) {
     furnished: !!row.furnished,
 
     features: row.features || '',
+
+    // Optional English fields (snake_case in DB; tolerate camelCase too). Absent → ''.
+    titleEn:       row.title_en       ?? row.titleEn       ?? '',
+    descriptionEn: row.description_en ?? row.descriptionEn ?? '',
+    cityEn:        row.city_en        ?? row.cityEn        ?? '',
+    areaEn:        row.area_en        ?? row.areaEn        ?? '',
+    addressEn:     row.address_en     ?? row.addressEn     ?? '',
+    featuresEn:    row.features_en    ?? row.featuresEn    ?? '',
 
     images: Array.isArray(row.images) ? row.images : [],
     mainImage: row.main_image ?? 0,

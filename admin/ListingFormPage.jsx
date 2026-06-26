@@ -59,6 +59,15 @@ const FORM_TRANSLATIONS = {
     'Live Preview':           'Преглед',
     'Record':                 'Запис',
     'Saved · returning to listings…': 'Запазено · пренасочване…',
+    'English content (optional)': 'Съдържание на английски (по избор)',
+    'Used on the English version of the site. Leave empty to fall back to the main fields.':
+      'Използва се в английската версия на сайта. Оставете празно, за да се ползва основното поле.',
+    'English Title':          'Заглавие (EN)',
+    'English Description':    'Описание (EN)',
+    'English City':           'Град (EN)',
+    'English Area':           'Район (EN)',
+    'English Address':        'Адрес (EN)',
+    'English Features':       'Екстри (EN)',
   },
   en: {
     'New Listing':            'New Listing',
@@ -117,6 +126,15 @@ const FORM_TRANSLATIONS = {
     'Live Preview':           'Live Preview',
     'Record':                 'Record',
     'Saved · returning to listings…': 'Saved · returning to listings…',
+    'English content (optional)': 'English content (optional)',
+    'Used on the English version of the site. Leave empty to fall back to the main fields.':
+      'Used on the English version of the site. Leave empty to fall back to the main fields.',
+    'English Title':          'English Title',
+    'English Description':    'English Description',
+    'English City':           'English City',
+    'English Area':           'English Area',
+    'English Address':        'English Address',
+    'English Features':       'English Features',
   },
 };
 
@@ -179,6 +197,8 @@ const EMPTY = {
   bedrooms: '', bathrooms: '', areaSqm: '', floor: '', totalFloors: '', yearBuilt: '',
   parking: false, elevator: false, furnished: false,
   features: '',
+  // Optional English fields — surfaced on the EN version of the public site.
+  titleEn: '', descriptionEn: '', cityEn: '', areaEn: '', addressEn: '', featuresEn: '',
   images: [], mainImage: 0,
 };
 
@@ -385,6 +405,36 @@ function ListingFormPage({ mode, id }) {
               onUploadingChange={(n) => setImagesUploading(n > 0)}
               isPhone={isPhone}
             />
+          </FormSection>
+
+          <FormSection n="06" title={t('English content (optional)')}>
+            <p style={{ margin: '0 0 20px', fontSize: 12, color: 'var(--fg-3)', lineHeight: 1.6, fontWeight: 300 }}>
+              {t('Used on the English version of the site. Leave empty to fall back to the main fields.')}
+            </p>
+            <Field label={t('English Title')}>
+              <TextInput value={form.titleEn} onChange={(v) => set('titleEn', v)}
+                placeholder="e.g. Villa di Pietra" />
+            </Field>
+            <Field label={t('English Description')}>
+              <TextArea value={form.descriptionEn} onChange={(v) => set('descriptionEn', v)}
+                rows={5} placeholder="Tucked behind a stone wall on a one-block lane…" />
+            </Field>
+            <div style={{ display: 'grid', gridTemplateColumns: isPhone ? '1fr' : '1fr 1fr', gap: 24 }}>
+              <Field label={t('English City')}>
+                <TextInput value={form.cityEn} onChange={(v) => set('cityEn', v)} placeholder="Sofia" />
+              </Field>
+              <Field label={t('English Area')}>
+                <TextInput value={form.areaEn} onChange={(v) => set('areaEn', v)} placeholder="Lozenets" />
+              </Field>
+            </div>
+            <Field label={t('English Address')}>
+              <TextInput value={form.addressEn} onChange={(v) => set('addressEn', v)}
+                placeholder="15 Dimitar Hadzhikotsev St., Lozenets, Sofia" />
+            </Field>
+            <Field label={t('English Features')}>
+              <TextArea value={form.featuresEn} onChange={(v) => set('featuresEn', v)} rows={3}
+                placeholder="Motor court · Restored stone facade · Library · Cellar · Pool" />
+            </Field>
           </FormSection>
         </div>
 

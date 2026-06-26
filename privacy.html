@@ -451,7 +451,7 @@
         <ul class="ak-footer-list">
           <li>АК РИЙЛ ЕСТЕЙТ</li>
           <li data-t="company_id">ЕИК: 208779452</li>
-          <li>ул. Димитър Хаджикоцев 15,<br>Лозенец, София</li>
+          <li data-t-html="company_address">ул. Димитър Хаджикоцев 15,<br>Лозенец, София</li>
           <li><a href="tel:+359879684460">+359 87 968 4460</a></li>
           <li><a href="mailto:office@akrealestatebg.com">office@akrealestatebg.com</a></li>
         </ul>
@@ -492,6 +492,7 @@
         svc_credit: 'Кредитен консултант', svc_broker: 'Имотно посредничество',
         svc_interior: 'Интериорен дизайн', svc_renovation: 'Ремонт от А до Я',
         foot_company_head: 'Компания', company_id: 'ЕИК: 208779452',
+        company_address: 'ул. Димитър Хаджикоцев 15,<br>Лозенец, София',
         foot_legal_head: 'Правна информация',
         legal_terms: 'Общи условия', legal_privacy: 'Политика за поверителност',
         legal_cookies_policy: 'Политика за бисквитки', legal_data_protection: 'Защита на личните данни',
@@ -509,6 +510,7 @@
         svc_credit: 'Mortgage consulting', svc_broker: 'Real estate brokerage',
         svc_interior: 'Interior design', svc_renovation: 'Renovation from A to Z',
         foot_company_head: 'Company', company_id: 'Company ID: 208779452',
+        company_address: '15 Dimitar Hadzhikotsev St.,<br>Lozenets, Sofia',
         foot_legal_head: 'Legal',
         legal_terms: 'Terms', legal_privacy: 'Privacy Policy',
         legal_cookies_policy: 'Cookie Policy', legal_data_protection: 'Data Protection',
@@ -614,6 +616,9 @@
       if (D.page_title) document.title = D.page_title;
       document.querySelectorAll('[data-t]').forEach(function(el){
         el.textContent = D[el.dataset.t] || T.bg[el.dataset.t] || el.dataset.t;
+      });
+      document.querySelectorAll('[data-t-html]').forEach(function(el){
+        el.innerHTML = D[el.dataset.tHtml] || T.bg[el.dataset.tHtml] || el.dataset.tHtml;
       });
       if (legalBody) legalBody.innerHTML = (l === 'en') ? EN_HTML : BG_HTML;
     }

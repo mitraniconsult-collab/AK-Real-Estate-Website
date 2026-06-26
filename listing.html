@@ -733,7 +733,7 @@
         <ul class="ak-footer-list">
           <li>АК РИЙЛ ЕСТЕЙТ</li>
           <li data-t="company_id">ЕИК: 208779452</li>
-          <li>ул. Димитър Хаджикоцев 15,<br>Лозенец, София</li>
+          <li data-t-html="company_address">ул. Димитър Хаджикоцев 15,<br>Лозенец, София</li>
           <li><a href="tel:+359879684460">+359 87 968 4460</a></li>
           <li><a href="mailto:office@akrealestatebg.com">office@akrealestatebg.com</a></li>
         </ul>
@@ -827,12 +827,23 @@
       return escapeHtml(map[type] || type || "—");
     }
 
-    // Prefer the *_en field when EN is selected and present; otherwise fall back to the
-    // base (Bulgarian/default) value. Never mutates the record. Returns a raw value.
+    // Build the likely English column variants for a base field, covering both the
+    // snake_case DB convention (description_en) and camelCase (descriptionEn).
+    function enFieldVariants(field) {
+      var camel = field.replace(/_([a-z])/g, function (_, c) { return c.toUpperCase(); });
+      return [field + "_en", camel + "En", camel + "_en", field + "En"];
+    }
+
+    // Prefer an English field when EN is selected and one exists and is non-empty;
+    // otherwise fall back to the base (Bulgarian/default) value. Never mutates the record.
     function localized(listing, field) {
+      if (!listing) return "";
       if (!isBg()) {
-        var en = listing[field + "_en"];
-        if (en != null && String(en).trim() !== "") return en;
+        var keys = enFieldVariants(field);
+        for (var i = 0; i < keys.length; i++) {
+          var v = listing[keys[i]];
+          if (v != null && String(v).trim() !== "") return v;
+        }
       }
       return listing[field];
     }
@@ -975,6 +986,7 @@
         svc_credit: 'Кредитен консултант', svc_broker: 'Имотно посредничество',
         svc_interior: 'Интериорен дизайн', svc_renovation: 'Ремонт от А до Я',
         foot_company_head: 'Компания', company_id: 'ЕИК: 208779452',
+        company_address: 'ул. Димитър Хаджикоцев 15,<br>Лозенец, София',
         foot_legal_head: 'Правна информация',
         legal_terms: 'Общи условия', legal_privacy: 'Политика за поверителност',
         legal_cookies_policy: 'Политика за бисквитки', legal_data_protection: 'Защита на личните данни',
@@ -991,6 +1003,7 @@
         svc_credit: 'Mortgage consulting', svc_broker: 'Real estate brokerage',
         svc_interior: 'Interior design', svc_renovation: 'Renovation from A to Z',
         foot_company_head: 'Company', company_id: 'Company ID: 208779452',
+        company_address: '15 Dimitar Hadzhikotsev St.,<br>Lozenets, Sofia',
         foot_legal_head: 'Legal',
         legal_terms: 'Terms', legal_privacy: 'Privacy Policy',
         legal_cookies_policy: 'Cookie Policy', legal_data_protection: 'Data Protection',
@@ -1006,6 +1019,10 @@
       document.querySelectorAll('[data-t]').forEach(function(el) {
         var key = el.dataset.t;
         el.textContent = (LISTING_T[l] && LISTING_T[l][key]) || (LISTING_T.bg && LISTING_T.bg[key]) || key;
+      });
+      document.querySelectorAll('[data-t-html]').forEach(function(el) {
+        var key = el.dataset.tHtml;
+        el.innerHTML = (LISTING_T[l] && LISTING_T[l][key]) || (LISTING_T.bg && LISTING_T.bg[key]) || key;
       });
       var loadingEl = document.getElementById('loading-msg');
       if (loadingEl) loadingEl.textContent = l === 'en' ? 'Loading listing…' : 'Зареждане…';

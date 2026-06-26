@@ -778,7 +778,7 @@
           <h1 data-t="hero_title">Имоти</h1>
         </div>
         <p class="intro" data-t="hero_intro">
-          Подбрана селекция от активни, продадени и отдадени имоти. Всеки запис се управлява от административния панел и се обновява автоматично.
+          Открийте подбрани имоти за продажба и наем в София и страната — селекция с ясен контекст, реални детайли и лично съдействие при всяка следваща стъпка.
         </p>
       </section>
 
@@ -839,7 +839,7 @@
         <ul class="ak-footer-list">
           <li>АК РИЙЛ ЕСТЕЙТ</li>
           <li data-t="company_id">ЕИК: 208779452</li>
-          <li>ул. Димитър Хаджикоцев 15,<br>Лозенец, София</li>
+          <li data-t-html="company_address">ул. Димитър Хаджикоцев 15,<br>Лозенец, София</li>
           <li><a href="tel:+359879684460">+359 87 968 4460</a></li>
           <li><a href="mailto:office@akrealestatebg.com">office@akrealestatebg.com</a></li>
         </ul>
@@ -1093,7 +1093,7 @@
         nav_listings: 'Обяви', nav_services: 'Услуги', nav_contact: 'Свържи се с нас',
         nav_label: 'Навигация',
         hero_eyebrow: 'Portfolio', hero_title: 'Имоти',
-        hero_intro: 'Подбрана селекция от активни, продадени и отдадени имоти. Всеки запис се управлява от административния панел и се обновява автоматично.',
+        hero_intro: 'Открийте подбрани имоти за продажба и наем в София и страната — селекция с ясен контекст, реални детайли и лично съдействие при всяка следваща стъпка.',
         filter_all: 'Всички', filter_active: 'Активни', filter_sale: 'Продажба',
         filter_rent: 'Наем', filter_sold: 'Продадени', filter_rented: 'Отдадени',
         search_placeholder: 'Търси по име, град или район…',
@@ -1104,6 +1104,7 @@
         svc_credit: 'Кредитен консултант', svc_broker: 'Имотно посредничество',
         svc_interior: 'Интериорен дизайн', svc_renovation: 'Ремонт от А до Я',
         foot_company_head: 'Компания', company_id: 'ЕИК: 208779452',
+        company_address: 'ул. Димитър Хаджикоцев 15,<br>Лозенец, София',
         foot_legal_head: 'Правна информация',
         legal_terms: 'Общи условия', legal_privacy: 'Политика за поверителност',
         legal_cookies_policy: 'Политика за бисквитки', legal_data_protection: 'Защита на личните данни',
@@ -1115,7 +1116,7 @@
         nav_listings: 'Listings', nav_services: 'Services', nav_contact: 'Contact',
         nav_label: 'Navigation',
         hero_eyebrow: 'Portfolio', hero_title: 'Properties',
-        hero_intro: 'A curated selection of active, sold and rented properties. Every listing is managed from the admin panel and updated automatically.',
+        hero_intro: 'Explore selected properties for sale and rent in Sofia and across Bulgaria — a curated portfolio with clear context, real details, and personal guidance at every next step.',
         filter_all: 'All', filter_active: 'Active', filter_sale: 'For Sale',
         filter_rent: 'For Rent', filter_sold: 'Sold', filter_rented: 'Rented',
         search_placeholder: 'Search by name, city or district…',
@@ -1126,6 +1127,7 @@
         svc_credit: 'Mortgage consulting', svc_broker: 'Real estate brokerage',
         svc_interior: 'Interior design', svc_renovation: 'Renovation from A to Z',
         foot_company_head: 'Company', company_id: 'Company ID: 208779452',
+        company_address: '15 Dimitar Hadzhikotsev St.,<br>Lozenets, Sofia',
         foot_legal_head: 'Legal',
         legal_terms: 'Terms', legal_privacy: 'Privacy Policy',
         legal_cookies_policy: 'Cookie Policy', legal_data_protection: 'Data Protection',
@@ -1141,6 +1143,10 @@
       document.querySelectorAll('[data-t]').forEach(function(el) {
         var key = el.dataset.t;
         el.textContent = (T[l] && T[l][key]) || (T.bg && T.bg[key]) || key;
+      });
+      document.querySelectorAll('[data-t-html]').forEach(function(el) {
+        var key = el.dataset.tHtml;
+        el.innerHTML = (T[l] && T[l][key]) || (T.bg && T.bg[key]) || key;
       });
       var searchEl = document.getElementById('search');
       if (searchEl) searchEl.placeholder = T[l].search_placeholder;

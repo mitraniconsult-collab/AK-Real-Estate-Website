@@ -1111,8 +1111,8 @@
         <div class="ak-footer-col-head"><span class="ak-footer-dot"></span>Компания</div>
         <ul class="ak-footer-list">
           <li>АК РИЙЛ ЕСТЕЙТ</li>
-          <li>ЕИК: 208779452</li>
-          <li>ул. Димитър Хаджикоцев 15,<br>Лозенец, София</li>
+          <li data-t="company_id">ЕИК: 208779452</li>
+          <li data-t-html="company_address">ул. Димитър Хаджикоцев 15,<br>Лозенец, София</li>
           <li><a href="tel:+359879684460">+359 87 968 4460</a></li>
           <li><a href="mailto:office@akrealestatebg.com">office@akrealestatebg.com</a></li>
         </ul>
@@ -1214,6 +1214,7 @@
         cta_text: 'Разкажете ни какъв имот или проект планирате. Ще ви върнем ясен първи отговор и следваща стъпка.',
         cta_btn: 'Свържете се с нас',
         footer_nav: 'Навигация', footer_services: 'Услуги', footer_company: 'Компания', footer_legal: 'Правна информация',
+        company_id: 'ЕИК: 208779452', company_address: 'ул. Димитър Хаджикоцев 15,<br>Лозенец, София',
         fn_home: 'Начало', fn_listings: 'Обяви', fn_services: 'Услуги', fn_contact: 'Свържи се с нас',
         fs1: 'Кредитен консултант', fs2: 'Имотно посредничество', fs3: 'Интериорен дизайн', fs4: 'Ремонт от А до Я',
         fl_terms: 'Общи условия', fl_privacy: 'Политика за поверителност', fl_cookies: 'Политика за бисквитки', fl_data: 'Защита на личните данни',
@@ -1292,6 +1293,7 @@
         cta_text: 'Tell us what property or project you are planning. We will send you a clear first response and next step.',
         cta_btn: 'Get in Touch',
         footer_nav: 'Navigation', footer_services: 'Services', footer_company: 'Company', footer_legal: 'Legal',
+        company_id: 'Company ID: 208779452', company_address: '15 Dimitar Hadzhikotsev St.,<br>Lozenets, Sofia',
         fn_home: 'Home', fn_listings: 'Listings', fn_services: 'Services', fn_contact: 'Contact',
         fs1: 'Credit Consulting', fs2: 'Real Estate Agency', fs3: 'Interior Design', fs4: 'Full Renovation',
         fl_terms: 'Terms of Use', fl_privacy: 'Privacy Policy', fl_cookies: 'Cookie Policy', fl_data: 'Data Protection',
@@ -1321,6 +1323,9 @@
       // data-t fallback
       document.querySelectorAll('[data-t]').forEach(function(el) {
         el.textContent = D[el.dataset.t] || T.bg[el.dataset.t] || el.dataset.t;
+      });
+      document.querySelectorAll('[data-t-html]').forEach(function(el) {
+        el.innerHTML = D[el.dataset.tHtml] || T.bg[el.dataset.tHtml] || el.dataset.tHtml;
       });
       // Hero
       setText(document.querySelector('.hero h1'), D.hero_title);
