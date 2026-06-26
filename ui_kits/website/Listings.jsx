@@ -246,7 +246,7 @@ function getImageUrl(image) {
     : (image.url || image.publicUrl || image.public_url || image.image_url || image.src || image.path || '');
   if (!raw) return '';
   if (raw.startsWith('blob:') || raw.startsWith('data:')) return raw;
-  if (raw.startsWith('http')) return raw;
+  if (raw.startsWith('http')) return raw.replace(/^http:\/\//i, 'https://');
   const base = (window.AK_SUPABASE_URL || 'https://ylyilqwoiyirodigshgd.supabase.co').replace(/\/$/, '');
   if (raw.includes('/storage/v1/object/public/')) return base + raw.substring(raw.indexOf('/storage/v1/object/public/'));
   if (raw.includes('/')) return base + '/storage/v1/object/public/' + raw;
