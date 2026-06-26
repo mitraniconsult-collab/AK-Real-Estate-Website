@@ -9,6 +9,7 @@ const TRANSLATIONS = {
     'Listings':        'Имоти',
     'New Listing':     'Нов имот',
     'Inquiries':       'Запитвания',
+    'Account':         'Профил',
     'Search listings…':'Търси имоти…',
     'All systems quiet':'Всичко е наред',
     'Sign Out':        'Изход',
@@ -63,6 +64,7 @@ const TRANSLATIONS = {
     'Listings':        'Listings',
     'New Listing':     'New Listing',
     'Inquiries':       'Inquiries',
+    'Account':         'Account',
     'Search listings…':'Search listings…',
     'All systems quiet':'All systems quiet',
     'Sign Out':        'Sign Out',
@@ -182,6 +184,7 @@ function Sidebar({ active, onSignOut, onNavigate }) {
     { id: 'listings',    label: t('Listings'),    icon: 'home',             to: '/listings' },
     { id: 'listing-new', label: t('New Listing'), icon: 'plus',            to: '/listings/new' },
     { id: 'inquiries',   label: t('Inquiries'),   icon: 'mail',            to: '/inquiries' },
+    { id: 'account',     label: t('Account'),     icon: 'user',            to: '/account' },
   ];
   return (
     <aside style={{
@@ -427,6 +430,7 @@ function Breadcrumbs() {
   crumbs.push({ label: t('Admin'), to: '/dashboard' });
   if (route.name === 'dashboard') crumbs.push({ label: t('Dashboard') });
   if (route.name === 'inquiries') crumbs.push({ label: t('Inquiries') });
+  if (route.name === 'account') crumbs.push({ label: t('Account') });
   if (route.name === 'listings') crumbs.push({ label: t('Listings') });
   if (route.name === 'listing-new') {
     crumbs.push({ label: t('Listings'), to: '/listings' });

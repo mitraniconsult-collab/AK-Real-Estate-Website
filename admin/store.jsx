@@ -33,6 +33,7 @@ function parsePath() {
   if (parts.length === 0)                                         return { name: 'dashboard',    search };
   if (parts[0] === 'dashboard')                                   return { name: 'dashboard',    search };
   if (parts[0] === 'login')                                       return { name: 'login',        search };
+  if (parts[0] === 'account')                                     return { name: 'account',      search };
   if (parts[0] === 'inquiries')                                   return { name: 'inquiries',    search };
   if (parts[0] === 'listings' && parts.length === 1)              return { name: 'listings',     search };
   if (parts[0] === 'listings' && parts[1] === 'new')              return { name: 'listing-new',  search };
