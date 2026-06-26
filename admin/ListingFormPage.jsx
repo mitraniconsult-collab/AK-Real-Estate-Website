@@ -68,6 +68,10 @@ const FORM_TRANSLATIONS = {
     'English Area':           'Район на английски',
     'English Address':        'Адрес на английски',
     'English Features':       'Особености на английски',
+    'Uploaded images automatically receive a subtle AK Real Estate watermark.':
+      'Качените снимки автоматично получават дискретен AK Real Estate watermark.',
+    'Could not process watermark for this image. Please try another file.':
+      'Watermark-ът на тази снимка не можа да се обработи. Моля, опитайте друг файл.',
   },
   en: {
     'New Listing':            'New Listing',
@@ -135,6 +139,10 @@ const FORM_TRANSLATIONS = {
     'English Area':           'English Area',
     'English Address':        'English Address',
     'English Features':       'English Features',
+    'Uploaded images automatically receive a subtle AK Real Estate watermark.':
+      'Uploaded images automatically receive a subtle AK Real Estate watermark.',
+    'Could not process watermark for this image. Please try another file.':
+      'Could not process watermark for this image. Please try another file.',
   },
 };
 
@@ -639,6 +647,97 @@ function getImageUrl(image) {
   return base + '/storage/v1/object/public/listing-images/' + raw;
 }
 
+// ─── Client-side watermarking ────────────────────────────────────────────────
+// Every newly uploaded property photo is drawn to a canvas, lightly watermarked
+// with the AK Real Estate wordmark (bottom-right), downscaled to a sane max width
+// and re-encoded as JPEG before it is sent to Supabase Storage. Existing images and
+// stock URLs are untouched — this only runs on real File uploads.
+const WATERMARK_MAX_WIDTH = 2400;
+const WATERMARK_JPEG_QUALITY = 0.88;
+
+function loadImageFromFile(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Image decode failed')); };
+    img.src = url;
+  });
+}
+
+function drawWatermark(ctx, width, height) {
+  const text = 'AK REAL ESTATE';
+  const pad = Math.round(width * 0.03);
+  const fontSize = Math.max(18, Math.round(width * 0.032));
+
+  ctx.save();
+  ctx.font = '500 ' + fontSize + 'px Arial, Helvetica, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'bottom';
+  // Letter-spacing is supported on modern canvas; degrade gracefully where it isn't.
+  if ('letterSpacing' in ctx) { try { ctx.letterSpacing = Math.round(fontSize * 0.16) + 'px'; } catch (e) {} }
+
+  const x = width - pad;
+  const y = height - pad;
+  const textW = ctx.measureText(text).width;
+
+  // Wordmark — white, translucent, with a soft dark shadow for legibility on light photos.
+  ctx.shadowColor = 'rgba(0,0,0,.55)';
+  ctx.shadowBlur = Math.round(fontSize * 0.25);
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = Math.round(fontSize * 0.06);
+  ctx.globalAlpha = 0.38;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(text, x, y);
+
+  // Small red accent square just to the left of the wordmark.
+  const sq = Math.round(fontSize * 0.52);
+  const gap = Math.round(fontSize * 0.45);
+  const sqX = x - textW - gap - sq;
+  const sqY = y - Math.round(fontSize * 0.35) - Math.round(sq / 2);
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+  ctx.globalAlpha = 0.42;
+  ctx.fillStyle = '#b0181c';
+  ctx.fillRect(sqX, sqY, sq, sq);
+
+  ctx.restore();
+}
+
+function canvasToFile(canvas, originalFile) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) { reject(new Error('Canvas export failed')); return; }
+      const base = ((originalFile && originalFile.name) || 'image').replace(/\.[^./\\]+$/, '');
+      resolve(new File([blob], base + '.jpg', { type: 'image/jpeg' }));
+    }, 'image/jpeg', WATERMARK_JPEG_QUALITY);
+  });
+}
+
+async function watermarkImageFile(file) {
+  if (!file || !/^image\//.test(file.type || '')) throw new Error('Not an image file');
+  const img = await loadImageFromFile(file);
+  const srcW = img.naturalWidth || img.width;
+  const srcH = img.naturalHeight || img.height;
+  if (!srcW || !srcH) throw new Error('Image has no dimensions');
+
+  const scale = srcW > WATERMARK_MAX_WIDTH ? WATERMARK_MAX_WIDTH / srcW : 1;
+  const w = Math.round(srcW * scale);
+  const h = Math.round(srcH * scale);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas 2D context unavailable');
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, 0, 0, w, h);
+  drawWatermark(ctx, w, h);
+  return canvasToFile(canvas, file);
+}
+
 function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone }) {
   const t = useFormLang();
   const inputRef = React.useRef(null);
@@ -662,11 +761,22 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
     setPending(prev => [...prev, ...newPending]);
     for (const item of newPending) {
       try {
-        const ext = (item.file.name.split('.').pop() || 'jpg').toLowerCase();
-        const path = item.id + '.' + ext;
+        // Process + watermark before upload. On failure, skip this image — never
+        // fall back to uploading the un-watermarked original.
+        let processed;
+        try {
+          processed = await watermarkImageFile(item.file);
+        } catch (wmErr) {
+          console.error('Watermark processing failed:', wmErr);
+          alert(t('Could not process watermark for this image. Please try another file.'));
+          setPending(prev => prev.filter(p => p.id !== item.id));
+          URL.revokeObjectURL(item.blobUrl);
+          continue;
+        }
+        const path = item.id + '.jpg';
         const { data, error } = await supabase.storage
           .from('listing-images')
-          .upload(path, item.file, { upsert: false });
+          .upload(path, processed, { upsert: false, contentType: 'image/jpeg' });
         if (error) throw error;
         const { data: urlData } = supabase.storage
           .from('listing-images')
@@ -716,9 +826,15 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
           letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>
           {t('Drop images here')}
         </div>
-        <p style={{ margin: '0 0 18px', fontSize: 12, color: 'var(--fg-2)',
+        <p style={{ margin: '0 0 10px', fontSize: 12, color: 'var(--fg-2)',
           fontWeight: 300, lineHeight: 1.55 }}>
           JPG or PNG · 4:3 or 16:9 preferred · max 8 MB per file. The first image becomes the main image automatically.
+        </p>
+        <p style={{ margin: '0 0 18px', fontSize: 11, color: 'var(--fg-3)',
+          fontWeight: 300, lineHeight: 1.5, display: 'flex', alignItems: 'center',
+          gap: 8, justifyContent: 'center' }}>
+          <RedSquare size={5} />
+          {t('Uploaded images automatically receive a subtle AK Real Estate watermark.')}
         </p>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center',
           flexDirection: isPhone ? 'column' : 'row', alignItems: 'center' }}>
