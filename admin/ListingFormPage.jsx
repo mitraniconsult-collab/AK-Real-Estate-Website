@@ -667,7 +667,7 @@ function loadImageFromFile(file) {
 
 function drawWatermark(ctx, width, height) {
   const text = 'AK REAL ESTATE';
-  const pad = Math.round(width * 0.035);
+  const pad = Math.max(32, Math.round(width * 0.05));
   const fontSize = Math.max(22, Math.round(width * 0.04));
 
   ctx.save();
