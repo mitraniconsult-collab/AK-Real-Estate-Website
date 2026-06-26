@@ -52,6 +52,7 @@ function csvEscape(val) {
 }
 
 function ListingsPage() {
+  const { t } = React.useContext(AdminLangContext);
   const route = useRoute();
   const rawListings = useListings();
   const listings = (Array.isArray(rawListings) ? rawListings : [])
@@ -135,13 +136,13 @@ React.useEffect(() => {
     <div className="ak-rise">
       <SectionTitle
         n="01"
-        label="Manage · Listings"
-        title="The portfolio"
-        accent="register."
+        label={t('Manage · Listings')}
+        title={t('The portfolio')}
+        accent={t('register.')}
         action={
           <div style={{ display: 'flex', gap: 10 }}>
-            <Btn variant="secondary" onClick={handleExportCsv}>↓ Export CSV</Btn>
-            <Btn variant="primary" as="a" href="/admin/listings/new">＋ New Listing</Btn>
+            <Btn variant="secondary" onClick={handleExportCsv}>↓ {t('Export CSV')}</Btn>
+            <Btn variant="primary" as="a" href="/admin/listings/new">＋ {t('New Listing')}</Btn>
           </div>
         }
       />
@@ -158,7 +159,7 @@ React.useEffect(() => {
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
           {['All', 'Active', 'Draft', 'Sold', 'Rented'].map(s => (
             <FilterChip key={s} active={status === s} onClick={() => setStatus(s)} count={counts[s]}>
-              {s}
+              {t(s)}
             </FilterChip>
           ))}
         </div>
@@ -167,8 +168,8 @@ React.useEffect(() => {
 
         {/* Listing type */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          {['All', 'Sale', 'Rent'].map(t => (
-            <SmallToggle key={t} active={listingType === t} onClick={() => setListingType(t)}>{t}</SmallToggle>
+          {['All', 'Sale', 'Rent'].map(opt => (
+            <SmallToggle key={opt} active={listingType === opt} onClick={() => setListingType(opt)}>{t(opt)}</SmallToggle>
           ))}
         </div>
 
@@ -178,7 +179,7 @@ React.useEffect(() => {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10,
           borderBottom: '1px solid var(--hairline-light)', padding: '2px 0', minWidth: 220 }}>
           <Icon name="search" size={14} style={{ color: 'var(--fg-3)' }} />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search title, city, area…"
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('Search title, city, area…')}
             style={{ background: 'transparent', border: 0, outline: 'none', color: 'var(--fg)',
               fontSize: 13, fontWeight: 300, flex: 1, padding: '6px 0', fontFamily: 'var(--font-body)' }} />
         </div>
@@ -186,8 +187,8 @@ React.useEffect(() => {
         {/* View toggle — hidden on mobile (always card view) */}
         {!isMobile && (
           <div style={{ display: 'flex', border: '1px solid var(--hairline-light)' }}>
-            <ViewToggle active={view === 'table'} onClick={() => setView('table')} title="Table view">≣</ViewToggle>
-            <ViewToggle active={view === 'cards'} onClick={() => setView('cards')} title="Card view">▦</ViewToggle>
+            <ViewToggle active={view === 'table'} onClick={() => setView('table')} title={t('Table view')}>≣</ViewToggle>
+            <ViewToggle active={view === 'cards'} onClick={() => setView('cards')} title={t('Card view')}>▦</ViewToggle>
           </div>
         )}
       </div>
@@ -197,9 +198,9 @@ React.useEffect(() => {
         fontSize: 10, fontWeight: 500, letterSpacing: '0.28em', textTransform: 'uppercase',
         color: 'var(--fg-2)' }}>
         <RedSquare size={5} />
-        Showing {filtered.length} of {listings.length}
-        {status !== 'All' && <span style={{ color: 'var(--fg-3)' }}>· status: {status}</span>}
-        {listingType !== 'All' && <span style={{ color: 'var(--fg-3)' }}>· {listingType}</span>}
+        {t('Showing')} {filtered.length} {t('of')} {listings.length}
+        {status !== 'All' && <span style={{ color: 'var(--fg-3)' }}>· {t('Status')}: {t(status)}</span>}
+        {listingType !== 'All' && <span style={{ color: 'var(--fg-3)' }}>· {t(listingType)}</span>}
         {q && <span style={{ color: 'var(--fg-3)' }}>· "{q}"</span>}
       </div>
 
@@ -213,9 +214,9 @@ React.useEffect(() => {
       {/* Delete confirm */}
       {confirmDel && (
         <ConfirmDialog
-          title="Delete listing?"
-          body={`${confirmDel.title} (${confirmDel.id}) will be permanently removed.`}
-          danger="Delete"
+          title={t('Delete listing?')}
+          body={`${confirmDel.title} (${confirmDel.id}) ${t('will be permanently removed.')}`}
+          danger={t('Delete')}
           onCancel={() => setConfirmDel(null)}
           onConfirm={() => { Store.remove(confirmDel.id); setConfirmDel(null); }}
         />
@@ -273,18 +274,19 @@ function ViewToggle({ active, children, onClick, title }) {
 }
 
 function ListingsTable({ listings, onDelete }) {
+  const { t } = React.useContext(AdminLangContext);
   return (
     <div style={{ overflowX: 'auto', border: '1px solid var(--hairline-light)' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1080 }}>
         <thead>
           <tr style={{ background: 'var(--ak-charcoal)' }}>
-            <Th>▪ Property</Th>
-            <Th>Location</Th>
-            <Th align="right">Price</Th>
-            <Th>Type</Th>
-            <Th>Status</Th>
-            <Th>Featured</Th>
-            <Th align="right">Actions</Th>
+            <Th>▪ {t('Property')}</Th>
+            <Th>{t('Location')}</Th>
+            <Th align="right">{t('Price')}</Th>
+            <Th>{t('Type')}</Th>
+            <Th>{t('Status')}</Th>
+            <Th>{t('Featured')}</Th>
+            <Th align="right">{t('Actions')}</Th>
           </tr>
         </thead>
         <tbody>
@@ -317,6 +319,7 @@ function Td({ children, align = 'left', style }) {
 }
 
 function ListingRow({ listing, odd, onDelete }) {
+  const { t } = React.useContext(AdminLangContext);
   const [hover, setHover] = React.useState(false);
   return (
     <tr onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
@@ -362,10 +365,10 @@ function ListingRow({ listing, odd, onDelete }) {
           {formatPrice(listing.price, listing.currency, listing.listingType)}
         </span>
       </Td>
-      <Td><TypeBadge type={listing.listingType} /></Td>
-      <Td><StatusBadge status={listing.status} /></Td>
+      <Td><ListingTypeBadge type={listing.listingType} /></Td>
+      <Td><ListingStatusBadge status={listing.status} /></Td>
       <Td>
-        <button onClick={() => Store.toggleFeatured(listing.id)} title="Toggle featured" style={{
+        <button onClick={() => Store.toggleFeatured(listing.id)} title={t('Toggle featured')} style={{
           background: 'transparent', border: 0, cursor: 'pointer', padding: 4,
           fontSize: 16, color: listing.featured ? 'var(--ak-crimson)' : 'var(--fg-3)',
           transition: 'color .2s var(--ease)',
@@ -381,23 +384,59 @@ function ListingRow({ listing, odd, onDelete }) {
 }
 
 function ListingRowActions({ listing, onDelete }) {
+  const { t } = React.useContext(AdminLangContext);
   const next = listing.status === 'Active' ? 'Draft' : 'Active';
   return (
     <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center', justifyContent: 'flex-end' }}>
-    <ActionBtn title="View" href={`/listing?id=${encodeURIComponent(listing.id)}`} disabled={listing.status !== 'Active'}>
+    <ActionBtn title={t('View')} href={`/listing?id=${encodeURIComponent(listing.id)}`} disabled={listing.status !== 'Active'}>
         <Icon name="eye" size={14} />
       </ActionBtn>
-      <ActionBtn title="Edit" href={`/admin/listings/${listing.id}/edit`}>
+      <ActionBtn title={t('Edit')} href={`/admin/listings/${listing.id}/edit`}>
         <Icon name="pencil" size={14} />
       </ActionBtn>
-      <ActionBtn title={listing.status === 'Active' ? 'Deactivate' : 'Activate'}
+      <ActionBtn title={listing.status === 'Active' ? t('Deactivate') : t('Activate')}
         onClick={() => Store.setStatus(listing.id, next)}>
         {listing.status === 'Active' ? <Icon name="circle-pause" size={14} /> : <Icon name="circle-play" size={14} />}
       </ActionBtn>
-      <ActionBtn title="Delete" danger onClick={() => onDelete(listing)}>
+      <ActionBtn title={t('Delete')} danger onClick={() => onDelete(listing)}>
         <Icon name="trash-2" size={14} />
       </ActionBtn>
     </div>
+  );
+}
+
+// Translated badges — mirror atoms.jsx StatusBadge/TypeBadge styling, but route the
+// label through t(). Data values (status/type) stay English; only display changes.
+function ListingStatusBadge({ status }) {
+  const { t } = React.useContext(AdminLangContext);
+  const map = {
+    Active:  { bg: 'var(--ak-crimson)', fg: '#fff', border: 'transparent' },
+    Draft:   { bg: 'transparent', fg: 'var(--fg-2)', border: 'var(--hairline-light)' },
+    Sold:    { bg: 'rgba(176,24,28,.15)', fg: 'var(--ak-crimson-bright)', border: 'rgba(176,24,28,.40)' },
+    Rented:  { bg: 'rgba(255,255,255,.05)', fg: 'var(--fg)', border: 'var(--hairline-light)' },
+  };
+  const s = map[status] || map.Draft;
+  return (
+    <span style={{
+      display: 'inline-block', padding: '4px 10px',
+      background: s.bg, color: s.fg, border: `1px solid ${s.border}`,
+      fontSize: 9, fontWeight: 500, letterSpacing: '0.20em',
+      textTransform: 'uppercase', borderRadius: 0,
+    }}>{t(status)}</span>
+  );
+}
+
+function ListingTypeBadge({ type }) {
+  const { t } = React.useContext(AdminLangContext);
+  return (
+    <span style={{
+      display: 'inline-block', padding: '4px 10px',
+      background: type === 'Sale' ? 'rgba(255,255,255,.05)' : 'transparent',
+      color: 'var(--fg)',
+      border: '1px solid var(--hairline-light)',
+      fontSize: 9, fontWeight: 500, letterSpacing: '0.20em',
+      textTransform: 'uppercase',
+    }}>{type === 'Sale' ? t('For Sale') : t('For Rent')}</span>
   );
 }
 
@@ -436,6 +475,7 @@ function ListingsCards({ listings, onDelete }) {
 }
 
 function AdminListingCard({ listing, onDelete }) {
+  const { t } = React.useContext(AdminLangContext);
   return (
     <article style={{
       background: 'var(--ak-charcoal)',
@@ -455,12 +495,12 @@ function AdminListingCard({ listing, onDelete }) {
         <div style={{ position: 'absolute', inset: 0,
           background: 'linear-gradient(180deg, rgba(0,0,0,.10) 0%, rgba(0,0,0,.60) 100%)' }}></div>
         <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 6 }}>
-          <StatusBadge status={listing.status} />
+          <ListingStatusBadge status={listing.status} />
           {listing.featured && <span style={{
             background: 'rgba(0,0,0,.55)', backdropFilter: 'blur(6px)',
             color: 'var(--ak-crimson)', padding: '4px 8px',
             fontSize: 9, fontWeight: 500, letterSpacing: '0.20em', textTransform: 'uppercase',
-          }}>★ Featured</span>}
+          }}>★ {t('Featured')}</span>}
         </div>
         <div style={{ position: 'absolute', bottom: 12, left: 12, right: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
@@ -494,6 +534,7 @@ function AdminListingCard({ listing, onDelete }) {
 }
 
 function EmptyState() {
+  const { t } = React.useContext(AdminLangContext);
   return (
     <div style={{
       padding: '80px 24px', textAlign: 'center',
@@ -502,19 +543,19 @@ function EmptyState() {
       <RedSquare style={{ display: 'inline-block', marginBottom: 18 }} />
       <div style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: 28,
         letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>
-        Nothing to show.
+        {t('Nothing to show.')}
       </div>
       <p style={{ margin: '0 auto 28px', maxWidth: 400, fontSize: 13, color: 'var(--fg-2)',
         fontWeight: 300, lineHeight: 1.6 }}>
-        No listings match the current filters. Adjust your search, or start a new listing —
-        we'll keep it as a draft until you're ready to publish.
+        {t("No listings match the current filters. Adjust your search, or start a new listing — we'll keep it as a draft until you're ready to publish.")}
       </p>
-      <Btn variant="primary" as="a" href="/admin/listings/new">＋ New Listing</Btn>
+      <Btn variant="primary" as="a" href="/admin/listings/new">＋ {t('New Listing')}</Btn>
     </div>
   );
 }
 
 function ConfirmDialog({ title, body, danger, onCancel, onConfirm }) {
+  const { t } = React.useContext(AdminLangContext);
   return (
     <div role="dialog" style={{
       position: 'fixed', inset: 0, zIndex: 80,
@@ -531,15 +572,15 @@ function ConfirmDialog({ title, body, danger, onCancel, onConfirm }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
           <RedSquare size={6} />
           <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
-            textTransform: 'uppercase', color: 'var(--ak-crimson-bright)' }}>Confirm</span>
+            textTransform: 'uppercase', color: 'var(--ak-crimson-bright)' }}>{t('Confirm')}</span>
         </div>
         <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300,
           fontSize: 26, letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 1.1 }}>{title}</h3>
         <p style={{ margin: '14px 0 28px', fontSize: 13, color: 'var(--fg-2)',
           fontWeight: 300, lineHeight: 1.6 }}>{body}</p>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-          <Btn variant="secondary" onClick={onCancel}>Cancel</Btn>
-          <Btn variant="primary" onClick={onConfirm}>{danger || 'Confirm'}</Btn>
+          <Btn variant="secondary" onClick={onCancel}>{t('Cancel')}</Btn>
+          <Btn variant="primary" onClick={onConfirm}>{danger || t('Confirm')}</Btn>
         </div>
       </div>
     </div>
