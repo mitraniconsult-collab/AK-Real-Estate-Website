@@ -59,15 +59,15 @@ const FORM_TRANSLATIONS = {
     'Live Preview':           'Преглед',
     'Record':                 'Запис',
     'Saved · returning to listings…': 'Запазено · пренасочване…',
-    'English content (optional)': 'Съдържание на английски (по избор)',
+    'English content (optional)': 'Английско съдържание (по избор)',
     'Used on the English version of the site. Leave empty to fall back to the main fields.':
       'Използва се в английската версия на сайта. Оставете празно, за да се ползва основното поле.',
-    'English Title':          'Заглавие (EN)',
-    'English Description':    'Описание (EN)',
-    'English City':           'Град (EN)',
-    'English Area':           'Район (EN)',
-    'English Address':        'Адрес (EN)',
-    'English Features':       'Екстри (EN)',
+    'English Title':          'Заглавие на английски',
+    'English Description':    'Описание на английски',
+    'English City':           'Град на английски',
+    'English Area':           'Район на английски',
+    'English Address':        'Адрес на английски',
+    'English Features':       'Особености на английски',
   },
   en: {
     'New Listing':            'New Listing',
@@ -258,9 +258,9 @@ function ListingFormPage({ mode, id }) {
     setTimeout(() => navigate('/listings'), 500);
   };
 
-  // Derived button labels — shared between top (desktop) and bottom (mobile) bars
-  const saveDraftLabel = form.status === 'Draft' ? t('Save Draft') : t('Save Changes');
-  const publishLabel   = form.status === 'Active' ? t('Save & Publish') : t('Publish Now');
+  // Single primary save action — shared between top (desktop) and bottom (mobile) bars.
+  // Always saves the full form and sets status to Active (an already-Active listing stays Active).
+  const publishLabel = t('Save & Publish');
 
   if (editing && !original) {
     return (
@@ -286,7 +286,6 @@ function ListingFormPage({ mode, id }) {
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', rowGap: 8 }}>
               <Btn variant="secondary" as="a" href="/admin/listings">{t('Cancel')}</Btn>
               {editing && <Btn variant="danger" onClick={() => setConfirmDel(true)}>{t('Delete')}</Btn>}
-              <Btn variant="secondary" onClick={() => save(false)} disabled={imagesUploading}>{saveDraftLabel}</Btn>
               <Btn variant="primary"   onClick={() => save(true)} disabled={imagesUploading}>{publishLabel}</Btn>
             </div>
           ) : null
@@ -334,7 +333,37 @@ function ListingFormPage({ mode, id }) {
             </div>
           </FormSection>
 
-          <FormSection n="02" title={t('Location')}>
+          <FormSection n="02" title={t('English content (optional)')}>
+            <p style={{ margin: '0 0 20px', fontSize: 12, color: 'var(--fg-3)', lineHeight: 1.6, fontWeight: 300 }}>
+              {t('Used on the English version of the site. Leave empty to fall back to the main fields.')}
+            </p>
+            <Field label={t('English Title')}>
+              <TextInput value={form.titleEn} onChange={(v) => set('titleEn', v)}
+                placeholder="e.g. Villa di Pietra" />
+            </Field>
+            <Field label={t('English Description')}>
+              <TextArea value={form.descriptionEn} onChange={(v) => set('descriptionEn', v)}
+                rows={5} placeholder="Tucked behind a stone wall on a one-block lane…" />
+            </Field>
+            <div style={{ display: 'grid', gridTemplateColumns: isPhone ? '1fr' : '1fr 1fr', gap: 24 }}>
+              <Field label={t('English City')}>
+                <TextInput value={form.cityEn} onChange={(v) => set('cityEn', v)} placeholder="Sofia" />
+              </Field>
+              <Field label={t('English Area')}>
+                <TextInput value={form.areaEn} onChange={(v) => set('areaEn', v)} placeholder="Lozenets" />
+              </Field>
+            </div>
+            <Field label={t('English Address')}>
+              <TextInput value={form.addressEn} onChange={(v) => set('addressEn', v)}
+                placeholder="15 Dimitar Hadzhikotsev St., Lozenets, Sofia" />
+            </Field>
+            <Field label={t('English Features')}>
+              <TextArea value={form.featuresEn} onChange={(v) => set('featuresEn', v)} rows={3}
+                placeholder="Motor court · Restored stone facade · Library · Cellar · Pool" />
+            </Field>
+          </FormSection>
+
+          <FormSection n="03" title={t('Location')}>
             <div style={{ display: 'grid', gridTemplateColumns: isPhone ? '1fr' : '1fr 1fr', gap: 24 }}>
               <Field label={t('City')} required error={errors.city}>
                 <TextInput value={form.city} onChange={(v) => set('city', v)} placeholder="Los Angeles" />
@@ -349,7 +378,7 @@ function ListingFormPage({ mode, id }) {
             </Field>
           </FormSection>
 
-          <FormSection n="03" title={t('Pricing')}>
+          <FormSection n="04" title={t('Pricing')}>
             <div style={{ display: 'grid', gridTemplateColumns: isPhone ? '1fr' : '2fr 1fr', gap: 24 }}>
               <Field label={t('Price')} required error={errors.price}
                 hint={form.listingType === 'Rent' ? t('Per month') : t('List price')}>
@@ -363,7 +392,7 @@ function ListingFormPage({ mode, id }) {
             </div>
           </FormSection>
 
-          <FormSection n="04" title={t('Specifications')}>
+          <FormSection n="05" title={t('Specifications')}>
             <div style={{ display: 'grid', gridTemplateColumns: isPhone ? '1fr' : 'repeat(3, 1fr)', gap: 24 }}>
               <Field label={t('Bedrooms')}>
                 <NumberInput value={form.bedrooms} onChange={(v) => set('bedrooms', v)} min={0} placeholder="7" />
@@ -398,43 +427,13 @@ function ListingFormPage({ mode, id }) {
             </Field>
           </FormSection>
 
-          <FormSection n="05" title={t('Photography')}>
+          <FormSection n="06" title={t('Photography')}>
             <ImageManager
               images={form.images} mainImage={form.mainImage}
               onChange={(images, mainImage) => setForm(prev => ({ ...prev, images, mainImage }))}
               onUploadingChange={(n) => setImagesUploading(n > 0)}
               isPhone={isPhone}
             />
-          </FormSection>
-
-          <FormSection n="06" title={t('English content (optional)')}>
-            <p style={{ margin: '0 0 20px', fontSize: 12, color: 'var(--fg-3)', lineHeight: 1.6, fontWeight: 300 }}>
-              {t('Used on the English version of the site. Leave empty to fall back to the main fields.')}
-            </p>
-            <Field label={t('English Title')}>
-              <TextInput value={form.titleEn} onChange={(v) => set('titleEn', v)}
-                placeholder="e.g. Villa di Pietra" />
-            </Field>
-            <Field label={t('English Description')}>
-              <TextArea value={form.descriptionEn} onChange={(v) => set('descriptionEn', v)}
-                rows={5} placeholder="Tucked behind a stone wall on a one-block lane…" />
-            </Field>
-            <div style={{ display: 'grid', gridTemplateColumns: isPhone ? '1fr' : '1fr 1fr', gap: 24 }}>
-              <Field label={t('English City')}>
-                <TextInput value={form.cityEn} onChange={(v) => set('cityEn', v)} placeholder="Sofia" />
-              </Field>
-              <Field label={t('English Area')}>
-                <TextInput value={form.areaEn} onChange={(v) => set('areaEn', v)} placeholder="Lozenets" />
-              </Field>
-            </div>
-            <Field label={t('English Address')}>
-              <TextInput value={form.addressEn} onChange={(v) => set('addressEn', v)}
-                placeholder="15 Dimitar Hadzhikotsev St., Lozenets, Sofia" />
-            </Field>
-            <Field label={t('English Features')}>
-              <TextArea value={form.featuresEn} onChange={(v) => set('featuresEn', v)} rows={3}
-                placeholder="Motor court · Restored stone facade · Library · Cellar · Pool" />
-            </Field>
           </FormSection>
         </div>
 
@@ -498,10 +497,6 @@ function ListingFormPage({ mode, id }) {
           <Btn variant="primary" onClick={() => save(true)} disabled={imagesUploading}
             style={{ width: '100%', justifyContent: 'center' }}>
             {publishLabel}
-          </Btn>
-          <Btn variant="secondary" onClick={() => save(false)} disabled={imagesUploading}
-            style={{ width: '100%', justifyContent: 'center' }}>
-            {saveDraftLabel}
           </Btn>
           <div style={{ display: 'flex', gap: 12 }}>
             <Btn variant="secondary" as="a" href="/admin/listings"
