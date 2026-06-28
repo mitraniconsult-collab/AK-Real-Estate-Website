@@ -412,6 +412,54 @@
       letter-spacing: .04em;
     }
 
+    /* Characteristics — extra property details below the description. */
+    .char-section {
+      margin-top: 30px;
+      padding-top: 24px;
+      border-top: 1px solid var(--hairline);
+    }
+    .char-title {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--fg-3); font-size: 9px; letter-spacing: .24em;
+      text-transform: uppercase; margin-bottom: 16px;
+    }
+    .char-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+    }
+    .char-grid div {
+      border: 1px solid var(--hairline);
+      background: var(--ak-black);
+      padding: 14px;
+    }
+    .char-grid span {
+      display: block; color: var(--fg-3); font-size: 9px;
+      letter-spacing: .24em; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .char-grid strong { font-weight: 400; font-size: 15px; }
+    .char-chips {
+      margin-top: 14px;
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .char-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 14px; border: 1px solid var(--hairline);
+      font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--fg);
+    }
+    .char-chip::before {
+      content: ''; width: 5px; height: 5px;
+      background: var(--ak-crimson); display: inline-block; flex-shrink: 0;
+    }
+    .char-extras {
+      margin-top: 16px; color: var(--fg-2);
+      font-size: 12px; line-height: 1.8; letter-spacing: .04em;
+    }
+    .char-extras .lbl {
+      display: block; color: var(--fg-3); font-size: 9px;
+      letter-spacing: .24em; text-transform: uppercase; margin-bottom: 8px;
+    }
+
     .actions {
       margin-top: 34px;
       display: flex;
@@ -851,6 +899,60 @@
       return listing[field];
     }
 
+    // A value counts as "present" if it is not null/undefined/empty. Note: 0 is kept
+    // (e.g. floor 0 = ground floor is meaningful).
+    function hasVal(v) {
+      return v !== null && v !== undefined && String(v).trim() !== "";
+    }
+
+    // Builds the "Characteristics" block: a mini-grid of numeric fields, chips for the
+    // boolean amenities, and the extras/features text. Only non-empty fields render;
+    // returns "" when there is nothing to show.
+    function characteristicsHtml(listing) {
+      var L = isBg()
+        ? { title: "Характеристики", floor: "Етаж", total: "Общо етажи", year: "Година на строеж",
+            parking: "Паркинг", elevator: "Асансьор", furnished: "Обзаведен", extras: "Екстри" }
+        : { title: "Characteristics", floor: "Floor", total: "Total floors", year: "Year built",
+            parking: "Parking", elevator: "Elevator", furnished: "Furnished", extras: "Extras" };
+
+      var cells = [];
+      if (hasVal(listing.floor))        cells.push([L.floor, listing.floor]);
+      if (hasVal(listing.total_floors)) cells.push([L.total, listing.total_floors]);
+      if (hasVal(listing.year_built))   cells.push([L.year,  listing.year_built]);
+
+      var chips = [];
+      if (listing.parking === true)   chips.push(L.parking);
+      if (listing.elevator === true)  chips.push(L.elevator);
+      if (listing.furnished === true) chips.push(L.furnished);
+
+      var extras = localized(listing, "features");
+
+      if (!cells.length && !chips.length && !hasVal(extras)) return "";
+
+      var grid = cells.length
+        ? '<div class="char-grid">' +
+            cells.map(function (c) {
+              return "<div><span>" + escapeHtml(c[0]) + "</span><strong>" + escapeHtml(c[1]) + "</strong></div>";
+            }).join("") +
+          "</div>"
+        : "";
+
+      var chipRow = chips.length
+        ? '<div class="char-chips">' +
+            chips.map(function (c) { return '<span class="char-chip">' + escapeHtml(c) + "</span>"; }).join("") +
+          "</div>"
+        : "";
+
+      var extrasBlock = hasVal(extras)
+        ? '<div class="char-extras"><span class="lbl">' + escapeHtml(L.extras) + "</span>" + escapeHtml(extras) + "</div>"
+        : "";
+
+      return '<div class="char-section">' +
+               '<div class="char-title"><span class="red-square"></span>' + escapeHtml(L.title) + "</div>" +
+               grid + chipRow + extrasBlock +
+             "</div>";
+    }
+
     function renderNotFound() {
       window._notFound = true;
       app.innerHTML = `
@@ -916,7 +1018,7 @@
 
             ${localized(listing, "description") ? `<div class="description">${escapeHtml(localized(listing, "description"))}</div>` : ""}
 
-            ${localized(listing, "features") ? `<div class="features">${escapeHtml(localized(listing, "features"))}</div>` : ""}
+            ${characteristicsHtml(listing)}
 
             <div class="actions">
               <a class="btn primary" href="/contact?listing=${encodeURIComponent(listing.id)}">${isBg() ? 'Заявете достъп' : 'Request Viewing'}</a>
