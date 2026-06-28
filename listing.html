@@ -905,20 +905,32 @@
       return v !== null && v !== undefined && String(v).trim() !== "";
     }
 
-    // Builds the "Characteristics" block: a mini-grid of numeric fields, chips for the
-    // boolean amenities, and the extras/features text. Only non-empty fields render;
-    // returns "" when there is nothing to show.
+    // Builds the single unified "Characteristics" block: one grid with ALL structured
+    // fields (the former top stats + floor/total/year), chips for the boolean amenities,
+    // and the extras/features text. Only non-empty fields render; returns "" when empty.
+    // Cell values are already HTML-safe (numbers are escaped here; the translate* helpers
+    // return escaped text), so they are inserted without re-escaping.
     function characteristicsHtml(listing) {
       var L = isBg()
-        ? { title: "Характеристики", floor: "Етаж", total: "Общо етажи", year: "Година на строеж",
+        ? { title: "Характеристики", beds: "Спални", baths: "Бани", area: "Площ",
+            ptype: "Тип имот", deal: "Сделка", status: "Статус",
+            floor: "Етаж", total: "Общо етажи", year: "Година на строеж",
             parking: "Паркинг", elevator: "Асансьор", furnished: "Обзаведен", extras: "Екстри" }
-        : { title: "Characteristics", floor: "Floor", total: "Total floors", year: "Year built",
+        : { title: "Characteristics", beds: "Bedrooms", baths: "Bathrooms", area: "Area",
+            ptype: "Property type", deal: "Deal type", status: "Status",
+            floor: "Floor", total: "Total floors", year: "Year built",
             parking: "Parking", elevator: "Elevator", furnished: "Furnished", extras: "Extras" };
 
       var cells = [];
-      if (hasVal(listing.floor))        cells.push([L.floor, listing.floor]);
-      if (hasVal(listing.total_floors)) cells.push([L.total, listing.total_floors]);
-      if (hasVal(listing.year_built))   cells.push([L.year,  listing.year_built]);
+      if (hasVal(listing.bedrooms))      cells.push([L.beds,   escapeHtml(listing.bedrooms)]);
+      if (hasVal(listing.bathrooms))     cells.push([L.baths,  escapeHtml(listing.bathrooms)]);
+      if (hasVal(listing.area_sqm))      cells.push([L.area,   escapeHtml(listing.area_sqm) + " m²"]);
+      if (hasVal(listing.property_type)) cells.push([L.ptype,  translatePropertyType(listing.property_type)]);
+      if (hasVal(listing.listing_type))  cells.push([L.deal,   translateListingType(listing.listing_type)]);
+      if (hasVal(listing.status))        cells.push([L.status, translateStatus(listing.status)]);
+      if (hasVal(listing.floor))         cells.push([L.floor,  escapeHtml(listing.floor)]);
+      if (hasVal(listing.total_floors))  cells.push([L.total,  escapeHtml(listing.total_floors)]);
+      if (hasVal(listing.year_built))    cells.push([L.year,   escapeHtml(listing.year_built)]);
 
       var chips = [];
       if (listing.parking === true)   chips.push(L.parking);
@@ -932,7 +944,7 @@
       var grid = cells.length
         ? '<div class="char-grid">' +
             cells.map(function (c) {
-              return "<div><span>" + escapeHtml(c[0]) + "</span><strong>" + escapeHtml(c[1]) + "</strong></div>";
+              return "<div><span>" + escapeHtml(c[0]) + "</span><strong>" + c[1] + "</strong></div>";
             }).join("") +
           "</div>"
         : "";
@@ -1005,15 +1017,6 @@
 
             <div class="price">
               ${formatPrice(listing.price, listing.currency, listing.listing_type)}
-            </div>
-
-            <div class="meta">
-            <div><span>${isBg() ? 'Спални'   : 'Bedrooms'}</span><strong>${escapeHtml(listing.bedrooms || "—")}</strong></div>
-            <div><span>${isBg() ? 'Бани'     : 'Bathrooms'}</span><strong>${escapeHtml(listing.bathrooms || "—")}</strong></div>
-            <div><span>${isBg() ? 'Площ'     : 'Area'}</span><strong>${escapeHtml(listing.area_sqm || "—")} m²</strong></div>
-            <div><span>${isBg() ? 'Тип имот' : 'Type'}</span><strong>${translatePropertyType(listing.property_type)}</strong></div>
-            <div><span>${isBg() ? 'Сделка'   : 'Listing'}</span><strong>${translateListingType(listing.listing_type)}</strong></div>
-            <div><span>${isBg() ? 'Статус'   : 'Status'}</span><strong>${translateStatus(listing.status)}</strong></div>
             </div>
 
             ${localized(listing, "description") ? `<div class="description">${escapeHtml(localized(listing, "description"))}</div>` : ""}
