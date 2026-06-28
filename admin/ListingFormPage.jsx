@@ -72,6 +72,17 @@ const FORM_TRANSLATIONS = {
       'Качените снимки автоматично получават дискретен AK Real Estate watermark.',
     'Could not process watermark for this image. Please try another file.':
       'Watermark-ът на тази снимка не можа да се обработи. Моля, опитайте друг файл.',
+    'Upload images or video': 'Качете снимки или видео',
+    'Images and videos up to 100 MB are supported.': 'Поддържат се снимки и видео до 100 MB.',
+    'Images automatically receive an AK Real Estate watermark. Video files are uploaded without a watermark.':
+      'Снимките автоматично получават AK Real Estate watermark. Видео файловете се качват без watermark.',
+    'This file is too large. Maximum size is 100 MB.': 'Файлът е твърде голям. Максималният размер е 100 MB.',
+    'Upload failed. The file may be too large or an unsupported format.':
+      'Качването е неуспешно. Файлът може да е твърде голям или с неподдържан формат.',
+    'Video': 'Видео',
+    'item': 'елемент', 'items': 'елемента',
+    'uploading…': 'качване…',
+    'Click ★ to set the main media': 'Натиснете ★ за основна медия',
   },
   en: {
     'New Listing':            'New Listing',
@@ -143,6 +154,17 @@ const FORM_TRANSLATIONS = {
       'Uploaded images automatically receive a subtle AK Real Estate watermark.',
     'Could not process watermark for this image. Please try another file.':
       'Could not process watermark for this image. Please try another file.',
+    'Upload images or video': 'Upload images or video',
+    'Images and videos up to 100 MB are supported.': 'Images and videos up to 100 MB are supported.',
+    'Images automatically receive an AK Real Estate watermark. Video files are uploaded without a watermark.':
+      'Images automatically receive an AK Real Estate watermark. Video files are uploaded without a watermark.',
+    'This file is too large. Maximum size is 100 MB.': 'This file is too large. Maximum size is 100 MB.',
+    'Upload failed. The file may be too large or an unsupported format.':
+      'Upload failed. The file may be too large or an unsupported format.',
+    'Video': 'Video',
+    'item': 'item', 'items': 'items',
+    'uploading…': 'uploading…',
+    'Click ★ to set the main media': 'Click ★ to set the main media',
   },
 };
 
@@ -757,6 +779,33 @@ async function watermarkImageFile(file) {
   return canvasToFile(canvas, file);
 }
 
+// ─── Video media ─────────────────────────────────────────────────────────────
+// Videos are uploaded as-is (no watermark). Type is inferred from extension/MIME so
+// the existing `images` URL array + `main_image` index model is reused unchanged.
+const VIDEO_EXTS = ['mp4', 'webm', 'mov', 'm4v', 'ogg', 'ogv'];
+const VIDEO_MIME = { mp4: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime', m4v: 'video/mp4', ogg: 'video/ogg', ogv: 'video/ogg' };
+const MAX_MEDIA_BYTES = 100 * 1024 * 1024; // 100 MB
+
+function mediaExt(name) {
+  const m = String(name || '').toLowerCase().split('?')[0].match(/\.([a-z0-9]+)$/);
+  return m ? m[1] : '';
+}
+function isVideoFile(file) {
+  if (!file) return false;
+  if (file.type && file.type.indexOf('video/') === 0) return true;
+  return VIDEO_EXTS.indexOf(mediaExt(file.name)) !== -1;
+}
+function isVideoUrl(url) {
+  return VIDEO_EXTS.indexOf(mediaExt(typeof url === 'string' ? url : '')) !== -1;
+}
+function videoExtFor(file) {
+  const e = mediaExt(file && file.name);
+  if (VIDEO_EXTS.indexOf(e) !== -1) return e;
+  if (file && file.type === 'video/webm') return 'webm';
+  if (file && file.type === 'video/quicktime') return 'mov';
+  return 'mp4';
+}
+
 function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone }) {
   const t = useFormLang();
   const inputRef = React.useRef(null);
@@ -772,35 +821,50 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
   const handleFiles = async (files) => {
     const supabase = window.akSupabase;
     if (!supabase) return;
-    const newPending = Array.from(files).map(f => ({
-      id: crypto.randomUUID(),
-      blobUrl: URL.createObjectURL(f),
-      file: f,
-    }));
+
+    const newPending = [];
+    for (const f of Array.from(files)) {
+      if (f.size > MAX_MEDIA_BYTES) {
+        alert(t('This file is too large. Maximum size is 100 MB.'));
+        continue;
+      }
+      newPending.push({ id: crypto.randomUUID(), blobUrl: URL.createObjectURL(f), file: f, isVideo: isVideoFile(f) });
+    }
+    if (!newPending.length) return;
     setPending(prev => [...prev, ...newPending]);
+
     for (const item of newPending) {
       let processedUrl = null;
       try {
-        // Process + watermark before upload. On failure, skip this image — never
-        // fall back to uploading the un-watermarked original.
-        let processed;
-        try {
-          processed = await watermarkImageFile(item.file);
-        } catch (wmErr) {
-          console.error('Watermark processing failed:', wmErr);
-          alert(t('Could not process watermark for this image. Please try another file.'));
-          continue; // cleanup runs in finally
+        let uploadFile, path, contentType;
+
+        if (item.isVideo) {
+          // Videos are uploaded as-is — no watermark processing.
+          const ext = videoExtFor(item.file);
+          uploadFile = item.file;
+          path = item.id + '.' + ext;
+          contentType = item.file.type || VIDEO_MIME[ext] || 'video/mp4';
+        } else {
+          // Images: watermark before upload. On failure, skip — never upload the original.
+          let processed;
+          try {
+            processed = await watermarkImageFile(item.file);
+          } catch (wmErr) {
+            console.error('Watermark processing failed:', wmErr);
+            alert(t('Could not process watermark for this image. Please try another file.'));
+            continue; // cleanup runs in finally
+          }
+          // Show the watermarked result in the pending thumbnail immediately.
+          processedUrl = URL.createObjectURL(processed);
+          setPending(prev => prev.map(p => p.id === item.id ? { ...p, blobUrl: processedUrl } : p));
+          uploadFile = processed;
+          path = item.id + '.jpg';
+          contentType = 'image/jpeg';
         }
 
-        // Swap the pending thumbnail to the actual watermarked result so the admin
-        // sees the watermark immediately, before the upload even finishes.
-        processedUrl = URL.createObjectURL(processed);
-        setPending(prev => prev.map(p => p.id === item.id ? { ...p, blobUrl: processedUrl } : p));
-
-        const path = item.id + '.jpg';
         const { data, error } = await supabase.storage
           .from('listing-images')
-          .upload(path, processed, { upsert: false, contentType: 'image/jpeg' });
+          .upload(path, uploadFile, { upsert: false, contentType });
         if (error) throw error;
         const { data: urlData } = supabase.storage
           .from('listing-images')
@@ -809,7 +873,8 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
         const curMain = mainImageRef.current;
         onChange([...curImages, urlData.publicUrl], curImages.length === 0 ? 0 : curMain);
       } catch (err) {
-        console.error('Image upload failed:', err);
+        console.error('Media upload failed:', err);
+        alert(t('Upload failed. The file may be too large or an unsupported format.'));
       } finally {
         setPending(prev => prev.filter(p => p.id !== item.id));
         URL.revokeObjectURL(item.blobUrl);
@@ -850,17 +915,17 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
         <RedSquare style={{ marginBottom: 14 }} />
         <div style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: 24,
           letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>
-          {t('Drop images here')}
+          {t('Upload images or video')}
         </div>
         <p style={{ margin: '0 0 10px', fontSize: 12, color: 'var(--fg-2)',
           fontWeight: 300, lineHeight: 1.55 }}>
-          JPG or PNG · 4:3 or 16:9 preferred · max 8 MB per file. The first image becomes the main image automatically.
+          {t('Images and videos up to 100 MB are supported.')}
         </p>
         <p style={{ margin: '0 0 18px', fontSize: 11, color: 'var(--fg-3)',
           fontWeight: 300, lineHeight: 1.5, display: 'flex', alignItems: 'center',
-          gap: 8, justifyContent: 'center' }}>
+          gap: 8, justifyContent: 'center', maxWidth: 460, marginInline: 'auto' }}>
           <RedSquare size={5} />
-          {t('Uploaded images automatically receive a subtle AK Real Estate watermark.')}
+          {t('Images automatically receive an AK Real Estate watermark. Video files are uploaded without a watermark.')}
         </p>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center',
           flexDirection: isPhone ? 'column' : 'row', alignItems: 'center' }}>
@@ -869,7 +934,8 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
             {t('Add Stock')}
           </Btn>
         </div>
-        <input ref={inputRef} type="file" multiple accept="image/*"
+        <input ref={inputRef} type="file" multiple
+          accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
           style={{ display: 'none' }}
           onChange={(e) => handleFiles(e.target.files)} />
       </div>
@@ -880,10 +946,10 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
             <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
               textTransform: 'uppercase', color: 'var(--fg-2)' }}>
-              {images.length + pending.length} image{images.length + pending.length === 1 ? '' : 's'}
+              {images.length + pending.length} {(images.length + pending.length === 1) ? t('item') : t('items')}
               {pending.length > 0
-                ? ' · ' + pending.length + ' uploading…'
-                : ' · Click ★ to set the main image'}
+                ? ' · ' + pending.length + ' ' + t('uploading…')
+                : ' · ' + t('Click ★ to set the main media')}
             </span>
           </div>
           <div style={{ display: 'grid',
@@ -895,7 +961,7 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
                 onRemove={() => remove(i)} />
             ))}
             {pending.map((item) => (
-              <ImageThumbLoading key={item.id} blobUrl={item.blobUrl} />
+              <ImageThumbLoading key={item.id} blobUrl={item.blobUrl} isVideo={item.isVideo} />
             ))}
           </div>
         </div>
@@ -905,7 +971,9 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
 }
 
 function ImageThumb({ src, isMain, onMain, onRemove }) {
+  const t = useFormLang();
   const url = getImageUrl(src);
+  const video = isVideoUrl(url);
   return (
     <div style={{
       position: 'relative', aspectRatio: '4/3', overflow: 'hidden',
@@ -913,13 +981,23 @@ function ImageThumb({ src, isMain, onMain, onRemove }) {
       background: 'var(--ak-graphite)',
     }}>
       {url ? (
-        <img src={url} alt=""
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
-                   objectFit: 'cover' }} />
+        video ? (
+          <video src={url} muted playsInline preload="metadata"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <img src={url} alt=""
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+        )
       ) : (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
           justifyContent: 'center', fontSize: 10, fontWeight: 500, letterSpacing: '0.20em',
           textTransform: 'uppercase', color: 'var(--fg-3)' }}>No image</div>
+      )}
+      {video && (
+        <div style={{ position: 'absolute', top: 6, right: 6,
+          background: 'rgba(0,0,0,.72)', color: '#fff', padding: '3px 7px',
+          fontSize: 8, fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase',
+          display: 'flex', alignItems: 'center', gap: 4 }}>▶ {t('Video')}</div>
       )}
       {isMain && (
         <div style={{ position: 'absolute', top: 6, left: 6,
@@ -949,7 +1027,7 @@ function ImageThumb({ src, isMain, onMain, onRemove }) {
   );
 }
 
-function ImageThumbLoading({ blobUrl }) {
+function ImageThumbLoading({ blobUrl, isVideo }) {
   return (
     <div style={{
       position: 'relative', aspectRatio: '4/3', overflow: 'hidden',
@@ -957,10 +1035,13 @@ function ImageThumbLoading({ blobUrl }) {
       background: 'var(--ak-graphite)',
       opacity: 0.65,
     }}>
-      {blobUrl && (
+      {blobUrl && (isVideo ? (
+        <video src={blobUrl} muted playsInline
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+      ) : (
         <img src={blobUrl} alt=""
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-      )}
+      ))}
       <div style={{
         position: 'absolute', inset: 0, display: 'flex',
         alignItems: 'center', justifyContent: 'center',

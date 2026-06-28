@@ -330,6 +330,66 @@
       display: block;
     }
 
+    /* ── Video + gallery/lightbox ── */
+    .main-image video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: contain; object-position: center;
+      display: block; background: #000;
+    }
+    .main-image { cursor: default; }
+    .media-expand {
+      position: absolute; top: 10px; right: 10px; z-index: 3;
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.6); color: #fff;
+      border: 1px solid var(--hairline); cursor: pointer; font-size: 14px;
+      transition: background .2s var(--ease);
+    }
+    .media-expand:hover { background: var(--ak-crimson); }
+    .thumb { position: relative; }
+    .thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .thumb-play {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 20px; text-shadow: 0 1px 6px rgba(0,0,0,.7); pointer-events: none;
+    }
+    .thumb-badge {
+      position: absolute; bottom: 4px; left: 4px;
+      background: rgba(0,0,0,.7); color: #fff;
+      font-size: 8px; letter-spacing: .16em; text-transform: uppercase;
+      padding: 2px 6px; pointer-events: none;
+    }
+    .lightbox {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,.94);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lightbox[hidden] { display: none; }
+    .lb-stage {
+      max-width: 92vw; max-height: 88vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lb-media { max-width: 92vw; max-height: 88vh; object-fit: contain; display: block; }
+    .lb-btn {
+      position: absolute; background: rgba(0,0,0,.5); color: #fff;
+      border: 1px solid var(--hairline); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s var(--ease);
+    }
+    .lb-btn:hover { background: var(--ak-crimson); }
+    .lb-close { top: 18px; right: 18px; width: 42px; height: 42px; font-size: 18px; }
+    .lb-prev, .lb-next { top: 50%; transform: translateY(-50%); width: 48px; height: 64px; font-size: 30px; }
+    .lb-prev { left: 14px; } .lb-next { right: 14px; }
+    .lb-counter {
+      position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+      color: var(--fg-2); font-size: 11px; letter-spacing: .22em;
+    }
+    @media (max-width: 640px) {
+      .lb-prev, .lb-next { width: 40px; height: 52px; font-size: 24px; }
+      .lb-media { max-width: 96vw; max-height: 78vh; }
+      .lb-close { top: 12px; right: 12px; }
+    }
+
     .details {
       position: sticky;
       top: 110px;
@@ -965,6 +1025,146 @@
              "</div>";
     }
 
+    // ── Media gallery (images + videos) ──────────────────────────────────────
+    // Type is inferred from the file extension — no schema change. Existing image
+    // URLs simply resolve to type "image" and render exactly as before.
+    var VIDEO_EXTS = ["mp4", "webm", "mov", "m4v", "ogg", "ogv"];
+    function mediaExt(u) {
+      var m = String(u || "").toLowerCase().split("?")[0].match(/\.([a-z0-9]+)$/);
+      return m ? m[1] : "";
+    }
+    function isVideoUrl(u) { return VIDEO_EXTS.indexOf(mediaExt(u)) !== -1; }
+
+    function buildMediaList(listing) {
+      var arr = Array.isArray(listing.images) ? listing.images : [];
+      var out = [];
+      for (var i = 0; i < arr.length; i++) {
+        var url = getImageUrl(arr[i]);
+        if (url) out.push({ url: url, type: isVideoUrl(url) ? "video" : "image" });
+      }
+      return out;
+    }
+
+    function mainMediaHtml(item) {
+      if (!item || !item.url) return "";
+      if (item.type === "video") {
+        return '<video id="mainMedia" src="' + escapeHtml(item.url) + '" controls playsinline preload="metadata"></video>';
+      }
+      return '<img id="mainMedia" src="' + escapeHtml(item.url) + '" alt="">';
+    }
+
+    function thumbHtml(item, index, activeIndex) {
+      var inner;
+      if (item.type === "video") {
+        inner = '<video src="' + escapeHtml(item.url) + '" muted playsinline preload="metadata"></video>' +
+                '<span class="thumb-play">▶</span>' +
+                '<span class="thumb-badge">' + (isBg() ? "Видео" : "Video") + '</span>';
+      } else {
+        inner = '<img src="' + escapeHtml(item.url) + '" alt="">';
+      }
+      return '<button class="thumb ' + (index === activeIndex ? "active" : "") +
+             '" data-index="' + index + '" type="button">' + inner + "</button>";
+    }
+
+    function galleryHtml(mediaList, mainIndex) {
+      var main = mediaList.length ? (mediaList[mainIndex] || mediaList[0]) : null;
+      var thumbs = mediaList.length > 1
+        ? '<div class="thumbs">' + mediaList.map(function (m, i) { return thumbHtml(m, i, mainIndex); }).join("") + "</div>"
+        : "";
+      return '<section class="gallery"><div class="main-image" id="mainStage">' +
+               (main ? mainMediaHtml(main) + '<button class="media-expand" id="mediaExpand" type="button" aria-label="Expand">⛶</button>' : "") +
+             "</div>" + thumbs + "</section>";
+    }
+
+    function lightboxHtml(mediaList) {
+      if (!mediaList.length) return "";
+      return '<div class="lightbox" id="lightbox" hidden>' +
+               '<button class="lb-btn lb-close" id="lbClose" type="button" aria-label="Close">✕</button>' +
+               '<button class="lb-btn lb-prev" id="lbPrev" type="button" aria-label="Previous">‹</button>' +
+               '<div class="lb-stage" id="lbStage"></div>' +
+               '<button class="lb-btn lb-next" id="lbNext" type="button" aria-label="Next">›</button>' +
+               '<div class="lb-counter" id="lbCounter"></div>' +
+             "</div>";
+    }
+
+    function initGallery(mediaList, startMain) {
+      if (!mediaList.length) return;
+      var mainStage = document.getElementById("mainStage");
+      var lightbox = document.getElementById("lightbox");
+      var lbStage = document.getElementById("lbStage");
+      var lbCounter = document.getElementById("lbCounter");
+      var current = (startMain >= 0 && startMain < mediaList.length) ? startMain : 0;
+      var lbIndex = 0;
+
+      function pauseVideos(el) {
+        if (!el) return;
+        var vids = el.getElementsByTagName("video");
+        for (var i = 0; i < vids.length; i++) { try { vids[i].pause(); } catch (e) {} }
+      }
+      function setActiveThumb(i) {
+        var ts = document.querySelectorAll(".thumb");
+        for (var k = 0; k < ts.length; k++) {
+          if (k === i) ts[k].classList.add("active"); else ts[k].classList.remove("active");
+        }
+      }
+      function wireMain() {
+        var expand = document.getElementById("mediaExpand");
+        if (expand) expand.onclick = function (e) { e.stopPropagation(); openLb(current); };
+        var el = document.getElementById("mainMedia");
+        if (el && el.tagName === "IMG") { el.style.cursor = "zoom-in"; el.onclick = function () { openLb(current); }; }
+      }
+      function renderMain() {
+        pauseVideos(mainStage);
+        mainStage.innerHTML = mainMediaHtml(mediaList[current]) +
+          '<button class="media-expand" id="mediaExpand" type="button" aria-label="Expand">⛶</button>';
+        wireMain();
+      }
+      function setMain(i) { current = i; renderMain(); setActiveThumb(i); }
+
+      var thumbBtns = document.querySelectorAll(".thumb");
+      for (var i = 0; i < thumbBtns.length; i++) {
+        (function (btn) {
+          btn.addEventListener("click", function () { setMain(parseInt(btn.getAttribute("data-index"), 10) || 0); });
+        })(thumbBtns[i]);
+      }
+      wireMain();
+
+      function renderLb() {
+        pauseVideos(lbStage);
+        var item = mediaList[lbIndex];
+        lbStage.innerHTML = item.type === "video"
+          ? '<video class="lb-media" src="' + escapeHtml(item.url) + '" controls playsinline preload="metadata"></video>'
+          : '<img class="lb-media" src="' + escapeHtml(item.url) + '" alt="">';
+        if (lbCounter) lbCounter.textContent = (lbIndex + 1) + " / " + mediaList.length;
+      }
+      function openLb(i) { lbIndex = i; lightbox.hidden = false; document.body.style.overflow = "hidden"; renderLb(); }
+      function closeLb() { pauseVideos(lbStage); lbStage.innerHTML = ""; lightbox.hidden = true; document.body.style.overflow = ""; }
+      function prevLb() { lbIndex = (lbIndex - 1 + mediaList.length) % mediaList.length; renderLb(); }
+      function nextLb() { lbIndex = (lbIndex + 1) % mediaList.length; renderLb(); }
+
+      var closeBtn = document.getElementById("lbClose");
+      var prevBtn = document.getElementById("lbPrev");
+      var nextBtn = document.getElementById("lbNext");
+      if (closeBtn) closeBtn.onclick = closeLb;
+      if (prevBtn) prevBtn.onclick = prevLb;
+      if (nextBtn) nextBtn.onclick = nextLb;
+      if (lightbox) lightbox.addEventListener("click", function (e) { if (e.target === lightbox) closeLb(); });
+      if (mediaList.length <= 1) {
+        if (prevBtn) prevBtn.style.display = "none";
+        if (nextBtn) nextBtn.style.display = "none";
+      }
+
+      // One global keydown handler; replace any previous (renderListing re-runs on lang toggle).
+      if (window._lbKey) document.removeEventListener("keydown", window._lbKey);
+      window._lbKey = function (e) {
+        if (!lightbox || lightbox.hidden) return;
+        if (e.key === "Escape") closeLb();
+        else if (e.key === "ArrowLeft") prevLb();
+        else if (e.key === "ArrowRight") nextLb();
+      };
+      document.addEventListener("keydown", window._lbKey);
+    }
+
     function renderNotFound() {
       window._notFound = true;
       app.innerHTML = `
@@ -985,27 +1185,13 @@
 
     function renderListing(listing) {
       window._notFound = false;
-      const images = Array.isArray(listing.images) ? listing.images : [];
-      const mainIndex = Number(listing.main_image || 0);
-      const mainImage = getImageUrl(images[mainIndex] || images[0] || "");
+      const mediaList = buildMediaList(listing);
+      let mainIndex = Number(listing.main_image || 0);
+      if (!(mainIndex >= 0 && mainIndex < mediaList.length)) mainIndex = 0;
 
       app.innerHTML = `
         <div class="grid">
-          <section class="gallery">
-            <div class="main-image">
-              ${mainImage ? `<img id="mainPhoto" src="${escapeHtml(mainImage)}" alt="">` : ""}
-            </div>
-
-            ${images.length > 1 ? `
-              <div class="thumbs">
-                ${images.map((src, index) => `
-                  <button class="thumb ${index === mainIndex ? "active" : ""}" data-src="${escapeHtml(getImageUrl(src))}" type="button">
-                    <img src="${escapeHtml(getImageUrl(src))}" alt="">
-                  </button>
-                `).join("")}
-              </div>
-            ` : ""}
-          </section>
+          ${galleryHtml(mediaList, mainIndex)}
 
           <aside class="details">
             <div class="eyebrow">
@@ -1029,16 +1215,10 @@
             </div>
           </aside>
         </div>
+        ${lightboxHtml(mediaList)}
       `;
 
-      document.querySelectorAll(".thumb").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const photo = document.getElementById("mainPhoto");
-          if (photo) photo.src = btn.dataset.src;
-          document.querySelectorAll(".thumb").forEach(x => x.classList.remove("active"));
-          btn.classList.add("active");
-        });
-      });
+      initGallery(mediaList, mainIndex);
     }
 
     async function loadListing() {
