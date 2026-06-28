@@ -83,10 +83,14 @@ function Btn({ children, variant = 'primary', as = 'button', href, onClick, styl
 }
 
 function Logo({ size = 'md', light = false }) {
+  // `md` is the public site header wordmark. It is sized to match the standalone
+  // pages' .logo (uniform 22px / .18em / single colour) so the header logo looks
+  // identical across /, /services, /listings, /listing, /privacy, /terms, /cookies.
+  // `sm` (app promo) and `lg` (footer) keep the two-tone treatment.
   const sizes = {
-    sm: { ak: 16, lbl: 9, gap: 8, sq: 5 },
-    md: { ak: 22, lbl: 11, gap: 10, sq: 7 },
-    lg: { ak: 36, lbl: 16, gap: 14, sq: 9 },
+    sm: { ak: 16, lbl: 9,  gap: 8,  sq: 5, lblLs: '0.32em', muted: true },
+    md: { ak: 22, lbl: 22, gap: 10, sq: 7, lblLs: '0.18em', muted: false },
+    lg: { ak: 36, lbl: 16, gap: 14, sq: 9, lblLs: '0.32em', muted: true },
   };
   const s = sizes[size];
   const color = light ? 'var(--ak-ink)' : 'var(--fg)';
@@ -100,8 +104,8 @@ function Logo({ size = 'md', light = false }) {
       <span style={{ width: s.sq, height: s.sq, background: 'var(--ak-crimson)', flexShrink: 0 }}></span>
       <span style={{
         fontFamily: 'var(--font-display)', fontWeight: 300,
-        fontSize: s.lbl, letterSpacing: '0.32em', lineHeight: 1,
-        textTransform: 'uppercase', color: mute,
+        fontSize: s.lbl, letterSpacing: s.lblLs, lineHeight: 1,
+        textTransform: 'uppercase', color: s.muted ? mute : color,
       }}>REAL ESTATE</span>
     </span>
   );
