@@ -8,13 +8,13 @@ function Footer({ lang = 'bg' }) {
         { label: 'Начало',            href: '/' },
         { label: 'Обяви',             href: '/listings' },
         { label: 'Услуги',            href: '/services' },
-        { label: 'Свържи се с нас',   href: 'mailto:office@akrealestatebg.com' },
+        { label: 'Свържи се с нас',   href: '/contact' },
       ]
     : [
-        { label: 'Home',     href: '/' },
-        { label: 'Listings', href: '/listings' },
-        { label: 'Services', href: '/services' },
-        { label: 'Contact',  href: 'mailto:office@akrealestatebg.com' },
+        { label: 'Home',        href: '/' },
+        { label: 'Listings',    href: '/listings' },
+        { label: 'Services',    href: '/services' },
+        { label: 'Contact us',  href: '/contact' },
       ];
 
   const serviceLinks = isBg

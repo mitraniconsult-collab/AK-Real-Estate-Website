@@ -57,7 +57,16 @@ function Nav({ active = 'listings', onNav, onLang }) {
         borderBottom: scrolled || open ? '1px solid var(--hairline-light)' : '1px solid transparent',
         transition: 'all .4s var(--ease)',
       }}>
-        <a href="#" style={{ textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); onPick('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+        <a href="/" style={{ textDecoration: 'none' }} onClick={(e) => {
+          const path = (typeof window !== 'undefined' && window.location.pathname) || '/';
+          // On the homepage, smooth-scroll to top (SPA). On other pages (e.g. /contact),
+          // allow the default navigation to "/".
+          if (path === '/' || path === '') {
+            e.preventDefault();
+            onPick('home');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }}>
           <Logo size="md" />
         </a>
 
