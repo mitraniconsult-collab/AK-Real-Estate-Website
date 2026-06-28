@@ -120,6 +120,19 @@ function Contact({ lang = 'bg' }) {
       return;
     }
 
+    // Inquiry is saved. Fire-and-forget email notification via the Edge Function —
+    // this must never block or fail the form. A failure only logs a sanitized warning.
+    try {
+      window.akSupabase.functions
+        .invoke('notify-inquiry', { body: payload })
+        .then(({ error: fnErr }) => {
+          if (fnErr) console.warn('Inquiry saved, notification email failed.');
+        })
+        .catch(() => console.warn('Inquiry saved, notification email failed.'));
+    } catch (e) {
+      console.warn('Inquiry saved, notification email failed.');
+    }
+
     setSent(true);
   };
 
