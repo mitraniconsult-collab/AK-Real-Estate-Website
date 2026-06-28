@@ -98,7 +98,7 @@ function Hero({ lang = 'bg' }) {
               aria-label={isBg ? 'Виж всички имоти' : 'View all listings'}>
               {isBg ? 'Виж обявите' : 'View Listings'}
             </Btn>
-            <a href="/#contact" style={{
+            <a href="/contact" style={{
               fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
               letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--fg)',
               textDecoration: 'none', borderBottom: '1px solid rgba(245,241,234,.35)', paddingBottom: 4,

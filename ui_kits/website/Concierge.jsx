@@ -124,7 +124,7 @@ function Concierge({ lang = 'bg' }) {
               <Btn variant="primary" as="a" href="/services" style={{ textDecoration: 'none' }}>
                 {isBg ? 'Всички услуги →' : 'All services →'}
               </Btn>
-              <Btn variant="secondary" as="a" href="/#contact" style={{ textDecoration: 'none' }}>
+              <Btn variant="secondary" as="a" href="/contact" style={{ textDecoration: 'none' }}>
                 {isBg ? 'Запитване' : 'Get in touch'}
               </Btn>
             </div>

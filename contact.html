@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<title>Контакт — AK Real Estate</title>
+<meta name="description" content="Свържете се с AK Real Estate — бутикова агенция за недвижими имоти в София. Изпратете запитване или ни се обадете.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="assets/logo-monogram.svg">
+<meta property="og:title" content="Контакт — AK Real Estate">
+<meta property="og:description" content="Свържете се с нас — изпратете запитване за имот или услуга и ще ви върнем ясен отговор.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
+<style>
+  html { scroll-behavior: smooth; }
+  html, body { margin: 0; padding: 0; }
+  :focus-visible {
+    outline: 2px solid var(--ak-crimson);
+    outline-offset: 3px;
+  }
+  body {
+    background: var(--ak-ink);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+  * { box-sizing: border-box; }
+  ::selection { background: var(--ak-crimson); color: #fff; }
+  .ak-section { padding: var(--section-y) var(--gutter); position: relative; }
+  .ak-section.dark  { background: var(--ak-ink);   color: var(--fg); }
+  .ak-section.black { background: var(--ak-black);  color: var(--fg); }
+  .ak-section.light { background: var(--ak-bone);   color: var(--fg-on-light); }
+  .ak-grain::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='6'><line x1='0' y1='0' x2='0' y2='6' stroke='%23ffffff' stroke-width='.5' opacity='.08' transform='rotate(35)'/></svg>");
+    mix-blend-mode: overlay; opacity: .5;
+  }
+
+  /* Fades on enter */
+  @keyframes ak-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .ak-rise { animation: ak-rise .9s var(--ease) both; }
+
+  /* =====================================================================
+     RESPONSIVE LAYER
+     The components use inline styles for layout. Mobile overrides below
+     use !important to flip multi-column grids to single column, hide
+     decorative edge labels that don't fit, soften vertical rhythm, and
+     wrap dense flex strips. Two breakpoints:
+       <= 980px  tablet  (2-col → 1-col where appropriate)
+       <= 640px  phone   (everything stacks, smaller margins/type)
+     ===================================================================== */
+
+  /* Tablet */
+  @media (max-width: 980px) {
+    :root {
+      --gutter: clamp(20px, 4vw, 40px);
+      --section-y: clamp(64px, 9vw, 110px);
+    }
+    .r-stack-980           { grid-template-columns: 1fr !important; }
+    .r-stack-980-keep-label { grid-template-columns: minmax(28px,auto) 1fr !important; }
+    .r-masonry             { grid-template-columns: repeat(6, 1fr) !important; grid-auto-rows: 140px !important; }
+    .r-overflow-2          { grid-template-columns: repeat(2, 1fr) !important; }
+    .r-journal             { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+
+  /* Phone */
+  @media (max-width: 640px) {
+    :root {
+      --gutter: 20px;
+      --section-y: clamp(56px, 12vw, 80px);
+    }
+
+    /* Stack any multi-column container tagged for collapse */
+    .r-stack-640,
+    .r-stack-980,
+    .r-cols-2,
+    .r-cols-3,
+    .r-cols-4 {
+      grid-template-columns: 1fr !important;
+    }
+    .r-cols-6              { grid-template-columns: repeat(3, 1fr) !important; }
+    .r-stack-640-keep-label { grid-template-columns: minmax(20px,auto) 1fr !important; }
+
+    /* Tighten gaps when stacked */
+    .r-stack-640, .r-stack-980, .r-cols-2, .r-cols-3, .r-cols-4 {
+      gap: clamp(24px, 6vw, 40px) !important;
+    }
+
+    /* Masonry: every card spans full width, auto height */
+    .r-masonry {
+      grid-template-columns: 1fr !important;
+      grid-auto-rows: auto !important;
+      gap: 16px !important;
+    }
+    .r-masonry > a {
+      grid-column: 1 / -1 !important;
+      grid-row: auto !important;
+      aspect-ratio: 4 / 5 !important;
+      min-height: 0 !important;
+    }
+
+    /* Overflow grid → 1-col */
+    .r-overflow-2, .r-journal { grid-template-columns: 1fr !important; }
+
+    /* Decorative vertical edge labels hidden on phone */
+    .r-edge-label { display: none !important; }
+
+    /* Flex strips that get cramped: allow wrapping */
+    .r-flex-wrap  { flex-wrap: wrap !important; }
+    .r-hide-phone { display: none !important; }
+    .r-shrink     { flex: 1 1 100% !important; }
+
+    /* Footer wordmark row */
+    .r-footer-head { flex-wrap: wrap !important; gap: 16px !important; }
+    .r-footer-head > span:nth-of-type(1) { display: none !important; }
+    .r-legal { flex-wrap: wrap !important; row-gap: 8px !important; column-gap: 14px !important; font-size: 9px !important; }
+    .r-legal > .r-spacer { display: none !important; }
+
+    /* Editorial inset double-column copy → single */
+    .r-edit-inset-copy { grid-template-columns: 1fr !important; }
+
+    /* Concierge service tiles → 1-col */
+    .r-services { grid-template-columns: 1fr !important; }
+
+    /* App promo phone mock — scale down */
+    .r-app-phone { transform: scale(.86); transform-origin: center; }
+
+    /* Contact line stack */
+    .r-contact-line { grid-template-columns: 1fr !important; gap: 4px !important; }
+
+    /* Press headline strip */
+    .r-press-head { flex-wrap: wrap !important; gap: 14px !important; }
+
+    /* Hero bottom strip */
+    .r-hero-strip {
+      flex-wrap: wrap !important; gap: 10px !important; row-gap: 6px !important;
+      font-size: 9px !important;
+    }
+    .r-hero-strip > span:nth-of-type(3) { display: none !important; }
+
+    /* Listings header / footer CTA row */
+    .r-listings-foot { gap: 16px !important; }
+    .r-listings-foot > span:nth-of-type(2) { display: none !important; }
+
+    /* Lower display-headline letterspacing for small widths */
+    h1, h2 { letter-spacing: 0.04em !important; }
+
+    /* Re-align right-justified hero block to left on phone */
+    .r-text-left-mobile { text-align: left !important; justify-self: start !important; }
+    .r-text-left-mobile p { margin-left: 0 !important; }
+    .r-text-left-mobile > div:last-of-type { justify-content: flex-start !important; }
+  }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    window.AK_SUPABASE_URL = "https://ylyilqwoiyirodigshgd.supabase.co";
+    window.AK_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_wxCfqS0aCFRRXf0WgIhGzw_2SGd8tcL";
+    if (window.supabase) {
+      window.akSupabase = window.supabase.createClient(
+        window.AK_SUPABASE_URL,
+        window.AK_SUPABASE_PUBLISHABLE_KEY
+      );
+    }
+  </script>
+  <script src="shared/listings-store.js"></script>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="ui_kits/website/atoms.jsx"></script>
+  <script type="text/babel" src="ui_kits/website/Nav.jsx"></script>
+  <script type="text/babel" src="ui_kits/website/Contact.jsx"></script>
+  <script type="text/babel" src="ui_kits/website/Footer.jsx"></script>
+
+  <script type="text/babel">
+    const { Nav, Contact, Footer } = window;
+
+    // Optional listing context: /contact?listing=L-014 (or ?subject=L-014) prefills the
+    // message field. Read once at mount — keeps the existing Contact form logic intact.
+    function contactPrefill(lang) {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const id = (params.get('listing') || params.get('subject') || '').trim();
+        if (!id) return '';
+        return (lang === 'en')
+          ? 'I am interested in listing ' + id + '.'
+          : 'Интересувам се от имот ' + id + '.';
+      } catch (e) { return ''; }
+    }
+
+    function App() {
+      const [active, setActive] = React.useState('contact');
+      const [lang, setLang] = React.useState(
+        () => (typeof localStorage !== 'undefined' && localStorage.getItem('ak-lang')) || 'bg'
+      );
+      const handleLang = (l) => { setLang(l); try { localStorage.setItem('ak-lang', l); } catch(e) {} };
+      React.useEffect(() => { window.AK_LANG = lang; }, [lang]);
+      React.useEffect(() => {
+        document.documentElement.lang = lang;
+        document.title = (lang === 'en') ? 'Contact — AK Real Estate' : 'Контакт — AK Real Estate';
+      }, [lang]);
+
+      // Prefill is seeded from the language at first mount (Contact reads initialMessage once);
+      // toggling language afterwards keeps any text the user already typed.
+      const prefillRef = React.useRef(contactPrefill(lang));
+
+      return (
+        <>
+          <Nav active={active} onNav={setActive} lang={lang} onLang={handleLang} />
+          <main>
+            <Contact lang={lang} initialMessage={prefillRef.current} />
+          </main>
+          <Footer lang={lang} />
+        </>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

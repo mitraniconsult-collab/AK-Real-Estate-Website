@@ -11,14 +11,14 @@ const INTEREST_OPTIONS = [
   { key: 'renovation', bg: 'Ремонт от А до Я',    en: 'Renovation' },
 ];
 
-function Contact({ lang = 'bg' }) {
+function Contact({ lang = 'bg', initialMessage = '' }) {
   const isBg = lang !== 'en';
   const [sent, setSent] = React.useState(false);
   const [name, setName] = React.useState('');
   const [phone, setPhone] = React.useState('');
   const [budget, setBudget] = React.useState('');
   const [interest, setInterest] = React.useState('buy'); // stores the stable key
-  const [message, setMessage] = React.useState('');
+  const [message, setMessage] = React.useState(initialMessage || '');
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(''); // '' | 'validation' | 'network'
   const [errorMsg, setErrorMsg] = React.useState(''); // specific message; falls back to generic text
