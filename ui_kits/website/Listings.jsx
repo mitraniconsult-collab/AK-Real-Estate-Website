@@ -1,28 +1,6 @@
 // Listings — masonry property grid.
-// featuredOnly=true  → home page: Supabase fetch (Active+featured), AKStore fallback, no filter chips.
+// featuredOnly=true → active featured properties from the shared database store.
 // featuredOnly=false → full listings page: all public listings via AKStore with filter chips.
-
-// ─── Normalize a row from Supabase (snake_case) or AKStore (camelCase) ───────
-function normalizeListing(row) {
-  return {
-    id:          row.id,
-    title:       row.title          || '',
-    city:        row.city           || '',
-    area:        row.area           || '',
-    status:      row.status         || 'Active',
-    featured:    row.featured       ?? false,
-    listingType: row.listingType    || row.listing_type    || 'Sale',
-    price:       row.price          || 0,
-    currency:    row.currency       || 'USD',
-    bedrooms:    row.bedrooms       || '',
-    bathrooms:   row.bathrooms      || '',
-    areaSqm:     row.areaSqm        || row.area_sqm        || '',
-    mainImage:   row.mainImage      != null ? row.mainImage
-                 : row.main_image  != null ? row.main_image : 0,
-    images:      row.images         || [],
-    createdAt:   row.createdAt      || row.created_at      || '',
-  };
-}
 
 // ─── AKStore hook (full listing page) ────────────────────────────────────────
 function useStoreListings() {
@@ -224,6 +202,12 @@ function PropertyCard({ listing, cols, rows, compact, lang = 'bg', 'aria-label':
   const img = getImageUrl((listing.images && listing.images[listing.mainImage]) || (listing.images && listing.images[0]));
   const isClosed = listing.status === 'Sold' || listing.status === 'Rented';
   const isBg = lang !== 'en';
+  const localized = field => window.AKLocale
+    ? window.AKLocale.listingField(listing, field, lang)
+    : listing[field];
+  const title = localized('title');
+  const area = localized('area');
+  const city = localized('city');
 
   let tag = null;
   if (listing.status === 'Sold')        tag = { label: isBg ? 'Продаден'  : 'Sold',     bg: 'rgba(176,24,28,.92)', fg: '#fff' };
@@ -238,7 +222,7 @@ function PropertyCard({ listing, cols, rows, compact, lang = 'bg', 'aria-label':
   return (
     <a href={'/listing?id=' + listing.id}
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-      aria-label={`${listing.title}${listing.area ? ', ' + listing.area : ''}${listing.city ? ', ' + listing.city : ''}`}
+      aria-label={`${title}${area ? ', ' + area : ''}${city ? ', ' + city : ''}`}
       style={{
         gridColumn: cols, gridRow: rows,
         position: 'relative', overflow: 'hidden', borderRadius: 4,
@@ -250,7 +234,7 @@ function PropertyCard({ listing, cols, rows, compact, lang = 'bg', 'aria-label':
       }}>
       {/* image */}
       {img && (
-        <img src={img} alt={listing.title} loading="lazy" decoding="async"
+        <img src={img} alt={title} loading="lazy" decoding="async"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
                    objectFit: 'cover', transform: hover ? 'scale(1.05)' : 'scale(1)',
                    transition: 'transform .9s var(--ease)',
@@ -292,7 +276,7 @@ function PropertyCard({ listing, cols, rows, compact, lang = 'bg', 'aria-label':
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <RedSquare size={6} />
             <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
-              textTransform: 'uppercase', color: 'var(--fg-2)' }}>{listing.area || listing.city || '—'}</span>
+              textTransform: 'uppercase', color: 'var(--fg-2)' }}>{area || city || '—'}</span>
           </div>
           {listing.listingType && (
             <span style={{
@@ -310,14 +294,14 @@ function PropertyCard({ listing, cols, rows, compact, lang = 'bg', 'aria-label':
           margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300,
           fontSize: compact ? 'clamp(20px,1.8vw,26px)' : 'clamp(22px, 2.6vw, 38px)', lineHeight: 1.0,
           letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--fg)',
-        }}>{listing.title || '—'}</h3>
+        }}>{title || '—'}</h3>
 
         <div style={{ display: 'flex', alignItems: 'flex-end', marginTop: 12,
           paddingTop: 12, borderTop: '1px solid rgba(245,241,234,.20)' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.14em',
               textTransform: 'uppercase', color: 'var(--fg-2)' }}>
-              {listing.bedrooms ? `${listing.bedrooms} ${isBg ? 'ст' : 'br'}` : '—'}
+              {listing.bedrooms ? `${listing.bedrooms} ${isBg ? 'спални' : 'br'}` : '—'}
               {' · '}
               {listing.areaSqm ? `${listing.areaSqm} m²` : '—'}
             </div>
@@ -326,7 +310,7 @@ function PropertyCard({ listing, cols, rows, compact, lang = 'bg', 'aria-label':
               letterSpacing: '0.04em', marginTop: 4,
               textDecoration: isClosed ? 'line-through' : 'none',
               textDecorationColor: 'rgba(255,255,255,.35)' }}>
-              {window.formatPrice(listing.price, listing.currency, listing.listingType)}
+              {window.AKLocale ? window.AKLocale.price(listing.price, listing.currency, listing.listingType, lang) : window.formatPrice(listing.price, listing.currency, listing.listingType)}
             </div>
           </div>
           <span style={{

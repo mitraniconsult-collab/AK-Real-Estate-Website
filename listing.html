@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AK Real Estate — Listing</title>
 
+  <script src="/shared/i18n.js"></script>
   <script src="/shared/auth-storage.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -884,16 +885,8 @@
 
     const app = document.getElementById("app");
 
-    function formatPrice(n, currency = "EUR", listingType) {
-      if (n == null || isNaN(Number(n))) return "—";
-      const sym = currency === "USD" ? "$" : currency === "EUR" ? "€" : currency === "GBP" ? "£" : currency + " ";
-      let value = Number(n);
-      let formatted;
-      if (value >= 1000000) formatted = sym + (value / 1000000).toFixed(value % 1000000 === 0 ? 0 : 1) + "M";
-      else if (value >= 1000) formatted = sym + value.toLocaleString();
-      else formatted = sym + value;
-      if (listingType === "Rent") formatted += isBg() ? "/мес." : "/mo";
-      return formatted;
+    function formatPrice(value, currency = 'EUR', deal) {
+      return window.AKLocale.price(value, currency, deal, window._lang);
     }
 
     function escapeHtml(value) {
@@ -949,19 +942,9 @@
     // Prefer an English field when EN is selected and one exists and is non-empty;
     // otherwise fall back to the base (Bulgarian/default) value. Never mutates the record.
     function localized(listing, field) {
-      if (!listing) return "";
-      if (!isBg()) {
-        var keys = enFieldVariants(field);
-        for (var i = 0; i < keys.length; i++) {
-          var v = listing[keys[i]];
-          if (v != null && String(v).trim() !== "") return v;
-        }
-      }
-      return listing[field];
+      return window.AKLocale.listingField(listing, field, window._lang);
     }
 
-    // A value counts as "present" if it is not null/undefined/empty. Note: 0 is kept
-    // (e.g. floor 0 = ground floor is meaningful).
     function hasVal(v) {
       return v !== null && v !== undefined && String(v).trim() !== "";
     }
@@ -1185,6 +1168,9 @@
     }
 
     function renderListing(listing) {
+      window.AKLocale.page(window._lang,
+        localized(listing, 'title') + ' — AK Real Estate',
+        String(localized(listing, 'description') || '').slice(0, 160));
       window._notFound = false;
       const mediaList = buildMediaList(listing);
       let mainIndex = Number(listing.main_image || 0);

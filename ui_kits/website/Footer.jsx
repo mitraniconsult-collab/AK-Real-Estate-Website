@@ -122,8 +122,8 @@ function Footer({ lang = 'bg' }) {
             fontSize: 13, fontWeight: 300, color: 'var(--fg-2)',
             letterSpacing: '0.02em', lineHeight: 1.5 }}>
             <li>АК РИЙЛ ЕСТЕЙТ</li>
-            <li>ЕИК: 208779452</li>
-            <li>ул. Димитър Хаджикоцев 15,<br/>Лозенец, София</li>
+            <li>{isBg ? 'ЕИК' : 'Company ID'}: 208779452</li>
+            <li>{isBg ? <>ул. Димитър Хаджикоцев 15,<br/>Лозенец, София</> : <>15 Dimitar Hadzhikotsev St.,<br/>Lozenets, Sofia</>}</li>
             <li><a href="tel:+359879684460" style={linkStyle} onMouseEnter={onHover} onMouseLeave={offHover}>+359 87 968 4460</a></li>
             <li><a href="mailto:office@akrealestatebg.com" style={linkStyle} onMouseEnter={onHover} onMouseLeave={offHover}>office@akrealestatebg.com</a></li>
           </ul>
@@ -143,7 +143,7 @@ function Footer({ lang = 'bg' }) {
         color: 'var(--fg-3)' }}>
         <span>{isBg ? '© 2026 AK Real Estate. Всички права запазени.' : '© 2026 AK Real Estate. All rights reserved.'}</span>
         <span style={{ color: 'var(--ak-crimson)' }}>▪</span>
-        <span>АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452</span>
+        <span>АК РИЙЛ ЕСТЕЙТ · {isBg ? 'ЕИК' : 'Company ID'} 208779452</span>
         <span className="r-spacer" style={{ flex: 1 }}></span>
         <a href="/terms"   style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>{isBg ? 'Общи условия'             : 'Terms'}</a>
         <a href="/privacy" style={{ color: 'var(--fg-3)', textDecoration: 'none' }}>{isBg ? 'Политика за поверителност' : 'Privacy'}</a>

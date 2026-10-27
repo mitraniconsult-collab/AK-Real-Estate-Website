@@ -107,3 +107,52 @@ test('editor failure keeps user on the form with an actionable error', async () 
   assert.equal(events.at(-1)[0], 'saving');
   assert.equal(events.at(-1)[1], false);
 });
+function localeHelpers() {
+  const ctx = { window: {}, Intl };
+  vm.runInNewContext(source('shared/i18n.js'), ctx);
+  return ctx.window.AKLocale;
+}
+test('property fields use the same translation for raw DB rows and store models', () => {
+  const { listingField } = localeHelpers();
+  for (const row of [
+    { title: 'Българско заглавие', title_en: 'English title', area: 'Божурище', area_en: 'Bozhurishte' },
+    { title: 'Българско заглавие', titleEn: 'English title', area: 'Божурище', areaEn: 'Bozhurishte' },
+  ]) {
+    assert.equal(listingField(row, 'title', 'en'), 'English title');
+    assert.equal(listingField(row, 'area', 'en'), 'Bozhurishte');
+    assert.equal(listingField(row, 'title', 'bg'), 'Българско заглавие');
+  }
+  assert.equal(listingField({ title: 'Оригинал', title_en: '  ' }, 'title', 'en'), 'Оригинал');
+});
+test('property prices follow the selected locale and retain the exact amount', () => {
+  const { price } = localeHelpers();
+  assert.equal(price(168000, 'EUR', 'Sale', 'en'), '€168,000');
+  assert.equal(price(168000, 'EUR', 'Sale', 'bg').replace(/\s/g, ' '), '168 000 €');
+  assert.equal(price(1250000.5, 'EUR', 'Sale', 'en'), '€1,250,000.5');
+  assert.match(price(950, 'EUR', 'Rent', 'bg'), /\/мес\.$/);
+  assert.match(price(950, 'EUR', 'Rent', 'en'), /\/mo$/);
+  assert.equal(price(null, 'EUR', 'Sale', 'bg'), '—');
+  assert.equal(price(0, 'EUR', 'Sale', 'en'), '€0');
+});
+test('switching page language updates browser and metadata without duplicating tags', () => {
+  const nodes = [];
+  const document = {
+    documentElement: { lang: 'bg' }, title: '',
+    head: { appendChild: node => nodes.push(node) },
+    createElement: () => ({ attrs: {}, setAttribute(key, value) { this.attrs[key] = value; } }),
+    querySelector: selector => {
+      const [, attr, value] = selector.match(/meta\[(name|property)="([^"]+)"\]/);
+      return nodes.find(node => node.attrs[attr] === value) || null;
+    },
+  };
+  const ctx = { window: {}, document, Intl };
+  vm.runInNewContext(source('shared/i18n.js'), ctx);
+  ctx.window.AKLocale.page('en', 'English title', 'English description');
+  assert.equal(document.documentElement.lang, 'en');
+  assert.equal(document.title, 'English title');
+  ctx.window.AKLocale.page('bg', 'Българско заглавие', 'Българско описание');
+  assert.equal(document.documentElement.lang, 'bg');
+  assert.equal(document.title, 'Българско заглавие');
+  assert.equal(nodes.length, 4);
+  assert.equal(nodes.find(n => n.attrs.property === 'og:locale').attrs.content, 'bg_BG');
+});

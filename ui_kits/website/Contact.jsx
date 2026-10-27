@@ -19,6 +19,12 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
   const [budget, setBudget] = React.useState('');
   const [interest, setInterest] = React.useState('buy'); // stores the stable key
   const [message, setMessage] = React.useState(initialMessage || '');
+  const previousPrefill = React.useRef(initialMessage || '');
+  React.useEffect(() => {
+    const previous = previousPrefill.current;
+    setMessage(current => current === previous ? (initialMessage || '') : current);
+    previousPrefill.current = initialMessage || '';
+  }, [initialMessage]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(''); // '' | 'validation' | 'network'
   const [errorMsg, setErrorMsg] = React.useState(''); // specific message; falls back to generic text
@@ -177,7 +183,7 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
           </p>
 
           <div style={{ marginTop: 56, display: 'flex', flexDirection: 'column', gap: 22 }}>
-            <ContactLine label={isBg ? 'София' : 'Sofia'} value="ул. Димитър Хаджикоцев 15, Лозенец" />
+            <ContactLine label={isBg ? 'София' : 'Sofia'} value={isBg ? 'ул. Димитър Хаджикоцев 15, Лозенец' : '15 Dimitar Hadzhikotsev St., Lozenets, Sofia'} />
             <ContactLine label={isBg ? 'Телефон' : 'Phone'}
               value={<a href="tel:+359879684460" style={{ color: 'var(--fg)', textDecoration: 'none' }}>+359 87 968 4460</a>} />
             <ContactLine label={isBg ? 'Имейл' : 'Email'}
@@ -230,7 +236,7 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
             <Field label={isBg ? 'Вашето име' : 'Your name'} value={name} onChange={setName}
               placeholder={isBg ? 'Три имена' : 'Full name'} />
             <Field label={isBg ? 'Телефон' : 'Phone'} value={phone} onChange={setPhone}
-              placeholder={isBg ? '+359 …' : '+1 / +44 …'} type="tel" />
+              placeholder="+359 …" type="tel" />
             <Field label={isBg ? 'Бюджет (ориентировъчно)' : 'Budget (approx.)'} value={budget} onChange={setBudget}
               placeholder={isBg ? 'напр. 150 000 €' : 'e.g. €150,000'} />
 

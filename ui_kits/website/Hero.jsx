@@ -125,7 +125,7 @@ function Hero({ lang = 'bg' }) {
         </span>
         <span style={{ flex: 1, height: 1, background: 'var(--hairline-light)' }}></span>
         <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--fg-2)' }}>
-          Scroll
+          {isBg ? 'Надолу' : 'Scroll'}
         </span>
         <span style={{ color: 'var(--fg-2)' }}>↓</span>
       </div>

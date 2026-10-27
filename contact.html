@@ -157,6 +157,7 @@
 <body>
   <div id="root"></div>
 
+  <script src="/shared/i18n.js"></script>
   <script src="/shared/auth-storage.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -205,19 +206,20 @@
       const handleLang = (l) => { setLang(l); try { localStorage.setItem('ak-lang', l); } catch(e) {} };
       React.useEffect(() => { window.AK_LANG = lang; }, [lang]);
       React.useEffect(() => {
-        document.documentElement.lang = lang;
-        document.title = (lang === 'en') ? 'Contact — AK Real Estate' : 'Контакт — AK Real Estate';
+        window.AKLocale.page(lang,
+          lang === 'en' ? 'Contact — AK Real Estate' : 'Контакт — AK Real Estate',
+          lang === 'en' ? 'Contact AK Real Estate in Sofia. Request a viewing or a consultation about your property or project.' : 'Свържете се с AK Real Estate в София. Заявете оглед или консултация за вашия имот или проект.');
       }, [lang]);
 
       // Prefill is seeded from the language at first mount (Contact reads initialMessage once);
       // toggling language afterwards keeps any text the user already typed.
-      const prefillRef = React.useRef(contactPrefill(lang));
+      const initialMessage = contactPrefill(lang);
 
       return (
         <>
           <Nav active={active} onNav={setActive} lang={lang} onLang={handleLang} />
           <main>
-            <Contact lang={lang} initialMessage={prefillRef.current} />
+            <Contact lang={lang} initialMessage={initialMessage} />
           </main>
           <Footer lang={lang} />
         </>

@@ -157,6 +157,7 @@
 <body>
   <div id="root"></div>
 
+  <script src="/shared/i18n.js"></script>
   <script src="/shared/auth-storage.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -194,7 +195,12 @@
         () => (typeof localStorage !== 'undefined' && localStorage.getItem('ak-lang')) || 'bg'
       );
       const handleLang = (l) => { setLang(l); try { localStorage.setItem('ak-lang', l); } catch(e) {} };
-      React.useEffect(() => { window.AK_LANG = lang; }, [lang]);
+      React.useEffect(() => {
+        window.AK_LANG = lang;
+        window.AKLocale.page(lang,
+          lang === 'en' ? 'AK Real Estate — Boutique real estate agency, Sofia' : 'AK Real Estate — Бутикова агенция за недвижими имоти, София',
+          lang === 'en' ? 'Selected properties for sale and rent in Sofia. Real estate brokerage, mortgage consulting, interior design and renovation.' : 'Подбрани имоти за продажба и наем в София. Имотно посредничество, кредитно консултиране, интериорен дизайн и ремонт.');
+      }, [lang]);
       return (
         <>
           <Nav active={active} onNav={setActive} lang={lang} onLang={handleLang} />

@@ -6,6 +6,7 @@
   <title>Имоти — AK Real Estate</title>
 
   <script src="/shared/search.js"></script>
+  <script src="/shared/i18n.js"></script>
   <script src="/shared/auth-storage.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -899,16 +900,8 @@
       return base + '/storage/v1/object/public/listing-images/' + raw;
     }
 
-    function formatPrice(n, currency = "EUR", listingType) {
-      if (n == null || isNaN(Number(n))) return "—";
-      const sym = currency === "USD" ? "$" : currency === "EUR" ? "€" : currency === "GBP" ? "£" : currency + " ";
-      const value = Number(n);
-      let formatted;
-      if (value >= 1000000) formatted = sym + (value / 1000000).toFixed(value % 1000000 === 0 ? 0 : 1) + "M";
-      else if (value >= 1000) formatted = sym + value.toLocaleString();
-      else formatted = sym + value;
-      if (listingType === "Rent") formatted += window._lang === "en" ? "/mo" : "/мес.";
-      return formatted;
+    function formatPrice(value, currency = 'EUR', deal) {
+      return window.AKLocale.price(value, currency, deal, window._lang);
     }
 
     function escapeHtml(value) {
@@ -942,11 +935,7 @@
     // Prefer the *_en field when EN is selected and it exists; otherwise fall back to
     // the base (Bulgarian/default) value. Never mutates the record.
     function localized(listing, field) {
-      if (window._lang === "en") {
-        var en = listing[field + "_en"];
-        if (en != null && String(en).trim() !== "") return en;
-      }
-      return listing[field];
+      return window.AKLocale.listingField(listing, field, window._lang);
     }
 
     function matchesFilter(listing) {
