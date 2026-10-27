@@ -27,60 +27,46 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
   }, [initialMessage]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(''); // '' | 'validation' | 'network'
-  const [errorMsg, setErrorMsg] = React.useState(''); // specific message; falls back to generic text
-  const [honeypot, setHoneypot] = React.useState(''); // bots fill this; humans never see it
-  const mountedAt = React.useRef(Date.now());
-
-  // Maps a Supabase/Postgres error to a more specific, user-readable message.
-  // Returns '' when no specific match is found (caller shows the generic text).
-  const resolveErrorMsg = (err) => {
-    const code = err && err.code ? String(err.code) : '';
-    const msg = (err && err.message ? String(err.message) : '').toLowerCase();
-
-    // relation/table missing — 42P01
-    if (code === '42P01' || msg.includes('does not exist') || msg.includes('could not find the table')) {
-      return isBg
-        ? 'Таблицата за запитвания липсва. Моля, свържете се с нас директно.'
-        : 'The inquiries table is missing. Please contact us directly.';
-    }
-    // permission / RLS denied — 42501 or PostgREST RLS message
-    if (code === '42501' || msg.includes('row-level security') || msg.includes('permission denied')) {
-      return isBg
-        ? 'Изпращането не е разрешено в момента. Моля, свържете се с нас директно.'
-        : 'Submission is not permitted right now. Please contact us directly.';
-    }
-    // check constraint violation — 23514
-    if (code === '23514' || msg.includes('check constraint') || msg.includes('violates check')) {
-      return isBg
-        ? 'Някои данни не са валидни. Моля, проверете полетата и опитайте отново.'
-        : 'Some details are invalid. Please check the fields and try again.';
-    }
-    return '';
+  const [failureCode, setFailureCode] = React.useState('');
+  const [honeypot, setHoneypot] = React.useState('');
+  const submitLock = React.useRef(false);
+  const submitted = React.useRef(false);
+  const errorMessages = {
+    phone: isBg ? 'Моля, въведете валиден телефонен номер.' : 'Please enter a valid phone number.',
+    length: isBg ? 'Името трябва да е до 150 знака, бюджетът до 100, а съобщението до 5000.' : 'Use up to 150 characters for your name, 100 for the budget, and 5000 for the message.',
+    unavailable: isBg ? 'Изпращането не е достъпно в момента. Моля, свържете се с нас директно.' : 'Submission is currently unavailable. Please contact us directly.',
+    invalid: isBg ? 'Моля, проверете данните и опитайте отново.' : 'Please check your details and try again.',
   };
+  const errorMsg = errorMessages[failureCode] || (isBg
+    ? 'Възникна грешка. Данните ви са запазени във формата. Опитайте отново или ни пишете директно.'
+    : 'Something went wrong. Your details remain in the form. Please try again or contact us directly.');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitLock.current || submitted.current) return;
     setError('');
-    setErrorMsg('');
+    setFailureCode('');
 
     // Spam guard 1 — honeypot filled → silently show success, never insert.
     if (honeypot.trim()) { setSent(true); return; }
-
-    // Spam guard 2 — submitted suspiciously fast → silently show success, never insert.
-    if (Date.now() - mountedAt.current < 2000) { setSent(true); return; }
 
     const nm = name.trim();
     const ph = phone.trim();
 
     // Validation — require at least name + phone.
     if (!nm || !ph) { setError('validation'); return; }
+    const digits = ph.replace(/\D/g, '');
+    if (!/^\+?[\d\s().-]+$/.test(ph) || digits.length < 7 || digits.length > 15) {
+      setError('network'); setFailureCode('phone'); return;
+    }
+    if (nm.length > 150 || budget.trim().length > 100 || message.trim().length > 5000) {
+      setError('network'); setFailureCode('length'); return;
+    }
 
     if (!window.akSupabase) {
       console.error('Contact insert: window.akSupabase is not available.');
       setError('network');
-      setErrorMsg(isBg
-        ? 'Услугата не е достъпна. Моля, свържете се с нас директно.'
-        : 'Service unavailable. Please contact us directly.');
+      setFailureCode('unavailable');
       return;
     }
 
@@ -103,6 +89,7 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
       user_agent: navigator.userAgent,
     };
 
+    submitLock.current = true;
     setLoading(true);
     // No .select() — anon has INSERT but not SELECT; chaining .select() would
     // require a SELECT and fail on an otherwise successful insert.
@@ -112,21 +99,16 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
     } catch (_) {
       insErr = { code: 'network', message: 'Connection unavailable' };
     } finally {
+      submitLock.current = false;
       setLoading(false);
     }
 
     if (insErr) {
       // Sanitized diagnostics only — error metadata + payload field NAMES,
       // never the submitted values (name/phone/message stay private).
-      console.error('Contact insert error:', {
-        code: insErr.code,
-        message: insErr.message,
-        details: insErr.details,
-        hint: insErr.hint,
-        payloadKeys: Object.keys(payload),
-      });
-      setError('network'); // form values are preserved
-      setErrorMsg(resolveErrorMsg(insErr)); // '' → generic text shown
+      console.error('Contact insert failed:', insErr.code || 'network');
+      setError('network');
+      setFailureCode(['42P01', '42501', 'PGRST205'].includes(insErr.code) ? 'unavailable' : insErr.code === '23514' ? 'invalid' : '');
       return;
     }
 
@@ -143,6 +125,7 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
       console.warn('Inquiry saved, notification email failed.');
     }
 
+    submitted.current = true;
     setSent(true);
   };
 
@@ -178,7 +161,7 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
             fontWeight: 300, color: 'var(--fg-2)' }}>
             {isBg
               ? 'Разкажете ни какъв имот или проект планирате. Ще ви върнем ясен първи отговор и следваща стъпка.'
-              : 'We respond to every message within one business day. No assistants, no automations.'
+              : 'Tell us about the property or project you are planning. We will respond with a clear first answer and the next step.'
             }
           </p>
 
@@ -220,7 +203,7 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
         </div>
 
         {/* right — form */}
-        <form onSubmit={handleSubmit}
+        <form onSubmit={handleSubmit} aria-busy={loading}
           style={{ background: 'rgba(20,20,20,.6)', backdropFilter: 'blur(14px)',
             border: '1px solid var(--hairline-light)', padding: 'clamp(28px,3.2vw,48px)',
             display: 'flex', flexDirection: 'column', gap: 28 }}>
@@ -234,20 +217,20 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
 
           {!sent && <>
             <Field label={isBg ? 'Вашето име' : 'Your name'} value={name} onChange={setName}
-              placeholder={isBg ? 'Три имена' : 'Full name'} />
+              placeholder={isBg ? 'Три имена' : 'Full name'} autoComplete="name" maxLength={150} required />
             <Field label={isBg ? 'Телефон' : 'Phone'} value={phone} onChange={setPhone}
-              placeholder="+359 …" type="tel" />
+              placeholder="+359 …" type="tel" autoComplete="tel" maxLength={40} required />
             <Field label={isBg ? 'Бюджет (ориентировъчно)' : 'Budget (approx.)'} value={budget} onChange={setBudget}
-              placeholder={isBg ? 'напр. 150 000 €' : 'e.g. €150,000'} />
+              placeholder={isBg ? 'напр. 150 000 €' : 'e.g. €150,000'} maxLength={100} />
 
             <div>
-              <label style={fieldLabelStyle}>{isBg ? 'Тема' : 'Area of Interest'}</label>
-              <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <div id="contact-interest-label" style={fieldLabelStyle}>{isBg ? 'Тема' : 'Area of Interest'}</div>
+              <div role="group" aria-labelledby="contact-interest-label" style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {INTEREST_OPTIONS.map(opt => {
                   const label = isBg ? opt.bg : opt.en;
                   const active = interest === opt.key;
                   return (
-                    <button key={opt.key} type="button" onClick={() => setInterest(opt.key)}
+                    <button key={opt.key} type="button" aria-pressed={active} onClick={() => setInterest(opt.key)}
                       style={{
                         background: active ? 'var(--ak-crimson)' : 'transparent',
                         color: active ? '#fff' : 'var(--fg)',
@@ -266,7 +249,7 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
               placeholder={isBg
                 ? 'Разкажете ни за вашия проект или запитване...'
                 : 'A quiet street, a stone wall, a garden.'
-              } textarea />
+              } textarea maxLength={5000} />
 
             {/* Honeypot — hidden from humans; only bots fill it. */}
             <input
@@ -281,7 +264,7 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
             />
 
             {error === 'validation' && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10,
+              <div role="alert" style={{ display: 'flex', alignItems: 'center', gap: 10,
                 padding: '12px 14px', background: 'rgba(176,24,28,.10)',
                 border: '1px solid rgba(176,24,28,.40)',
                 fontSize: 11, fontWeight: 500, letterSpacing: '0.16em',
@@ -291,7 +274,7 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
             )}
 
             {error === 'network' && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10,
+              <div role="alert" style={{ display: 'flex', alignItems: 'flex-start', gap: 10,
                 padding: '12px 14px', background: 'rgba(176,24,28,.10)',
                 border: '1px solid rgba(176,24,28,.40)',
                 fontSize: 11, fontWeight: 500, letterSpacing: '0.12em',
@@ -326,7 +309,7 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
           </>}
 
           {sent && (
-            <div style={{ padding: '40px 0', textAlign: 'center' }}>
+            <div role="status" style={{ padding: '40px 0', textAlign: 'center' }}>
               <RedSquare style={{ display: 'block', margin: '0 auto 18px' }} />
               <div style={{ fontFamily: 'var(--font-display)', fontWeight: 300,
                 fontSize: 32, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
@@ -352,7 +335,7 @@ const fieldLabelStyle = {
   color: 'var(--fg-2)',
 };
 
-function Field({ label, value, onChange, placeholder, textarea, type = 'text' }) {
+function Field({ label, value, onChange, placeholder, textarea, type = 'text', autoComplete, maxLength, required = false }) {
   const Tag = textarea ? 'textarea' : 'input';
   const fieldId = React.useId();
   return (
@@ -360,6 +343,9 @@ function Field({ label, value, onChange, placeholder, textarea, type = 'text' })
       <label htmlFor={fieldId} style={fieldLabelStyle}>{label}</label>
       <Tag
         id={fieldId}
+        autoComplete={autoComplete}
+        maxLength={maxLength}
+        required={required}
         value={value}
         type={textarea ? undefined : type}
         onChange={(e) => onChange(e.target.value)}

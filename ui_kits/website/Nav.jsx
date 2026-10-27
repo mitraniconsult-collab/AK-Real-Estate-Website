@@ -2,9 +2,12 @@
 // On phone, the link list collapses into a hamburger that opens a full-bleed
 // dark sheet. On desktop the original horizontal layout shows.
 
-function Nav({ active = 'listings', onNav, onLang }) {
+function Nav({ active = 'listings', onNav, onLang, lang: selectedLang }) {
   const [scrolled, setScrolled] = React.useState(false);
   const [open, setOpen] = React.useState(false);
+  const menuButton = React.useRef(null);
+  const menuPanel = React.useRef(null);
+  const menuId = React.useId();
   const [isMobile, setIsMobile] = React.useState(
     typeof window !== 'undefined' && window.matchMedia('(max-width: 880px)').matches
   );
@@ -21,17 +24,36 @@ function Nav({ active = 'listings', onNav, onLang }) {
     };
   }, []);
 
-  // Lock scroll while mobile sheet is open
+  // Keep keyboard focus inside the open sheet and its close button.
   React.useEffect(() => {
-    if (open) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = prev; };
-    }
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const controls = () => [menuButton.current, ...Array.from(menuPanel.current?.querySelectorAll('a[href], button:not([disabled])') || [])].filter(Boolean);
+    menuPanel.current?.querySelector('a[href]')?.focus();
+    const onKey = event => {
+      if (event.key === 'Escape') { event.preventDefault(); setOpen(false); return; }
+      if (event.key !== 'Tab') return;
+      const items = controls();
+      const index = items.indexOf(document.activeElement);
+      if (event.shiftKey && index <= 0) { event.preventDefault(); items[items.length - 1]?.focus(); }
+      else if (!event.shiftKey && (index === items.length - 1 || index === -1)) { event.preventDefault(); items[0]?.focus(); }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', onKey);
+      menuButton.current?.focus();
+    };
   }, [open]);
 
-  const [lang, setLang] = React.useState(() => (typeof localStorage !== 'undefined' && localStorage.getItem('ak-lang')) || 'bg');
-  const toggleLang = (l) => { setLang(l); if (typeof localStorage !== 'undefined') localStorage.setItem('ak-lang', l); onLang && onLang(l); };
+  const [storedLang, setStoredLang] = React.useState(() => window.AKLocale.read());
+  const lang = window.AKLocale.language(selectedLang || storedLang);
+  const toggleLang = l => {
+    setStoredLang(l);
+    try { localStorage.setItem('ak-lang', l); } catch (_) {}
+    onLang && onLang(l);
+  };
 
   const isBg = lang !== 'en';
   const links = [
@@ -47,7 +69,7 @@ function Nav({ active = 'listings', onNav, onLang }) {
 
   return (
     <>
-      <nav style={{
+      <nav aria-label={isBg ? 'Основна навигация' : 'Main navigation'} style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
         padding: 'clamp(14px, 2.2vw, 28px) var(--gutter)',
         display: 'flex', alignItems: 'center', gap: 16,
@@ -84,7 +106,7 @@ function Nav({ active = 'listings', onNav, onLang }) {
               {['bg','en'].map(l => (
                 <React.Fragment key={l}>
                   {l === 'en' && <span style={{ color: 'var(--fg-3)', fontSize: 10 }}>/</span>}
-                  <button onClick={() => toggleLang(l)} style={{
+                  <button type="button" aria-pressed={lang === l} onClick={() => toggleLang(l)} style={{
                     background: 'none', border: 'none', cursor: 'pointer',
                     fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
                     letterSpacing: '0.22em', textTransform: 'uppercase',
@@ -107,7 +129,11 @@ function Nav({ active = 'listings', onNav, onLang }) {
 
         {isMobile && (
           <button
-            aria-label={open ? 'Close menu' : 'Open menu'}
+            ref={menuButton}
+            type="button"
+            aria-expanded={open}
+            aria-controls={menuId}
+            aria-label={open ? (isBg ? 'Затвори менюто' : 'Close menu') : (isBg ? 'Отвори менюто' : 'Open menu')}
             onClick={() => setOpen(o => !o)}
             style={{
               marginLeft: 'auto',
@@ -137,7 +163,8 @@ function Nav({ active = 'listings', onNav, onLang }) {
 
       {/* Mobile sheet */}
       {isMobile && (
-        <div style={{
+        <div id={menuId} ref={menuPanel} aria-hidden={!open} inert={open ? undefined : ''} style={{
+          visibility: open ? 'visible' : 'hidden',
           position: 'fixed', inset: 0, zIndex: 49,
           background: 'rgba(0,0,0,.96)',
           backdropFilter: 'blur(18px)',
@@ -192,7 +219,7 @@ function Nav({ active = 'listings', onNav, onLang }) {
             {['bg','en'].map(l => (
               <React.Fragment key={l}>
                 {l === 'en' && <span style={{ color: 'var(--fg-3)', fontSize: 10 }}>/</span>}
-                <button onClick={() => toggleLang(l)} style={{
+                <button type="button" aria-pressed={lang === l} onClick={() => toggleLang(l)} style={{
                   background: 'none', border: 'none', cursor: 'pointer',
                   fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
                   letterSpacing: '0.28em', textTransform: 'uppercase',

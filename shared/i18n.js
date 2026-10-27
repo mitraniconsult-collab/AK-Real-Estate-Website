@@ -1,6 +1,9 @@
 // Shared display helpers. English fields fall back to original content when absent.
 (function () {
   function language(value) { return value === 'en' ? 'en' : 'bg'; }
+  function read() {
+    try { return language(localStorage.getItem('ak-lang')); } catch (_) { return 'bg'; }
+  }
   function listingField(row, field, lang) {
     if (!row) return '';
     const camel = field.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
@@ -37,5 +40,5 @@
     meta('og:locale', en ? 'en_GB' : 'bg_BG', true);
     if (description) { meta('description', description); meta('og:description', description, true); }
   }
-  window.AKLocale = { language, listingField, price, page };
+  window.AKLocale = { language, read, listingField, price, page };
 })();

@@ -201,7 +201,7 @@
     function App() {
       const [active, setActive] = React.useState('contact');
       const [lang, setLang] = React.useState(
-        () => (typeof localStorage !== 'undefined' && localStorage.getItem('ak-lang')) || 'bg'
+        () => window.AKLocale.read()
       );
       const handleLang = (l) => { setLang(l); try { localStorage.setItem('ak-lang', l); } catch(e) {} };
       React.useEffect(() => { window.AK_LANG = lang; }, [lang]);
