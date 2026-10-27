@@ -116,21 +116,14 @@ const TRANSLATIONS = {
 
 const AdminLangContext = React.createContext({ lang: 'bg', setLang: () => {}, t: k => k });
 
-function useAdminLang() {
-  const [lang, setLangState] = React.useState(
-    () => localStorage.getItem('ak-admin-locale') || 'bg'
-  );
-  const setLang = (l) => {
-    localStorage.setItem('ak-admin-locale', l);
-    setLangState(l);
-    window.dispatchEvent(new CustomEvent('ak-admin-locale-change', { detail: { lang: l } }));
-  };
-  const t = (key) => (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || key;
-  return { lang, setLang, t };
-}
+function useAdminLang() { return window.AKAdminLocale.use(TRANSLATIONS); }
 
 function AdminShell({ active, onSignOut, children }) {
   const langCtx = useAdminLang();
+  React.useEffect(() => {
+    document.documentElement.lang = langCtx.lang;
+    document.title = langCtx.lang === 'en' ? 'AK Real Estate — Admin' : 'AK Real Estate — Администрация';
+  }, [langCtx.lang]);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isPhone,  setIsPhone]  = React.useState(false);
@@ -265,11 +258,11 @@ function NavItem({ item, active, onNavigate }) {
 }
 
 function LangSwitch() {
-  const { lang, setLang } = React.useContext(AdminLangContext);
+  const { lang, setLang } = window.AKAdminLocale.use();
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
       {['bg', 'en'].map(l => (
-        <button key={l} onClick={() => setLang(l)} style={{
+        <button type="button" key={l} aria-pressed={l === lang} onClick={() => setLang(l)} style={{
           background: 'transparent',
           border: l === lang ? '1px solid var(--ak-crimson)' : '1px solid var(--hairline-light)',
           color: l === lang ? 'var(--ak-crimson-bright)' : 'var(--fg-3)',
@@ -333,7 +326,7 @@ function TopBar({ isMobile, isPhone, onMenu }) {
       />
       <button
         onClick={submitSearch}
-        title="Search"
+        title={t("Search")} aria-label={t("Search")}
         style={{
           background: 'transparent', border: 0, color: 'var(--fg-3)',
           cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center',
@@ -413,7 +406,7 @@ function TopBar({ isMobile, isPhone, onMenu }) {
       {!isMobile && (
         <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
           textTransform: 'uppercase', color: 'var(--fg-2)', whiteSpace: 'nowrap' }}>
-          <span style={{ color: 'var(--ak-crimson)' }}>▪</span>&nbsp; {t('All systems quiet')}
+          <span style={{ color: 'var(--ak-crimson)' }}>▪</span>&nbsp; {t('Admin workspace')}
         </span>
       )}
       {!isMobile && <span style={{ width: 1, height: 20, background: 'var(--hairline-light)' }}></span>}

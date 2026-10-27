@@ -88,25 +88,7 @@ const DASH_T = {
   },
 };
 
-function useDashLang() {
-  const read = () => localStorage.getItem('ak-admin-locale') || 'bg';
-  const [lang, setLang] = React.useState(read);
-
-  React.useEffect(() => {
-    const sync = () => setLang(read());
-    window.addEventListener('storage', sync);
-    window.addEventListener('ak-admin-locale-change', sync);
-    window.addEventListener('focus', sync);
-    return () => {
-      window.removeEventListener('storage', sync);
-      window.removeEventListener('ak-admin-locale-change', sync);
-      window.removeEventListener('focus', sync);
-    };
-  }, []);
-
-  const t = (key) => (DASH_T[lang] && DASH_T[lang][key]) || key;
-  return { t, lang };
-}
+function useDashLang() { return window.AKAdminLocale.use(DASH_T); }
 
 function translateStatus(status, t) {
   return t(status);
@@ -182,8 +164,8 @@ function DashboardPage() {
         gap: 'clamp(12px, 1.4vw, 20px)',
       }}>
         <StatCard label={t('Featured')}              value={featured} sub={t('on home page')} emphasis="muted" />
-        <StatCard label={t('Active Portfolio Value')} value={'$' + (totalValue / 1_000_000).toFixed(1) + 'M'} sub={t('sum of active')} emphasis="muted" />
-        <StatCard label={t('Avg. Price')}             value={total ? '$' + Math.round(listings.reduce((s, l) => s + (l.price || 0), 0) / total / 1_000_000) + 'M' : '—'} sub={t('all listings')} emphasis="muted" />
+        <StatCard label={t('Active Portfolio Value')} value={window.AKAdminLocale.totals(listings.filter(l => l.status === 'Active'))} sub={t('sum of active')} emphasis="muted" />
+        <StatCard label={t('Avg. Price')}             value={window.AKAdminLocale.totals(listings, true)} sub={t('all listings')} emphasis="muted" />
         <StatCard label={t('Cities')}                 value={new Set(listings.map(l => l.city)).size} sub={t('markets covered')} emphasis="muted" />
       </div>
 
@@ -336,7 +318,7 @@ function LatestRow({ listing }) {
       </div>
       <span style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: 18,
         color: 'var(--fg)', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
-        {formatPrice(listing.price, listing.currency, listing.listingType)}
+        {window.AKAdminLocale.money(listing.price, listing.currency, listing.listingType)}
       </span>
       <DashStatusBadge status={listing.status} />
       <span style={{ color: hover ? 'var(--ak-crimson)' : 'var(--fg-3)',

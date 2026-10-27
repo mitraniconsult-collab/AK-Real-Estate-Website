@@ -174,33 +174,31 @@ const Store = {
   },
 
   async remove(id) {
-    if (!window.akSupabase) return;
-
-    const { error } = await window.akSupabase
-      .from('listings')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      console.error('Listing delete error:', error);
-      alert(error.message || 'Listing delete failed.');
-      return;
+    this.deleteError = null;
+    try {
+      if (!window.akSupabase) throw new Error('service_unavailable');
+      const { data, error } = await window.akSupabase.from('listings')
+        .delete().eq('id', id).select('id');
+      if (error || !data?.some(row => row.id === id)) throw error || new Error('delete_not_confirmed');
+      this.listings = this.listings.filter(row => row.id !== id);
+      this.notify();
+      return true;
+    } catch (_) {
+      this.deleteError = true;
+      return false;
     }
-
-    this.listings = this.listings.filter(l => l.id !== id);
-    this.notify();
   },
 
   async setStatus(id, status) {
     const l = this.listings.find(x => x.id === id);
     if (!l) return;
-    if (!await this.upsert({ ...l, status })) alert('Промяната не е записана. Опитайте отново. / Change was not saved.');
+    if (!await this.upsert({ ...l, status })) alert(window.AKAdminLocale ? window.AKAdminLocale.translate('Change was not saved. Please try again.') : 'Change was not saved. Please try again.');
   },
 
   async toggleFeatured(id) {
     const l = this.listings.find(x => x.id === id);
     if (!l) return;
-    if (!await this.upsert({ ...l, featured: !l.featured })) alert('Промяната не е записана. Опитайте отново. / Change was not saved.');
+    if (!await this.upsert({ ...l, featured: !l.featured })) alert(window.AKAdminLocale ? window.AKAdminLocale.translate('Change was not saved. Please try again.') : 'Change was not saved. Please try again.');
   },
 
   newId() {

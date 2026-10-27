@@ -77,7 +77,7 @@ const FORM_TRANSLATIONS = {
     'Upload images or video': 'Качете снимки или видео',
     'Images and videos up to 100 MB are supported.': 'Поддържат се снимки и видео до 100 MB.',
     'Images automatically receive an AK Real Estate watermark. Video files are uploaded without a watermark.':
-      'Снимките автоматично получават AK Real Estate watermark. Видео файловете се качват без watermark.',
+      'Снимките автоматично получават воден знак AK Real Estate. Видео файловете се качват без воден знак.',
     'This file is too large. Maximum size is 100 MB.': 'Файлът е твърде голям. Максималният размер е 100 MB.',
     'Upload failed. The file may be too large or an unsupported format.':
       'Качването е неуспешно. Файлът може да е твърде голям или с неподдържан формат.',
@@ -172,22 +172,7 @@ const FORM_TRANSLATIONS = {
 
 // Reads ak-admin-locale from localStorage, defaults to 'bg'.
 // Reacts to both "storage" (cross-tab) and "ak-admin-locale-change" (same-tab).
-function useFormLang() {
-  const [lang, setLang] = React.useState(
-    () => localStorage.getItem('ak-admin-locale') || 'bg'
-  );
-  React.useEffect(() => {
-    const onStorage = () => setLang(localStorage.getItem('ak-admin-locale') || 'bg');
-    const onCustom  = (e) => setLang(e.detail.lang);
-    window.addEventListener('storage', onStorage);
-    window.addEventListener('ak-admin-locale-change', onCustom);
-    return () => {
-      window.removeEventListener('storage', onStorage);
-      window.removeEventListener('ak-admin-locale-change', onCustom);
-    };
-  }, []);
-  return (key) => (FORM_TRANSLATIONS[lang] && FORM_TRANSLATIONS[lang][key]) || key;
-}
+function useFormLang() { return window.AKAdminLocale.use(FORM_TRANSLATIONS).t; }
 
 // ─── FormToggle — working toggle with hidden checkbox ────────────────────────
 // Mirrors the visual of atoms.jsx Toggle exactly.
@@ -271,8 +256,8 @@ function ListingFormPage({ mode, id }) {
 
   const validate = () => {
     const e = {};
-    if (!form.title) e.title = 'Title is required';
-    if (!form.city)  e.city  = 'City is required';
+    if (!String(form.title || '').trim()) e.title = 'Title is required';
+    if (!String(form.city || '').trim()) e.city  = 'City is required';
     if (!form.price && form.price !== 0) e.price = 'Price is required';
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -297,7 +282,7 @@ function ListingFormPage({ mode, id }) {
       setSaved(true);
       navigate('/listings');
     } catch (_) {
-      setSaveError(t('Save failed. Your changes are still here. Please try again.'));
+      setSaveError('Save failed. Your changes are still here. Please try again.');
     } finally {
       saveLock.current = false;
       setSaving(false);
@@ -306,14 +291,14 @@ function ListingFormPage({ mode, id }) {
 
   // Single primary save action — shared between top (desktop) and bottom (mobile) bars.
   // Always saves the full form and sets status to Active (an already-Active listing stays Active).
-  const publishLabel = saving ? t('Saving…') : t('Save & Publish');
+  const publishLabel = saving ? t('Saving…') : t(editing ? 'Save Changes' : 'Save & Publish');
 
   if (editing && !original) {
     return (
       <div className="ak-rise">
-        <SectionTitle label="Edit" title="Not" accent="found." />
+        <SectionTitle label={t("Edit")} title={t("Not")} accent={t("found.")} />
         <p style={{ color: 'var(--fg-2)' }}>
-          No listing with id "{id}". <a href="/admin/listings" style={{ color: 'var(--ak-crimson)' }}>Back to listings</a>.
+          {t("No listing with id")} "{id}". <a href="/admin/listings" style={{ color: 'var(--ak-crimson)' }}>{t("Back to listings")}</a>.
         </p>
       </div>
     );
@@ -331,14 +316,15 @@ function ListingFormPage({ mode, id }) {
           !isTablet ? (
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', rowGap: 8 }}>
               <Btn variant="secondary" as="a" href="/admin/listings">{t('Cancel')}</Btn>
+              {!editing && <Btn variant="secondary" disabled={saving || imagesUploading} onClick={() => save(false)}>{t('Save Draft')}</Btn>}
               {editing && <Btn variant="danger" onClick={() => setConfirmDel(true)}>{t('Delete')}</Btn>}
-              <Btn variant="primary"   onClick={() => save(true)} disabled={imagesUploading || saving}>{publishLabel}</Btn>
+              <Btn variant="primary"   onClick={() => save(!editing)} disabled={imagesUploading || saving}>{publishLabel}</Btn>
             </div>
           ) : null
         }
       />
 
-      {saveError && <div role="alert" style={{ padding: 18, marginBottom: 24, border: '1px solid var(--ak-crimson)' }}>{saveError}</div>}
+      {saveError && <div role="alert" style={{ padding: 18, marginBottom: 24, border: '1px solid var(--ak-crimson)' }}>{t(saveError)}</div>}
       {saved && (
         <div style={{ marginBottom: 24, padding: '14px 18px',
           background: 'rgba(176,24,28,.10)', border: '1px solid rgba(176,24,28,.30)',
@@ -362,11 +348,11 @@ function ListingFormPage({ mode, id }) {
           <FormSection n="01" title={t('Property Details')}>
             <Field label={t('Title')} required error={errors.title}>
               <TextInput value={form.title} onChange={(v) => set('title', v)}
-                placeholder="e.g. Villa di Pietra" autoFocus={!editing} />
+                placeholder={t('e.g. Villa di Pietra')} autoFocus={!editing} />
             </Field>
             <Field label={t('Description')} hint={t('A long-form narrative — appears on the listing page.')}>
               <TextArea value={form.description} onChange={(v) => set('description', v)}
-                rows={5} placeholder="Tucked behind a stone wall on a one-block lane…" />
+                rows={5} placeholder={t('Tucked behind a stone wall on a one-block lane…')} />
             </Field>
             <div style={{ display: 'grid', gridTemplateColumns: isPhone ? '1fr' : '1fr 1fr', gap: 24 }}>
               <Field label={t('Property Type')} required>
@@ -386,11 +372,11 @@ function ListingFormPage({ mode, id }) {
             </p>
             <Field label={t('English Title')}>
               <TextInput value={form.titleEn} onChange={(v) => set('titleEn', v)}
-                placeholder="e.g. Villa di Pietra" />
+                placeholder={t('e.g. Villa di Pietra')} />
             </Field>
             <Field label={t('English Description')}>
               <TextArea value={form.descriptionEn} onChange={(v) => set('descriptionEn', v)}
-                rows={5} placeholder="Tucked behind a stone wall on a one-block lane…" />
+                rows={5} placeholder={t('Tucked behind a stone wall on a one-block lane…')} />
             </Field>
             <div style={{ display: 'grid', gridTemplateColumns: isPhone ? '1fr' : '1fr 1fr', gap: 24 }}>
               <Field label={t('English City')}>
@@ -406,22 +392,22 @@ function ListingFormPage({ mode, id }) {
             </Field>
             <Field label={t('English Features')}>
               <TextArea value={form.featuresEn} onChange={(v) => set('featuresEn', v)} rows={3}
-                placeholder="Motor court · Restored stone facade · Library · Cellar · Pool" />
+                placeholder={t('Motor court · Restored stone facade · Library · Cellar · Pool')} />
             </Field>
           </FormSection>
 
           <FormSection n="03" title={t('Location')}>
             <div style={{ display: 'grid', gridTemplateColumns: isPhone ? '1fr' : '1fr 1fr', gap: 24 }}>
               <Field label={t('City')} required error={errors.city}>
-                <TextInput value={form.city} onChange={(v) => set('city', v)} placeholder="Los Angeles" />
+                <TextInput value={form.city} onChange={(v) => set('city', v)} placeholder={t('Los Angeles')} />
               </Field>
               <Field label={t('Area / Neighborhood')}>
-                <TextInput value={form.area} onChange={(v) => set('area', v)} placeholder="Bel Air" />
+                <TextInput value={form.area} onChange={(v) => set('area', v)} placeholder={t('Bel Air')} />
               </Field>
             </div>
-            <Field label={t('Full Address')} hint={t('Shown to verified clients only.')}>
+            <Field label={t('Full Address')} hint={t('Stored with the listing. Do not enter confidential address details.')}>
               <TextInput value={form.address} onChange={(v) => set('address', v)}
-                placeholder="1421 Stone Canyon Rd, Los Angeles, CA 90077" />
+                placeholder={t('1421 Stone Canyon Rd, Los Angeles, CA 90077')} />
             </Field>
           </FormSection>
 
@@ -451,7 +437,7 @@ function ListingFormPage({ mode, id }) {
                 <NumberInput value={form.areaSqm} onChange={(v) => set('areaSqm', v)} min={0} suffix="m²" placeholder="1152" />
               </Field>
               <Field label={t('Floor')}>
-                <NumberInput value={form.floor} onChange={(v) => set('floor', v)} min={0} placeholder="0 = ground" />
+                <NumberInput value={form.floor} onChange={(v) => set('floor', v)} min={0} placeholder={t('0 = ground')} />
               </Field>
               <Field label={t('Total Floors')}>
                 <NumberInput value={form.totalFloors} onChange={(v) => set('totalFloors', v)} min={1} placeholder="3" />
@@ -470,7 +456,7 @@ function ListingFormPage({ mode, id }) {
 
             <Field label={t('Features')} hint={t('Comma-separated · e.g. Pool · Library · Cellar')}>
               <TextArea value={form.features} onChange={(v) => set('features', v)} rows={3}
-                placeholder="Motor court · Restored stone facade · Library · Cellar · Pool" />
+                placeholder={t('Motor court · Restored stone facade · Library · Cellar · Pool')} />
             </Field>
           </FormSection>
 
@@ -497,10 +483,10 @@ function ListingFormPage({ mode, id }) {
             }>
               <ChipGroup value={form.status} onChange={(v) => set('status', v)}
                 options={[
-                  { value: 'Draft',  label: t('Draft')  },
-                  { value: 'Active', label: t('Active') },
-                  { value: 'Sold',   label: t('Sold')   },
-                  { value: 'Rented', label: t('Rented') },
+                  { value: 'Draft',  label: t('status.Draft')  },
+                  { value: 'Active', label: t('status.Active') },
+                  { value: 'Sold',   label: t('status.Sold')   },
+                  { value: 'Rented', label: t('status.Rented') },
                 ]} />
             </Field>
             <div style={{ marginTop: 18, paddingTop: 18, borderTop: '1px solid var(--hairline-light)' }}>
@@ -508,7 +494,7 @@ function ListingFormPage({ mode, id }) {
                 label={t('Featured on home page')} />
               <p style={{ margin: '12px 0 0', fontSize: 11, color: 'var(--fg-3)',
                 lineHeight: 1.5, fontWeight: 300 }}>
-                Featured listings appear in the home-page portfolio strip and "Featured Portfolio" section.
+                {t('Featured listings appear in the home-page portfolio strip and "Featured Portfolio" section.')}
               </p>
             </div>
           </SidePanel>
@@ -517,15 +503,15 @@ function ListingFormPage({ mode, id }) {
             <PreviewCard form={form} />
             <div style={{ marginTop: 14, fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
               textTransform: 'uppercase', color: 'var(--fg-3)', textAlign: 'center' }}>
-              ▪ Approximation · public layout may differ
+              ▪ {t("Approximation · public layout may differ")}
             </div>
           </SidePanel>
 
           {editing && (
             <SidePanel title={t('Record')}>
-              <MetaRow label="ID"      value={form.id} />
-              <MetaRow label="Created" value={form.createdAt} />
-              <MetaRow label="Status"  value={form.status} />
+              <MetaRow label={t("ID")}      value={form.id} />
+              <MetaRow label={t("Created")} value={window.AKAdminLocale.date(form.createdAt)} />
+              <MetaRow label={t("Status")}  value={t("status." + form.status)} />
             </SidePanel>
           )}
         </aside>
@@ -541,10 +527,11 @@ function ListingFormPage({ mode, id }) {
           border: '1px solid var(--hairline-light)',
           display: 'flex', flexDirection: 'column', gap: 12,
         }}>
-          <Btn variant="primary" onClick={() => save(true)} disabled={imagesUploading || saving}
+          <Btn variant="primary" onClick={() => save(!editing)} disabled={imagesUploading || saving}
             style={{ width: '100%', justifyContent: 'center' }}>
             {publishLabel}
           </Btn>
+          {!editing && <Btn variant="secondary" disabled={saving || imagesUploading} onClick={() => save(false)}>{t('Save Draft')}</Btn>}
           <div style={{ display: 'flex', gap: 12 }}>
             <Btn variant="secondary" as="a" href="/admin/listings"
               style={{ flex: 1, justifyContent: 'center' }}>
@@ -562,11 +549,14 @@ function ListingFormPage({ mode, id }) {
 
       {confirmDel && (
         <ConfirmDialog
-          title="Delete listing?"
-          body={`${form.title} (${form.id}) will be permanently removed.`}
-          danger="Delete"
+          title={t("Delete listing?")}
+          body={`${form.title} (${form.id}) ${t("will be permanently removed.")}`}
+          danger={t("Delete")}
           onCancel={() => setConfirmDel(false)}
-          onConfirm={() => { Store.remove(form.id); setConfirmDel(false); navigate('/listings'); }}
+          onConfirm={async () => {
+            if (await Store.remove(form.id)) { setConfirmDel(false); navigate('/listings'); }
+            else alert(t('Could not delete the listing. Please try again.'));
+          }}
         />
       )}
     </div>
@@ -622,6 +612,7 @@ function MetaRow({ label, value }) {
 }
 
 function PreviewCard({ form }) {
+  const t = useFormLang();
   const img = getImageUrl(form.images[form.mainImage]);
   return (
     <div style={{ borderRadius: 4, overflow: 'hidden', background: '#0a0a0a' }}>
@@ -632,7 +623,7 @@ function PreviewCard({ form }) {
           <div style={{ position: 'absolute', inset: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
-            textTransform: 'uppercase', color: 'var(--fg-3)' }}>No image</div>
+            textTransform: 'uppercase', color: 'var(--fg-3)' }}>{t("No image")}</div>
         )}
         <div style={{ position: 'absolute', inset: 0,
           background: 'linear-gradient(180deg, rgba(0,0,0,.10) 0%, rgba(0,0,0,.85) 100%)' }}></div>
@@ -644,31 +635,25 @@ function PreviewCard({ form }) {
           </div>
           <h4 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300,
             fontSize: 22, lineHeight: 1, letterSpacing: '0.04em',
-            textTransform: 'uppercase', color: '#fff' }}>{form.title || 'Untitled'}</h4>
+            textTransform: 'uppercase', color: '#fff' }}>{form.title || t('Untitled')}</h4>
         </div>
       </div>
       <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'baseline',
         justifyContent: 'space-between', gap: 8 }}>
         <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.16em',
           textTransform: 'uppercase', color: 'var(--fg-3)' }}>
-          {form.bedrooms || '—'} BR · {form.areaSqm || '—'} m²
+          {form.bedrooms || '—'} {t('Bedrooms')} · {form.areaSqm || '—'} m²
         </span>
         <span style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: 16,
           color: 'var(--fg)' }}>
-          {form.price ? formatPrice(Number(form.price), form.currency, form.listingType) : '—'}
+          {form.price !== '' && form.price != null ? window.AKAdminLocale.money(Number(form.price), form.currency, form.listingType) : '—'}
         </span>
       </div>
     </div>
   );
 }
 
-const STOCK = [
-  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=600&q=80&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&q=80&auto=format&fit=crop",
-];
+
 
 // Resolves the display URL from an image entry that may be a plain string
 // or an object with various URL fields (Supabase storage returns objects with
@@ -900,11 +885,6 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
     }
   };
 
-  const addStock = () => {
-    const url = STOCK[(images.length + Math.floor(Math.random() * 5)) % STOCK.length];
-    onChange([...images, url], images.length === 0 ? 0 : mainImage);
-  };
-
   const remove = (i) => {
     const next = images.filter((_, idx) => idx !== i);
     let nextMain = mainImage;
@@ -947,9 +927,7 @@ function ImageManager({ images, mainImage, onChange, onUploadingChange, isPhone 
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center',
           flexDirection: isPhone ? 'column' : 'row', alignItems: 'center' }}>
           <Btn variant="primary" as="span">＋ {t('Choose Files')}</Btn>
-          <Btn variant="secondary" as="span" onClick={(e) => { e.stopPropagation(); addStock(); }}>
-            {t('Add Stock')}
-          </Btn>
+
         </div>
         <input ref={inputRef} type="file" multiple
           accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
@@ -1008,7 +986,7 @@ function ImageThumb({ src, isMain, onMain, onRemove }) {
       ) : (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
           justifyContent: 'center', fontSize: 10, fontWeight: 500, letterSpacing: '0.20em',
-          textTransform: 'uppercase', color: 'var(--fg-3)' }}>No image</div>
+          textTransform: 'uppercase', color: 'var(--fg-3)' }}>{t("No image")}</div>
       )}
       {video && (
         <div style={{ position: 'absolute', top: 6, right: 6,
@@ -1020,20 +998,20 @@ function ImageThumb({ src, isMain, onMain, onRemove }) {
         <div style={{ position: 'absolute', top: 6, left: 6,
           background: 'var(--ak-crimson)', color: '#fff',
           padding: '3px 7px', fontSize: 8, fontWeight: 500,
-          letterSpacing: '0.20em', textTransform: 'uppercase' }}>★ Main</div>
+          letterSpacing: '0.20em', textTransform: 'uppercase' }}>★ {t("Main")}</div>
       )}
       <div style={{ position: 'absolute', inset: 0, display: 'flex',
         flexDirection: 'column', justifyContent: 'flex-end', padding: 6, gap: 6,
         background: 'linear-gradient(180deg, transparent 50%, rgba(0,0,0,.65) 100%)' }}>
         <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' }}>
           {!isMain && (
-            <button onClick={onMain} title="Set as main" style={{
+            <button onClick={onMain} title={t("Set as main")} style={{
               background: 'rgba(0,0,0,.65)', backdropFilter: 'blur(4px)',
               border: '1px solid var(--hairline-light)', color: 'var(--fg)',
               padding: '4px 8px', fontSize: 11, cursor: 'pointer', lineHeight: 1,
             }}>★</button>
           )}
-          <button onClick={onRemove} title="Remove" style={{
+          <button onClick={onRemove} title={t("Remove")} style={{
             background: 'rgba(0,0,0,.65)', backdropFilter: 'blur(4px)',
             border: '1px solid var(--hairline-light)', color: 'var(--fg)',
             padding: '4px 8px', fontSize: 11, cursor: 'pointer', lineHeight: 1,
@@ -1045,6 +1023,7 @@ function ImageThumb({ src, isMain, onMain, onRemove }) {
 }
 
 function ImageThumbLoading({ blobUrl, isVideo }) {
+  const t = useFormLang();
   return (
     <div style={{
       position: 'relative', aspectRatio: '4/3', overflow: 'hidden',
@@ -1065,7 +1044,7 @@ function ImageThumbLoading({ blobUrl, isVideo }) {
         background: 'rgba(0,0,0,.50)',
       }}>
         <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.22em',
-          textTransform: 'uppercase', color: '#fff' }}>Uploading…</span>
+          textTransform: 'uppercase', color: '#fff' }}>{t("Uploading…")}</span>
       </div>
     </div>
   );

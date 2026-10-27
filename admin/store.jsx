@@ -103,11 +103,13 @@ function useAuth() {
 
     checkSession();
 
-    const { data: listener } = window.akSupabase?.auth.onAuthStateChange((_event, session) => {
+    const { data: listener } = window.akSupabase?.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
       setCheckingAuth(false);
       setSignedIn(!!session);
 
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') setTimeout(() => Store.load(), 0);
+      if (session && event === 'PASSWORD_RECOVERY') { navigate('/account'); return; }
       if (session && (location.pathname === '/admin' || location.pathname === '/admin/' || location.pathname === '/admin/login')) {
         navigate('/dashboard');
       }

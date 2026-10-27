@@ -107,6 +107,8 @@
 
   <script src="/shared/listings-store.js"></script>
 
+  <script src="/shared/i18n.js"></script>
+  <script src="/admin/locale.js"></script>
   <script type="text/babel" src="atoms.jsx"></script>
   <script type="text/babel" src="store.jsx"></script>
   <script type="text/babel" src="AdminShell.jsx"></script>
@@ -121,6 +123,7 @@
     const { AdminShell, LoginPage, DashboardPage, ListingsPage, ListingFormPage, InquiriesPage, AccountPage, useRoute, useAuth } = window;
 
     function App() {
+      const { t } = window.AKAdminLocale.use();
       const route = useRoute();
       const auth = useAuth();
 
@@ -137,7 +140,7 @@ if (auth.checkingAuth) {
       textTransform: 'uppercase',
       fontSize: 11
     }}>
-      Checking access…
+      {t('Checking access…')}
     </div>
   );
 }

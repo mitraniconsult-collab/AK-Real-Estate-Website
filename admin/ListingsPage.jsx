@@ -218,7 +218,10 @@ React.useEffect(() => {
           body={`${confirmDel.title} (${confirmDel.id}) ${t('will be permanently removed.')}`}
           danger={t('Delete')}
           onCancel={() => setConfirmDel(null)}
-          onConfirm={() => { Store.remove(confirmDel.id); setConfirmDel(null); }}
+          onConfirm={async () => {
+            if (await Store.remove(confirmDel.id)) setConfirmDel(null);
+            else alert(t('Could not delete the listing. Please try again.'));
+          }}
         />
       )}
     </div>
@@ -347,7 +350,7 @@ function ListingRow({ listing, odd, onDelete }) {
             </div>
             <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.16em',
               textTransform: 'uppercase', color: 'var(--fg-3)', marginTop: 4 }}>
-              {listing.id} · {listing.bedrooms} BR · {listing.areaSqm} m² · {listing.propertyType}
+              {listing.id} · {listing.bedrooms} {t('Bedrooms')} · {listing.areaSqm} m² · {t(listing.propertyType)}
             </div>
           </div>
         </a>
@@ -362,7 +365,7 @@ function ListingRow({ listing, odd, onDelete }) {
       <Td align="right">
         <span style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: 18,
           color: 'var(--fg)', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
-          {formatPrice(listing.price, listing.currency, listing.listingType)}
+          {window.AKAdminLocale.money(listing.price, listing.currency, listing.listingType)}
         </span>
       </Td>
       <Td><ListingTypeBadge type={listing.listingType} /></Td>
@@ -422,7 +425,7 @@ function ListingStatusBadge({ status }) {
       background: s.bg, color: s.fg, border: `1px solid ${s.border}`,
       fontSize: 9, fontWeight: 500, letterSpacing: '0.20em',
       textTransform: 'uppercase', borderRadius: 0,
-    }}>{t(status)}</span>
+    }}>{t("status." + status)}</span>
   );
 }
 
@@ -517,11 +520,11 @@ function AdminListingCard({ listing, onDelete }) {
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
           <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.18em',
             textTransform: 'uppercase', color: 'var(--fg-3)' }}>
-            {listing.bedrooms} BR · {listing.bathrooms} BA · {listing.areaSqm} m²
+            {listing.bedrooms} {t('Bedrooms')} · {listing.bathrooms} {t('Bathrooms')} · {listing.areaSqm} m²
           </span>
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: 18,
             color: 'var(--fg)', letterSpacing: '0.04em' }}>
-            {formatPrice(listing.price, listing.currency, listing.listingType)}
+            {window.AKAdminLocale.money(listing.price, listing.currency, listing.listingType)}
           </span>
         </div>
         <div style={{ display: 'flex', gap: 6, paddingTop: 10,
@@ -556,13 +559,22 @@ function EmptyState() {
 
 function ConfirmDialog({ title, body, danger, onCancel, onConfirm }) {
   const { t } = React.useContext(AdminLangContext);
+  const [pending, setPending] = React.useState(false);
+  const lock = React.useRef(false);
+  const confirm = async () => {
+    if (lock.current) return;
+    lock.current = true;
+    setPending(true);
+    try { await onConfirm(); }
+    finally { lock.current = false; setPending(false); }
+  };
   return (
     <div role="dialog" style={{
       position: 'fixed', inset: 0, zIndex: 80,
       background: 'rgba(0,0,0,.65)', backdropFilter: 'blur(6px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: 24,
-    }} onClick={onCancel}>
+    }} onClick={pending ? undefined : onCancel}>
       <div onClick={(e) => e.stopPropagation()} style={{
         width: '100%', maxWidth: 440,
         background: 'var(--ak-charcoal)',
@@ -579,8 +591,8 @@ function ConfirmDialog({ title, body, danger, onCancel, onConfirm }) {
         <p style={{ margin: '14px 0 28px', fontSize: 13, color: 'var(--fg-2)',
           fontWeight: 300, lineHeight: 1.6 }}>{body}</p>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-          <Btn variant="secondary" onClick={onCancel}>{t('Cancel')}</Btn>
-          <Btn variant="primary" onClick={onConfirm}>{danger || t('Confirm')}</Btn>
+          <Btn variant="secondary" disabled={pending} onClick={onCancel}>{t('Cancel')}</Btn>
+          <Btn variant="primary" disabled={pending} onClick={confirm}>{pending ? t('Deleting…') : (danger || t('Confirm'))}</Btn>
         </div>
       </div>
     </div>

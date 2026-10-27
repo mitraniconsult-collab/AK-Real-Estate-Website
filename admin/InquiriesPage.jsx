@@ -54,23 +54,7 @@ const INQ_T = {
   },
 };
 
-function useInqLang() {
-  const read = () => localStorage.getItem('ak-admin-locale') || 'bg';
-  const [lang, setLang] = React.useState(read);
-  React.useEffect(() => {
-    const sync = () => setLang(read());
-    window.addEventListener('storage', sync);
-    window.addEventListener('ak-admin-locale-change', sync);
-    window.addEventListener('focus', sync);
-    return () => {
-      window.removeEventListener('storage', sync);
-      window.removeEventListener('ak-admin-locale-change', sync);
-      window.removeEventListener('focus', sync);
-    };
-  }, []);
-  const t = (key) => (INQ_T[lang] && INQ_T[lang][key]) || key;
-  return { t, lang };
-}
+function useInqLang() { return window.AKAdminLocale.use(INQ_T); }
 
 const INTEREST_KEYS = ['buy', 'sell', 'credit', 'interior', 'renovation'];
 
@@ -127,35 +111,38 @@ function InquiriesPage() {
     if (!window.akSupabase) { setLoadError(true); setLoading(false); return; }
     setLoading(true);
     setLoadError(false);
-    const { data, error } = await window.akSupabase
-      .from('contact_inquiries')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (error) {
-      console.error('Inquiries load error:', { code: error.code, message: error.message, hint: error.hint });
+    try {
+      const { data, error } = await window.akSupabase.from('contact_inquiries')
+        .select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      setRows(data || []);
+    } catch (_) {
       setLoadError(true);
       setRows([]);
-    } else {
-      setRows(data || []);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   React.useEffect(() => { load(); }, [load]);
 
+  const pendingActions = React.useRef(new Set());
   async function updateStatus(id, nextStatus) {
+    if (pendingActions.current.has(id)) return;
+    const previousStatus = rows.find(row => row.id === id)?.status;
+    pendingActions.current.add(id);
     setActionError(false);
-    const prev = rows;
-    // Optimistic update
-    setRows(rs => rs.map(r => r.id === id ? { ...r, status: nextStatus } : r));
-    const { error } = await window.akSupabase
-      .from('contact_inquiries')
-      .update({ status: nextStatus })
-      .eq('id', id);
-    if (error) {
-      console.error('Inquiry update error:', { code: error.code, message: error.message, hint: error.hint });
-      setRows(prev); // roll back
+    setRows(current => current.map(row => row.id === id ? { ...row, status: nextStatus } : row));
+    try {
+      if (!window.akSupabase) throw new Error('service_unavailable');
+      const { error } = await window.akSupabase.from('contact_inquiries')
+        .update({ status: nextStatus }).eq('id', id);
+      if (error) throw error;
+    } catch (_) {
+      setRows(current => current.map(row => row.id === id ? { ...row, status: previousStatus } : row));
       setActionError(true);
+    } finally {
+      pendingActions.current.delete(id);
     }
   }
 
@@ -346,7 +333,7 @@ function InqTable({ rows, t, lang, onStatus }) {
               <ITd>{r.phone
                 ? <a href={'tel:' + String(r.phone).replace(/\s+/g, '')} style={{ color: 'var(--fg)', textDecoration: 'none', whiteSpace: 'nowrap' }}>{r.phone}</a>
                 : '—'}</ITd>
-              <ITd>{r.interest_label || (r.interest ? t(r.interest) : '—')}</ITd>
+              <ITd>{INTEREST_KEYS.includes(r.interest) ? t(r.interest) : (r.interest_label || '—')}</ITd>
               <ITd>{r.budget || '—'}</ITd>
               <ITd><span style={{ display: 'block', maxWidth: 320, color: 'var(--fg-2)', fontSize: 13,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.message || '—'}</span></ITd>
@@ -394,7 +381,7 @@ function InqCards({ rows, t, lang, onStatus }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, color: 'var(--fg-2)' }}>
             {r.phone && <div><span style={{ color: 'var(--fg-3)' }}>{t('Phone')}: </span>
               <a href={'tel:' + String(r.phone).replace(/\s+/g, '')} style={{ color: 'var(--fg)', textDecoration: 'none' }}>{r.phone}</a></div>}
-            <div><span style={{ color: 'var(--fg-3)' }}>{t('Interest:')} </span>{r.interest_label || (r.interest ? t(r.interest) : '—')}</div>
+            <div><span style={{ color: 'var(--fg-3)' }}>{t('Interest:')} </span>{INTEREST_KEYS.includes(r.interest) ? t(r.interest) : (r.interest_label || '—')}</div>
             {r.budget && <div><span style={{ color: 'var(--fg-3)' }}>{t('Budget')}: </span>{r.budget}</div>}
           </div>
 

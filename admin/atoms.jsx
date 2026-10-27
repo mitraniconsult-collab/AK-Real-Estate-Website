@@ -98,23 +98,30 @@ function SectionTitle({ n, label, title, accent, action }) {
 
 // Hairline-bottom input — matches public site form style
 function Field({ label, hint, error, required, children }) {
+  const { t } = window.AKAdminLocale.use();
+  const id = React.useId();
+  const control = React.isValidElement(children) ? React.cloneElement(children, {
+    id: children.props.id || id,
+    'aria-label': t(label),
+    required: !!required,
+  }) : children;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <label style={{
+      <label htmlFor={id} style={{
         fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
         textTransform: 'uppercase', color: error ? 'var(--ak-crimson-bright)' : 'var(--fg-2)',
         display: 'flex', alignItems: 'center', gap: 6,
       }}>
-        {label}
+        {t(label)}
         {required && <span style={{ color: 'var(--ak-crimson)' }}>▪</span>}
       </label>
-      {children}
+      {control}
       {(hint || error) && (
         <span style={{
           fontSize: 10, fontWeight: 500, letterSpacing: '0.18em',
           textTransform: 'uppercase',
           color: error ? 'var(--ak-crimson-bright)' : 'var(--fg-3)',
-        }}>{error || hint}</span>
+        }}>{t(error || hint)}</span>
       )}
     </div>
   );
@@ -129,15 +136,17 @@ const inputBase = {
   transition: 'border-color .22s var(--ease)',
 };
 
-function TextInput({ value, onChange, placeholder, type = 'text', autoFocus }) {
+function TextInput({ value, onChange, placeholder, type = 'text', autoFocus, id, required, 'aria-label': ariaLabel }) {
+  const { t } = window.AKAdminLocale.use();
   const [f, setF] = React.useState(false);
   return (
     <input
       autoFocus={autoFocus}
+      id={id} required={required} aria-label={ariaLabel}
       type={type}
       value={value ?? ''}
       onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
+      placeholder={t(placeholder)}
       onFocus={() => setF(true)}
       onBlur={() => setF(false)}
       style={{ ...inputBase, borderBottomColor: f ? 'var(--ak-crimson)' : 'var(--hairline-light)' }}
@@ -145,13 +154,13 @@ function TextInput({ value, onChange, placeholder, type = 'text', autoFocus }) {
   );
 }
 
-function NumberInput({ value, onChange, placeholder, min, max, step, suffix }) {
+function NumberInput({ value, onChange, placeholder, min, max, step, suffix, id, required, 'aria-label': ariaLabel }) {
   const [f, setF] = React.useState(false);
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12,
       borderBottom: `1px solid ${f ? 'var(--ak-crimson)' : 'var(--hairline-light)'}`,
       transition: 'border-color .22s var(--ease)' }}>
-      <input type="number" min={min} max={max} step={step}
+      <input type="number" id={id} required={required} aria-label={ariaLabel} min={min} max={max} step={step}
         value={value ?? ''} placeholder={placeholder}
         onChange={(e) => onChange(e.target.value === '' ? '' : Number(e.target.value))}
         onFocus={() => setF(true)} onBlur={() => setF(false)}
@@ -161,10 +170,10 @@ function NumberInput({ value, onChange, placeholder, min, max, step, suffix }) {
   );
 }
 
-function TextArea({ value, onChange, placeholder, rows = 5 }) {
+function TextArea({ value, onChange, placeholder, rows = 5, id, required, 'aria-label': ariaLabel }) {
   const [f, setF] = React.useState(false);
   return (
-    <textarea
+    <textarea id={id} required={required} aria-label={ariaLabel}
       value={value ?? ''} placeholder={placeholder} rows={rows}
       onChange={(e) => onChange(e.target.value)}
       onFocus={() => setF(true)} onBlur={() => setF(false)}
@@ -174,7 +183,7 @@ function TextArea({ value, onChange, placeholder, rows = 5 }) {
   );
 }
 
-function Select({ value, onChange, options }) {
+function Select({ value, onChange, options, id, required, 'aria-label': ariaLabel }) {
   const [f, setF] = React.useState(false);
   return (
     <div style={{
@@ -204,6 +213,7 @@ function Select({ value, onChange, options }) {
 
 // Segmented chip group — used for Listing Type, Status, Property Type
 function ChipGroup({ value, onChange, options }) {
+  const { t } = window.AKAdminLocale.use();
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingTop: 4 }}>
       {options.map(opt => {
@@ -220,7 +230,7 @@ function ChipGroup({ value, onChange, options }) {
               fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
               letterSpacing: '0.22em', textTransform: 'uppercase', borderRadius: 0,
               transition: 'all .2s var(--ease)',
-            }}>{l}</button>
+            }}>{t(l)}</button>
         );
       })}
     </div>
@@ -250,6 +260,7 @@ function Toggle({ checked, onChange, label }) {
 
 // Status badge — Active (crimson), Draft (smoke), Sold (gold-ish iron), Rented (outline)
 function StatusBadge({ status }) {
+  const { t } = window.AKAdminLocale.use();
   const map = {
     Active:  { bg: 'var(--ak-crimson)', fg: '#fff', border: 'transparent' },
     Draft:   { bg: 'transparent', fg: 'var(--fg-2)', border: 'var(--hairline-light)' },
@@ -263,11 +274,12 @@ function StatusBadge({ status }) {
       background: s.bg, color: s.fg, border: `1px solid ${s.border}`,
       fontSize: 9, fontWeight: 500, letterSpacing: '0.20em',
       textTransform: 'uppercase', borderRadius: 0,
-    }}>{status}</span>
+    }}>{t("status." + status)}</span>
   );
 }
 
 function TypeBadge({ type }) {
+  const { t } = window.AKAdminLocale.use();
   // Sale / Rent
   return (
     <span style={{
@@ -277,7 +289,7 @@ function TypeBadge({ type }) {
       border: '1px solid var(--hairline-light)',
       fontSize: 9, fontWeight: 500, letterSpacing: '0.20em',
       textTransform: 'uppercase',
-    }}>{type === 'Sale' ? 'For Sale' : 'For Rent'}</span>
+    }}>{t(type === 'Sale' ? 'For Sale' : 'For Rent')}</span>
   );
 }
 

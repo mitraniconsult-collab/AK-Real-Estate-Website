@@ -3,6 +3,11 @@
 const LOGIN_BG = "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=2400&q=80&auto=format&fit=crop";
 
 function LoginPage({ onSubmit }) {
+  const { t, lang } = window.AKAdminLocale.use();
+  React.useEffect(() => {
+    document.documentElement.lang = lang;
+    document.title = lang === 'en' ? 'Sign In — AK Real Estate' : 'Вход — AK Real Estate';
+  }, [lang]);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [remember, setRemember] = React.useState(true);
@@ -35,21 +40,21 @@ function LoginPage({ onSubmit }) {
     });
     if (error) {
       if (error.code === 'invalid_credentials' || error.status === 400) {
-        setError('Невалиден имейл или парола. / Invalid email or password.');
+        setError('Invalid email or password.');
       } else if (error.status === 429) {
-        setError('Твърде много опити. Изчакайте и опитайте отново. / Too many attempts. Please wait.');
+        setError('Too many attempts. Please wait and try again.');
       } else {
-        setError('Услугата за вход временно е недостъпна. Опитайте отново. / Sign-in service temporarily unavailable.');
+        setError('Sign-in service temporarily unavailable.');
       }
       return;
     }
     if (!data?.session) {
-      setError('Входът не е потвърден. Опитайте отново. / Sign-in was not confirmed.');
+      setError('Sign-in was not confirmed. Please try again.');
       return;
     }
     onSubmit(email.trim(), password, data);
   } catch (_) {
-    setError('Няма връзка с услугата за вход. Проверете връзката и опитайте отново. / Cannot reach sign-in service.');
+    setError('Cannot reach sign-in service. Please try again.');
   } finally {
     setLoading(false);
   }
@@ -61,7 +66,7 @@ function LoginPage({ onSubmit }) {
     setNotice(null);
 
     if (!email) {
-      setNotice({ type: 'error', text: 'Въведете имейл адрес, за да възстановите паролата.' });
+      setNotice({ type: 'error', text: 'Enter your email address to reset your password.' });
       return;
     }
 
@@ -81,17 +86,17 @@ function LoginPage({ onSubmit }) {
     try {
       ({ error } = await window.akSupabase.auth.resetPasswordForEmail(email.trim(), { redirectTo }));
     } catch (_) {
-      error = { message: 'Услугата временно е недостъпна. Опитайте отново.' };
+      error = { message: 'Could not send the recovery email. Please try again.' };
     } finally {
       setResetLoading(false);
     }
 
     if (error) {
-      setNotice({ type: 'error', text: error.message || 'Неуспешно изпращане на имейл. Опитайте отново.' });
+      setNotice({ type: 'error', text: 'Could not send the recovery email. Please try again.' });
       return;
     }
 
-    setNotice({ type: 'success', text: 'Изпратихме имейл за възстановяване на паролата.' });
+    setNotice({ type: 'success', text: 'If an account exists for this email, a recovery link has been sent.' });
   };
 
   return (
@@ -126,28 +131,27 @@ function LoginPage({ onSubmit }) {
             <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.42em',
               textTransform: 'uppercase', writingMode: 'vertical-rl',
               transform: 'rotate(180deg)', color: 'var(--fg-2)' }}>
-              § 00 — Admin Console
+              § 00 — {t('Admin Console')}
             </span>
             <div style={{ width: 1, height: 80, background: 'rgba(245,241,234,.20)' }}></div>
           </div>
 
           <div style={{ marginTop: 'auto', maxWidth: 580 }}>
-            <Eyebrow style={{ marginBottom: 24 }}>Restricted Access</Eyebrow>
+            <Eyebrow style={{ marginBottom: 24 }}>{t('Restricted Access')}</Eyebrow>
             <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 200,
               fontSize: 'clamp(48px, 6vw, 96px)', lineHeight: 0.94,
               letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              A quieter<br/>back <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>office.</em>
+              {t('A quieter')}<br/>{t('back')} <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>{t('office.')}</em>
             </h1>
             <p style={{ marginTop: 28, maxWidth: 420, fontSize: 14, lineHeight: 1.7,
               fontWeight: 300, color: 'var(--fg-2)' }}>
-              Manage the portfolio. Move listings between Draft, Active, Sold, and Rented.
-              The site reflects your edits the moment you save.
+              {t('Manage the portfolio. Move listings between Draft, Active, Sold, and Rented. The site reflects your edits the moment you save.')}
             </p>
             <div style={{ marginTop: 36, display: 'flex', alignItems: 'center', gap: 14,
               fontSize: 10, fontWeight: 500, letterSpacing: '0.28em',
               textTransform: 'uppercase', color: 'var(--fg-3)' }}>
               <RedSquare size={6} />
-              <span>Authorized personnel only · v2.4.0</span>
+              <span>{t('Authorized personnel only')}</span>
             </div>
           </div>
         </div>
@@ -161,15 +165,16 @@ function LoginPage({ onSubmit }) {
           width: '100%', maxWidth: 420,
           display: 'flex', flexDirection: 'column', gap: 28,
         }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><LangSwitch /></div>
           <div>
-            <Eyebrow>Sign In</Eyebrow>
+            <Eyebrow>{t('Sign In')}</Eyebrow>
             <h2 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontWeight: 200,
               fontSize: 'clamp(32px, 3.6vw, 48px)', lineHeight: 1,
               letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              Welcome <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>back.</em>
+              {t('Welcome')} <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>{t('back.')}</em>
             </h2>
             <p style={{ marginTop: 14, fontSize: 13, color: 'var(--fg-2)', fontWeight: 300, lineHeight: 1.55 }}>
-              Use your AK Real Estate administrator credentials.
+              {t('Use your AK Real Estate administrator credentials.')}
             </p>
           </div>
 
@@ -187,7 +192,7 @@ function LoginPage({ onSubmit }) {
               border: '1px solid rgba(176,24,28,.40)',
               fontSize: 11, fontWeight: 500, letterSpacing: '0.16em',
               textTransform: 'uppercase', color: 'var(--ak-crimson-bright)' }}>
-              <RedSquare size={6} /> {error}
+              <RedSquare size={6} /> {t(error)}
             </div>
           )}
 
@@ -199,7 +204,7 @@ function LoginPage({ onSubmit }) {
               fontSize: 11, fontWeight: 500, letterSpacing: '0.16em',
               lineHeight: 1.5,
               color: notice.type === 'success' ? 'var(--fg)' : 'var(--ak-crimson-bright)' }}>
-              <RedSquare size={6} /> {notice.text}
+              <RedSquare size={6} /> {t(notice.text)}
             </div>
           )}
 
@@ -213,9 +218,9 @@ function LoginPage({ onSubmit }) {
                 fontSize: 10, color: '#fff', transition: 'all .2s var(--ease)',
               }}>{remember && '✓'}</span>
               <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)}
-                style={{ display: 'none' }} />
+                style={{ position: 'absolute', width: 1, height: 1, opacity: 0 }} />
               <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.22em',
-                textTransform: 'uppercase', color: 'var(--fg-2)' }}>Remember me</span>
+                textTransform: 'uppercase', color: 'var(--fg-2)' }}>{t('Remember me')}</span>
             </label>
             <button type="button" onClick={handleForgot} disabled={resetLoading}
               style={{ background: 'none', border: 0, cursor: resetLoading ? 'default' : 'pointer',
@@ -223,14 +228,14 @@ function LoginPage({ onSubmit }) {
               textTransform: 'uppercase', color: 'var(--fg-2)',
               borderBottom: '1px solid var(--ak-crimson)', paddingBottom: 2, padding: '0 0 2px',
               opacity: resetLoading ? 0.6 : 1 }}>
-              {resetLoading ? 'Sending…' : 'Forgot?'}
+              {t(resetLoading ? 'Sending…' : 'Forgot?')}
             </button>
           </div>
 
           <Btn type="submit" variant="primary" disabled={loading} style={{
             justifyContent: 'space-between', padding: '15px 22px',
           }}>
-            <span>{loading ? 'Signing In…' : 'Sign In'}</span>
+            <span>{t(loading ? 'Signing In…' : 'Sign In')}</span>
             <span>→</span>
           </Btn>
 
@@ -239,7 +244,7 @@ function LoginPage({ onSubmit }) {
             <RedSquare size={6} />
             <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.22em',
               textTransform: 'uppercase', color: 'var(--fg-3)' }}>
-              Authorized admin credentials required
+              {t('Authorized admin credentials required')}
             </span>
           </div>
         </form>

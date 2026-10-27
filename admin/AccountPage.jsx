@@ -50,23 +50,7 @@ const ACCOUNT_T = {
   },
 };
 
-function useAccountLang() {
-  const read = () => localStorage.getItem('ak-admin-locale') || 'bg';
-  const [lang, setLang] = React.useState(read);
-  React.useEffect(() => {
-    const sync = () => setLang(read());
-    window.addEventListener('storage', sync);
-    window.addEventListener('ak-admin-locale-change', sync);
-    window.addEventListener('focus', sync);
-    return () => {
-      window.removeEventListener('storage', sync);
-      window.removeEventListener('ak-admin-locale-change', sync);
-      window.removeEventListener('focus', sync);
-    };
-  }, []);
-  const t = (k) => (ACCOUNT_T[lang] && ACCOUNT_T[lang][k]) || k;
-  return { t, lang };
-}
+function useAccountLang() { return window.AKAdminLocale.use(ACCOUNT_T); }
 
 function AccountPasswordInput({ value, onChange, autoFocus }) {
   const [f, setF] = React.useState(false);
@@ -120,9 +104,9 @@ function AccountPage({ onSignOut }) {
     e.preventDefault();
     setError('');
     setSuccess('');
-    if (!pw) { setError(t('New password is required.')); return; }
-    if (pw.length < 8) { setError(t('Password must be at least 8 characters.')); return; }
-    if (pw !== pw2) { setError(t('Passwords do not match.')); return; }
+    if (!pw) { setError('New password is required.'); return; }
+    if (pw.length < 8) { setError('Password must be at least 8 characters.'); return; }
+    if (pw !== pw2) { setError('Passwords do not match.'); return; }
 
     setSaving(true);
     try {
@@ -130,11 +114,11 @@ function AccountPage({ onSignOut }) {
       if (err) throw err;
       setPw('');
       setPw2('');
-      setSuccess(t('Password changed successfully.'));
+      setSuccess('Password changed successfully.');
     } catch (err) {
       // Log a sanitized message only — never the password.
       console.error('Password change failed:', (err && err.message) ? err.message : 'unknown error');
-      setError(t('Password could not be changed. Please try again.'));
+      setError('Password could not be changed. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -198,7 +182,7 @@ function AccountPage({ onSignOut }) {
               background: 'rgba(176,24,28,.10)', border: '1px solid rgba(176,24,28,.35)',
               display: 'flex', alignItems: 'center', gap: 10 }}>
               <RedSquare size={6} />
-              <span style={{ fontSize: 12, color: 'var(--fg)', fontWeight: 300 }}>{error}</span>
+              <span style={{ fontSize: 12, color: 'var(--fg)', fontWeight: 300 }}>{t(error)}</span>
             </div>
           )}
           {success && (
@@ -206,7 +190,7 @@ function AccountPage({ onSignOut }) {
               background: 'rgba(255,255,255,.04)', border: '1px solid var(--hairline-light)',
               display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ width: 6, height: 6, background: 'var(--ak-crimson)', display: 'inline-block', flexShrink: 0 }}></span>
-              <span style={{ fontSize: 12, color: 'var(--fg)', fontWeight: 300 }}>{success}</span>
+              <span style={{ fontSize: 12, color: 'var(--fg)', fontWeight: 300 }}>{t(success)}</span>
             </div>
           )}
 

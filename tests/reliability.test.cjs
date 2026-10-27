@@ -72,14 +72,14 @@ test('remember me persists across visits; session-only tokens stay out of localS
   adapter.removeItem('session');
   assert.equal(adapter.getItem('session'), null);
 });
-function editorSave(upsert) {
+function editorSave(upsert, status = 'Active') {
   const code = source('admin/ListingFormPage.jsx');
   const start = code.indexOf('  const save = async (publish) => {');
   const end = code.indexOf('\n  };', start) + 5;
   const events = [];
   const ctx = {
     saveLock: { current: false }, imagesUploading: false, validate: () => true,
-    form: { id: 'L-014', title: 'Edited', status: 'Active' }, editing: true,
+    form: { id: 'L-014', title: 'Edited', status }, editing: true,
     Store: { upsert }, t: s => s, navigate: () => events.push('navigate'),
     setSaving: value => events.push(['saving', value]), setSaved: value => events.push(['saved', value]),
     setSaveError: value => events.push(['error', value]),
@@ -156,4 +156,78 @@ test('switching page language updates browser and metadata without duplicating t
   assert.equal(document.title, 'Българско заглавие');
   assert.equal(nodes.length, 4);
   assert.equal(nodes.find(n => n.attrs.property === 'og:locale').attrs.content, 'bg_BG');
+});
+test('saving edits preserves Sold, Rented and Draft statuses', async () => {
+  for (const status of ['Sold', 'Rented', 'Draft']) {
+    let payload;
+    const { save } = editorSave(async row => { payload = row; return true; }, status);
+    await save(false);
+    assert.equal(payload.status, status);
+  }
+});
+function adminLocale() {
+  const values = new Map(), events = new Map();
+  const ctx = {
+    Intl, Date, window: {
+      addEventListener(name, fn) { events.set(name, fn); },
+      dispatchEvent(event) { events.get(event.type)?.(event); },
+    },
+    CustomEvent: class { constructor(type, options) { this.type = type; this.detail = options.detail; } },
+    localStorage: { getItem: key => values.get(key) || null, setItem: (key, value) => values.set(key, value) },
+  };
+  vm.runInNewContext(source('shared/i18n.js'), ctx);
+  vm.runInNewContext(source('admin/locale.js'), ctx);
+  return { api: ctx.window.AKAdminLocale, values, events, ctx };
+}
+test('admin locale switches all subscribers and remains separate from public locale', () => {
+  const { api, values, events } = adminLocale();
+  values.set('ak-lang', 'bg');
+  let notifications = 0;
+  const off = api.subscribe(() => notifications++);
+  api.set('en');
+  assert.equal(api.read(), 'en');
+  assert.equal(api.translate('Password'), 'Password');
+  assert.equal(values.get('ak-lang'), 'bg');
+  assert.equal(notifications, 1);
+  values.set('ak-admin-locale', 'bg');
+  events.get('storage')({ key: 'ak-admin-locale' });
+  assert.equal(api.translate('Password'), 'Парола');
+  assert.equal(notifications, 2);
+  off();
+  api.set('en');
+  assert.equal(notifications, 2);
+});
+test('admin badges and media labels have Bulgarian and English equivalents', () => {
+  const { api } = adminLocale();
+  for (const key of ['status.Active', 'status.Sold', 'status.Rented', 'Apartment', 'No image', 'Set as main', 'Signing In…']) {
+    assert.notEqual(api.translate(key, 'bg'), api.translate(key, 'en'), key);
+  }
+});
+test('dashboard never combines different currencies into an invented dollar amount', () => {
+  const { api } = adminLocale(); api.set('en');
+  assert.equal(api.totals([{ price: 100000, currency: 'EUR' }, { price: 200000, currency: 'EUR' }], true), '€150,000');
+  const mixed = api.totals([{ price: 168000, currency: 'EUR' }, { price: 100000, currency: 'USD' }]);
+  assert.ok(mixed.includes('€168,000'));
+  assert.ok(mixed.includes('100,000'));
+  assert.ok(mixed.includes(' · '));
+  assert.equal(api.totals([{ price: null }]), '—');
+});
+test('a failed or unconfirmed delete leaves the listing visible', async () => {
+  for (const response of [{ data: [], error: null }, { error: { code: '42501' } }, null]) {
+    const c = client({ data: [{ id: 'L-1', title: 'Keep this property' }] });
+    const baseFrom = c.from;
+    c.from = () => ({ ...baseFrom(), delete: () => ({ eq: () => ({ select: async () => { if (response === null) throw Error('offline'); return response; } }) }) });
+    const s = await store(c);
+    assert.equal(await s.remove('L-1'), false);
+    assert.equal(s.listings.length, 1);
+  }
+});
+test('confirmed deletion removes only the acknowledged property', async () => {
+  const c = client({ data: [{ id: 'L-1' }, { id: 'L-2' }] });
+  const baseFrom = c.from;
+  c.from = () => ({ ...baseFrom(), delete: () => ({ eq: () => ({ select: async () => ({ data: [{ id: 'L-1' }], error: null }) }) }) });
+  const s = await store(c);
+  assert.equal(await s.remove('L-1'), true);
+  assert.equal(s.listings.length, 1);
+  assert.equal(s.listings[0].id, 'L-2');
 });
