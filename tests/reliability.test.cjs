@@ -133,6 +133,7 @@ test('property prices follow the selected locale and retain the exact amount', (
   assert.match(price(950, 'EUR', 'Rent', 'en'), /\/mo$/);
   assert.equal(price(null, 'EUR', 'Sale', 'bg'), '—');
   assert.equal(price(0, 'EUR', 'Sale', 'en'), '€0');
+  assert.equal(price(10, '<img>', 'Sale', 'en'), '€10');
 });
 test('switching page language updates browser and metadata without duplicating tags', () => {
   const nodes = [];

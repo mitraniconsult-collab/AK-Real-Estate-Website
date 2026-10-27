@@ -14,6 +14,7 @@
   function price(value, currency = 'EUR', deal, lang = 'bg') {
     if (value == null || value === '' || !Number.isFinite(Number(value))) return '—';
     const en = language(lang) === 'en';
+    currency = /^[A-Z]{3}$/.test(String(currency)) ? String(currency) : 'EUR';
     let result;
     try {
       result = new Intl.NumberFormat(en ? 'en-GB' : 'bg-BG', {
