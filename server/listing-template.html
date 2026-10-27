@@ -393,6 +393,8 @@
     }
 
     .details {
+      min-width: 0;
+      overflow-wrap: anywhere;
       position: sticky;
       top: 110px;
       border: 1px solid var(--hairline);
@@ -415,9 +417,10 @@
       margin: 0;
       font-family: var(--font-display);
       font-weight: 300;
-      font-size: clamp(44px, 6vw, 86px);
-      line-height: .92;
-      letter-spacing: .06em;
+      font-size: clamp(28px, 3.2vw, 46px);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+      letter-spacing: .04em;
       text-transform: uppercase;
     }
 
