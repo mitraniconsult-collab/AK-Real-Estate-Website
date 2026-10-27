@@ -1,12 +1,20 @@
 {
   "rewrites": [
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/listing.html",
+      "destination": "/api/listing"
+    },
+    {
       "source": "/listings",
       "destination": "/listings.html"
     },
     {
       "source": "/listing",
-      "destination": "/listing.html"
+      "destination": "/api/listing"
     },
     {
       "source": "/services",
@@ -40,5 +48,10 @@
       "source": "/admin/:path*",
       "destination": "/admin/index.html"
     }
-  ]
+  ],
+  "functions": {
+    "api/listing.js": {
+      "includeFiles": "listing.html"
+    }
+  }
 }

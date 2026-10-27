@@ -1307,6 +1307,7 @@
     function setLang(l){
       allLang.forEach(function(b){ b.classList.toggle('active', b.dataset.lang === l); });
       try { localStorage.setItem('ak-lang', l); } catch(e){}
+      try { const url = new URL(location.href); url.searchParams.set('lang', l); history.replaceState(null, '', url); } catch(e){}
       applyLang(l);
     }
     allLang.forEach(function(b){
@@ -1315,7 +1316,8 @@
     window.addEventListener('storage', function(e) {
       if (e.key === 'ak-lang' && e.newValue) setLang(e.newValue);
     });
-    try { setLang(localStorage.getItem('ak-lang') || 'bg'); } catch(e){ setLang('bg'); }
+    const requestedLang = new URLSearchParams(location.search).get('lang');
+    try { setLang(['bg', 'en'].includes(requestedLang) ? requestedLang : (localStorage.getItem('ak-lang') || 'bg')); } catch(e){ setLang(requestedLang === 'en' ? 'en' : 'bg'); }
   })();
   </script>
 </body>
