@@ -50,50 +50,11 @@ function Listings({ featuredOnly = false, lang = 'bg' }) {
 
   const [filter, setFilter] = React.useState('All');
 
-  // Supabase featured fetch — only active when featuredOnly=true
-  const [sbList,  setSbList]  = React.useState(null);
-  const [sbReady, setSbReady] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!featuredOnly) return;
-    let cancelled = false;
-
-    async function fetchFeatured() {
-      // 1. Try Supabase with the public anon/publishable key
-      if (window.akSupabase) {
-        try {
-          const { data, error } = await window.akSupabase
-            .from('listings')
-            .select('*')
-            .eq('status', 'Active')
-            .eq('featured', true)
-            .order('created_at', { ascending: false });
-          if (!error && data && data.length > 0 && !cancelled) {
-            setSbList(data.map(normalizeListing));
-            setSbReady(true);
-            return;
-          }
-        } catch (_) { /* fall through to AKStore */ }
-      }
-      // 2. Fall back to AKStore (localStorage seed / same-browser admin saves)
-      if (!cancelled) {
-        const fallback = window.AKStore.publicListings()
-          .filter(l => l.status === 'Active' && l.featured)
-          .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
-        setSbList(fallback);
-        setSbReady(true);
-      }
-    }
-
-    fetchFeatured();
-    return () => { cancelled = true; };
-  }, [featuredOnly]);
-
   // ── Derive display list ────────────────────────────────────────────────────
   let displayList, activeCount;
 
   if (featuredOnly) {
-    displayList = sbReady ? (sbList || []) : [];
+    displayList = all.filter(l => l.status === 'Active' && l.featured);
     activeCount = displayList.length;
   } else {
     const current = filters.find(f => f.id === filter) || filters[0];
@@ -149,8 +110,13 @@ function Listings({ featuredOnly = false, lang = 'bg' }) {
         )}
       </header>
 
+      {!window.AKStore.ready && <p role="status">{isBg ? 'Зареждане на имотите…' : 'Loading properties…'}</p>}
+      {window.AKStore.loadError && <div role="alert">
+        <p>{isBg ? 'Имотите временно не могат да се заредят. Моля, опитайте отново или се свържете с нас.' : 'Properties are temporarily unavailable. Please retry or contact us.'}</p>
+        <Btn onClick={() => window.AKStore.load()}>{isBg ? 'Опитай отново' : 'Try again'}</Btn>
+      </div>}
       {/* Empty state */}
-      {top.length === 0 && (
+      {window.AKStore.ready && !window.AKStore.loadError && top.length === 0 && (
         <div style={{
           padding: '80px 24px', textAlign: 'center',
           border: '1px dashed var(--hairline-light)', background: 'var(--ak-charcoal)',
@@ -284,7 +250,7 @@ function PropertyCard({ listing, cols, rows, compact, lang = 'bg', 'aria-label':
       }}>
       {/* image */}
       {img && (
-        <img src={img} alt={listing.title}
+        <img src={img} alt={listing.title} loading="lazy" decoding="async"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
                    objectFit: 'cover', transform: hover ? 'scale(1.05)' : 'scale(1)',
                    transition: 'transform .9s var(--ease)',

@@ -76,7 +76,19 @@ function useAuth() {
         return;
       }
 
-      const { data } = await window.akSupabase.auth.getSession();
+      let data;
+      let timer;
+      try {
+        const result = await Promise.race([
+          window.akSupabase.auth.getSession(),
+          new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('auth_timeout')), 12000); }),
+        ]);
+        data = result.error ? null : result.data;
+      } catch (_) {
+        data = null;
+      } finally {
+        clearTimeout(timer);
+      }
 
       if (!mounted) return;
 
@@ -91,7 +103,9 @@ function useAuth() {
 
     checkSession();
 
-    const { data: listener } = window.akSupabase.auth.onAuthStateChange((_event, session) => {
+    const { data: listener } = window.akSupabase?.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      setCheckingAuth(false);
       setSignedIn(!!session);
 
       if (session && (location.pathname === '/admin' || location.pathname === '/admin/' || location.pathname === '/admin/login')) {
@@ -101,7 +115,7 @@ function useAuth() {
       if (!session) {
         navigate('/login');
       }
-    });
+    }) || { data: null };
 
     return () => {
       mounted = false;

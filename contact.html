@@ -152,10 +152,12 @@
     .r-text-left-mobile > div:last-of-type { justify-content: flex-start !important; }
   }
 </style>
+<link rel="canonical" href="https://www.akrealestatebg.com/contact">
 </head>
 <body>
   <div id="root"></div>
 
+  <script src="/shared/auth-storage.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     window.AK_SUPABASE_URL = "https://ylyilqwoiyirodigshgd.supabase.co";
@@ -163,7 +165,8 @@
     if (window.supabase) {
       window.akSupabase = window.supabase.createClient(
         window.AK_SUPABASE_URL,
-        window.AK_SUPABASE_PUBLISHABLE_KEY
+        window.AK_SUPABASE_PUBLISHABLE_KEY,
+        { auth: { storage: window.AKAuthStorage } }
       );
     }
   </script>

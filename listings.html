@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Имоти — AK Real Estate</title>
 
+  <script src="/shared/search.js"></script>
+  <script src="/shared/auth-storage.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -723,6 +725,7 @@
   .ak-footer-legal-spacer { display: none; }
 }
   </style>
+<link rel="canonical" href="https://www.akrealestatebg.com/listings">
 </head>
 
 <body>
@@ -871,7 +874,7 @@
     const SUPABASE_URL = "https://ylyilqwoiyirodigshgd.supabase.co";
     const SUPABASE_KEY = "sb_publishable_wxCfqS0aCFRRXf0WgIhGzw_2SGd8tcL";
 
-    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.AKAuthStorage } });
 
     const grid = document.getElementById("grid");
     const state = document.getElementById("state");
@@ -879,6 +882,7 @@
     const filterButtons = Array.from(document.querySelectorAll(".filter-btn"));
 
     let allListings = [];
+    let listingState = "loading";
     let activeFilter = "All";
     let activeTypeFilter = "";
 
@@ -903,7 +907,7 @@
       if (value >= 1000000) formatted = sym + (value / 1000000).toFixed(value % 1000000 === 0 ? 0 : 1) + "M";
       else if (value >= 1000) formatted = sym + value.toLocaleString();
       else formatted = sym + value;
-      if (listingType === "Rent") formatted += "/mo";
+      if (listingType === "Rent") formatted += window._lang === "en" ? "/mo" : "/мес.";
       return formatted;
     }
 
@@ -958,19 +962,25 @@
     }
 
     function matchesSearch(listing) {
-      const q = search.value.trim().toLowerCase();
-      if (!q) return true;
-      const text = [
-        listing.title,
-        listing.city,
-        listing.area,
-        listing.property_type,
-        listing.listing_type
-      ].join(" ").toLowerCase();
-      return text.includes(q);
+      return window.AKMatchesSearch(listing, search.value);
     }
 
     function render() {
+      if (listingState !== 'ready') {
+        grid.style.display = 'none';
+        state.style.display = 'grid';
+        state.textContent = listingState === 'loading'
+          ? (window._lang === 'en' ? 'Loading properties…' : 'Зареждане на имоти…')
+          : (window._lang === 'en' ? 'Properties are temporarily unavailable. Please try again.' : 'Имотите временно не могат да се заредят. Опитайте отново.');
+        if (listingState === 'error') {
+          const retry = document.createElement('button');
+          retry.className = 'filter-btn';
+          retry.textContent = window._lang === 'en' ? 'Try again' : 'Опитай отново';
+          retry.onclick = loadListings;
+          state.appendChild(retry);
+        }
+        return;
+      }
       const visible = allListings.filter(l => matchesFilter(l) && matchesSearch(l));
 
       if (!visible.length) {
@@ -991,7 +1001,7 @@
         return `
           <a class="card" href="/listing?id=${encodeURIComponent(listing.id)}">
             <div class="image">
-              ${img ? `<img src="${escapeHtml(img)}" alt="">` : ""}
+              ${img ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(localized(listing, "title"))}" loading="lazy" decoding="async">` : ""}
               <span class="${getBadgeClass(listing.status)}">${escapeHtml(statusLabel(listing.status))}</span>
             </div>
 
@@ -1000,8 +1010,8 @@
               <div class="title">${escapeHtml(localized(listing, "title"))}</div>
 
               <div class="meta">
-                ${escapeHtml(listing.bedrooms || "—")} BR ·
-                ${escapeHtml(listing.bathrooms || "—")} BA ·
+                ${escapeHtml(listing.bedrooms || "—")} ${window._lang === "en" ? "BR" : "спални"} ·
+                ${escapeHtml(listing.bathrooms || "—")} ${window._lang === "en" ? "BA" : "бани"} ·
                 ${escapeHtml(listing.area_sqm || "—")} m²
               </div>
 
@@ -1016,19 +1026,17 @@
     }
 
     async function loadListings() {
-      const { data, error } = await client
-        .from("listings")
-        .select("*")
-        .neq("status", "Draft")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Listings load error:", error);
-        state.textContent = (window._lang === "en") ? "Error loading listings." : "Грешка при зареждане на имотите.";
-        return;
+      listingState = 'loading';
+      render();
+      try {
+        const { data, error } = await client.from('listings').select('*')
+          .neq('status', 'Draft').order('created_at', { ascending: false });
+        if (error) throw error;
+        allListings = data || [];
+        listingState = 'ready';
+      } catch (_) {
+        listingState = 'error';
       }
-
-      allListings = data || [];
       render();
     }
 

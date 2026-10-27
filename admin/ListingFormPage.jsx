@@ -3,6 +3,8 @@
 // ─── BG/EN translations ──────────────────────────────────────────────────────
 const FORM_TRANSLATIONS = {
   bg: {
+    'Saving…': 'Запазване…',
+    'Save failed. Your changes are still here. Please try again.': 'Записът не бе потвърден. Промените ви са запазени във формата. Опитайте отново.',
     'New Listing':            'Нов имот',
     'Edit':                   'Редактиране',
     'A new':                  'Нов',
@@ -241,6 +243,9 @@ function ListingFormPage({ mode, id }) {
   const [form, setForm] = React.useState(editing && original ? original : EMPTY);
   const [errors, setErrors] = React.useState({});
   const [saved, setSaved] = React.useState(false);
+  const [saving, setSaving] = React.useState(false);
+  const [saveError, setSaveError] = React.useState('');
+  const saveLock = React.useRef(false);
   const [confirmDel, setConfirmDel] = React.useState(false);
   const [imagesUploading, setImagesUploading] = React.useState(false);
 
@@ -273,9 +278,12 @@ function ListingFormPage({ mode, id }) {
     return Object.keys(e).length === 0;
   };
 
-  const save = (publish) => {
-    if (!validate()) return;
-    if (imagesUploading) return;
+  const save = async (publish) => {
+    if (saveLock.current || imagesUploading || !validate()) return;
+    saveLock.current = true;
+    setSaving(true);
+    setSaved(false);
+    setSaveError('');
     const status = publish ? 'Active' : form.status;
     const payload = {
       ...form,
@@ -283,14 +291,22 @@ function ListingFormPage({ mode, id }) {
       id: editing ? form.id : Store.newId(),
       createdAt: editing ? form.createdAt : new Date().toISOString().slice(0, 10),
     };
-    Store.upsert(payload);
-    setSaved(true);
-    setTimeout(() => navigate('/listings'), 500);
+    try {
+      const ok = await Store.upsert(payload);
+      if (!ok) throw new Error('save_failed');
+      setSaved(true);
+      navigate('/listings');
+    } catch (_) {
+      setSaveError(t('Save failed. Your changes are still here. Please try again.'));
+    } finally {
+      saveLock.current = false;
+      setSaving(false);
+    }
   };
 
   // Single primary save action — shared between top (desktop) and bottom (mobile) bars.
   // Always saves the full form and sets status to Active (an already-Active listing stays Active).
-  const publishLabel = t('Save & Publish');
+  const publishLabel = saving ? t('Saving…') : t('Save & Publish');
 
   if (editing && !original) {
     return (
@@ -316,12 +332,13 @@ function ListingFormPage({ mode, id }) {
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', rowGap: 8 }}>
               <Btn variant="secondary" as="a" href="/admin/listings">{t('Cancel')}</Btn>
               {editing && <Btn variant="danger" onClick={() => setConfirmDel(true)}>{t('Delete')}</Btn>}
-              <Btn variant="primary"   onClick={() => save(true)} disabled={imagesUploading}>{publishLabel}</Btn>
+              <Btn variant="primary"   onClick={() => save(true)} disabled={imagesUploading || saving}>{publishLabel}</Btn>
             </div>
           ) : null
         }
       />
 
+      {saveError && <div role="alert" style={{ padding: 18, marginBottom: 24, border: '1px solid var(--ak-crimson)' }}>{saveError}</div>}
       {saved && (
         <div style={{ marginBottom: 24, padding: '14px 18px',
           background: 'rgba(176,24,28,.10)', border: '1px solid rgba(176,24,28,.30)',
@@ -524,7 +541,7 @@ function ListingFormPage({ mode, id }) {
           border: '1px solid var(--hairline-light)',
           display: 'flex', flexDirection: 'column', gap: 12,
         }}>
-          <Btn variant="primary" onClick={() => save(true)} disabled={imagesUploading}
+          <Btn variant="primary" onClick={() => save(true)} disabled={imagesUploading || saving}
             style={{ width: '100%', justifyContent: 'center' }}>
             {publishLabel}
           </Btn>

@@ -120,8 +120,8 @@ function Hero({ lang = 'bg' }) {
         <RedSquare size={6} />
         <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--fg-2)' }}>
           {lang === 'en'
-            ? `${stats.activeCount} active listings · ${stats.offMarketCount} off-market · ${stats.portfolioValue} portfolio value`
-            : `${stats.activeCount} активни имота · ${stats.offMarketCount} скрити оферти · ${stats.portfolioValue} стойност на портфолиото`}
+            ? `${stats.activeCount} active listings · ${stats.offMarketCount} completed deals · ${stats.portfolioValue} portfolio value`
+            : `${stats.activeCount} активни имота · ${stats.offMarketCount} приключени сделки · ${stats.portfolioValue} стойност на портфолиото`}
         </span>
         <span style={{ flex: 1, height: 1, background: 'var(--hairline-light)' }}></span>
         <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--fg-2)' }}>

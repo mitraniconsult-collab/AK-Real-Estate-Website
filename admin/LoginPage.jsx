@@ -14,7 +14,7 @@ function LoginPage({ onSubmit }) {
   const submit = async (e) => {
   e.preventDefault();
 
-  if (!email || !password) {
+  if (!email.trim() || !password) {
     setError('Email and password are required.');
     return;
   }
@@ -28,19 +28,31 @@ function LoginPage({ onSubmit }) {
   setNotice(null);
   setLoading(true);
 
-  const { data, error } = await window.akSupabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  setLoading(false);
-
-  if (error) {
-    setError('Invalid email or password.');
-    return;
+  try {
+    try { localStorage.setItem('ak.auth.remember', String(remember)); } catch (_) {}
+    const { data, error } = await window.akSupabase.auth.signInWithPassword({
+      email: email.trim(), password,
+    });
+    if (error) {
+      if (error.code === 'invalid_credentials' || error.status === 400) {
+        setError('Невалиден имейл или парола. / Invalid email or password.');
+      } else if (error.status === 429) {
+        setError('Твърде много опити. Изчакайте и опитайте отново. / Too many attempts. Please wait.');
+      } else {
+        setError('Услугата за вход временно е недостъпна. Опитайте отново. / Sign-in service temporarily unavailable.');
+      }
+      return;
+    }
+    if (!data?.session) {
+      setError('Входът не е потвърден. Опитайте отново. / Sign-in was not confirmed.');
+      return;
+    }
+    onSubmit(email.trim(), password, data);
+  } catch (_) {
+    setError('Няма връзка с услугата за вход. Проверете връзката и опитайте отново. / Cannot reach sign-in service.');
+  } finally {
+    setLoading(false);
   }
-
-  onSubmit(email, password, data);
 };
 
   const handleForgot = async (e) => {
@@ -65,9 +77,14 @@ function LoginPage({ onSubmit }) {
     // allowed redirect URLs.
     const redirectTo = window.location.origin + '/admin/login';
 
-    const { error } = await window.akSupabase.auth.resetPasswordForEmail(email, { redirectTo });
-
-    setResetLoading(false);
+    let error;
+    try {
+      ({ error } = await window.akSupabase.auth.resetPasswordForEmail(email.trim(), { redirectTo }));
+    } catch (_) {
+      error = { message: 'Услугата временно е недостъпна. Опитайте отново.' };
+    } finally {
+      setResetLoading(false);
+    }
 
     if (error) {
       setNotice({ type: 'error', text: error.message || 'Неуспешно изпращане на имейл. Опитайте отново.' });

@@ -100,10 +100,14 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
     setLoading(true);
     // No .select() — anon has INSERT but not SELECT; chaining .select() would
     // require a SELECT and fail on an otherwise successful insert.
-    const { error: insErr } = await window.akSupabase
-      .from('contact_inquiries')
-      .insert([payload]);
-    setLoading(false);
+    let insErr;
+    try {
+      ({ error: insErr } = await window.akSupabase.from('contact_inquiries').insert([payload]));
+    } catch (_) {
+      insErr = { code: 'network', message: 'Connection unavailable' };
+    } finally {
+      setLoading(false);
+    }
 
     if (insErr) {
       // Sanitized diagnostics only — error metadata + payload field NAMES,
@@ -344,10 +348,12 @@ const fieldLabelStyle = {
 
 function Field({ label, value, onChange, placeholder, textarea, type = 'text' }) {
   const Tag = textarea ? 'textarea' : 'input';
+  const fieldId = React.useId();
   return (
     <div>
-      <label style={fieldLabelStyle}>{label}</label>
+      <label htmlFor={fieldId} style={fieldLabelStyle}>{label}</label>
       <Tag
+        id={fieldId}
         value={value}
         type={textarea ? undefined : type}
         onChange={(e) => onChange(e.target.value)}

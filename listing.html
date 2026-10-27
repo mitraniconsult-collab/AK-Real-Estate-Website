@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AK Real Estate — Listing</title>
 
+  <script src="/shared/auth-storage.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -876,7 +877,7 @@
     const SUPABASE_URL = "https://ylyilqwoiyirodigshgd.supabase.co";
     const SUPABASE_KEY = "sb_publishable_wxCfqS0aCFRRXf0WgIhGzw_2SGd8tcL";
 
-    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.AKAuthStorage } });
 
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
@@ -891,7 +892,7 @@
       if (value >= 1000000) formatted = sym + (value / 1000000).toFixed(value % 1000000 === 0 ? 0 : 1) + "M";
       else if (value >= 1000) formatted = sym + value.toLocaleString();
       else formatted = sym + value;
-      if (listingType === "Rent") formatted += "/mo";
+      if (listingType === "Rent") formatted += isBg() ? "/мес." : "/mo";
       return formatted;
     }
 
@@ -1210,8 +1211,8 @@
             ${characteristicsHtml(listing)}
 
             <div class="actions">
-              <a class="btn primary" href="/contact?listing=${encodeURIComponent(listing.id)}">${isBg() ? 'Заявете достъп' : 'Request Viewing'}</a>
-              <a class="btn secondary" href="/">${isBg() ? 'Назад' : 'Back'}</a>
+              <a class="btn primary" href="/contact?listing=${encodeURIComponent(listing.id)}">${isBg() ? 'Заявете оглед' : 'Request Viewing'}</a>
+              <a class="btn secondary" href="/listings">${isBg() ? 'Назад' : 'Back'}</a>
             </div>
           </aside>
         </div>
@@ -1227,21 +1228,21 @@
         return;
       }
 
-      const { data, error } = await client
-        .from("listings")
-        .select("*")
-        .eq("id", id)
-        .neq("status", "Draft")
-        .single();
-
-      if (error || !data) {
-        console.error("Listing load error:", error);
-        renderNotFound();
-        return;
+      try {
+        const { data, error } = await client.from('listings').select('*')
+          .eq('id', id).neq('status', 'Draft').maybeSingle();
+        if (error) throw error;
+        if (!data) { renderNotFound(); return; }
+        window._currentListing = data;
+        renderListing(data);
+      } catch (_) {
+        app.textContent = isBg() ? 'Имотът временно не може да се зареди.' : 'This property is temporarily unavailable.';
+        const retry = document.createElement('button');
+        retry.className = 'btn';
+        retry.textContent = isBg() ? 'Опитай отново' : 'Try again';
+        retry.onclick = loadListing;
+        app.appendChild(retry);
       }
-
-      window._currentListing = data;
-      renderListing(data);
     }
 
     loadListing();
