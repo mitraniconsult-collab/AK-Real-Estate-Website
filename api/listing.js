@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import seo from '../server/public-seo.cjs';
-const template = readFileSync(join(process.cwd(), 'listing.html'), 'utf8');
+const template = readFileSync(join(process.cwd(), 'server/listing-template.html'), 'utf8');
 export async function GET(request) {
   const params = new URL(request.url).searchParams;
   const id = params.get('id');

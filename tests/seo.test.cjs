@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const seo = require('../server/public-seo.cjs');
-const template = fs.readFileSync(require('node:path').join(__dirname, '../listing.html'), 'utf8');
+const template = fs.readFileSync(require('node:path').join(__dirname, '../server/listing-template.html'), 'utf8');
 test('initial HTML escapes listing text and includes a real photo rather than video', () => {
  const html = seo.metadata(template, { id:'L-014', title:'<script>"&', title_en:'Apartment', description_en:'A bright apartment', images:['https://images.test/tour.mp4', 'https://images.test/photo.jpg'], main_image:0 }, 'en');
  assert.match(html, /<title>Apartment \| AK Real Estate<\/title>/);
