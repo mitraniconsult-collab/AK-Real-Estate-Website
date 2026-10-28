@@ -14,7 +14,7 @@ function useListings() {
 // ----- Clean-path router -----
 // Backward-compat shim: /admin/#/dashboard or /admin/foo#/bar → /admin/dashboard
 if (location.hash && location.hash.startsWith('#/')) {
-  history.replaceState(null, '', '/admin' + location.hash.slice(1));
+  history.replaceState(history.state, '', '/admin' + location.hash.slice(1));
 }
 
 function parsePath() {
@@ -45,16 +45,20 @@ function parsePath() {
 function useRoute() {
   const [route, setRoute] = React.useState(parsePath());
   React.useEffect(() => {
-    const fn = () => setRoute(parsePath());
+    const fn = event => {
+      if (window.AKUnsavedChanges && !window.AKUnsavedChanges.acceptPop(event)) return;
+      setRoute(parsePath());
+    };
     window.addEventListener('popstate', fn);
     return () => window.removeEventListener('popstate', fn);
   }, []);
   return route;
 }
 
-function navigate(to) {
+function navigate(to, options = {}) {
   const path = to.startsWith('/') ? to : '/' + to;
   const full = path.startsWith('/admin') ? path : '/admin' + path;
+  if (window.AKUnsavedChanges) return window.AKUnsavedChanges.push(full, !!options.force);
   history.pushState(null, '', full);
   window.dispatchEvent(new PopStateEvent('popstate', { state: null }));
 }
@@ -115,7 +119,7 @@ function useAuth() {
       }
 
       if (!session) {
-        navigate('/login');
+        navigate('/login', { force: true });
       }
     }) || { data: null };
 
@@ -137,11 +141,12 @@ function useAuth() {
     },
 
     signOut: async () => {
+      if (window.AKUnsavedChanges && !window.AKUnsavedChanges.allow()) return;
       if (window.akSupabase) {
         await window.akSupabase.auth.signOut();
       }
       setSignedIn(false);
-      navigate('/login');
+      navigate('/login', { force: true });
     },
   };
 }

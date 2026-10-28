@@ -80,6 +80,7 @@ function editorSave(upsert, status = 'Active') {
   const ctx = {
     saveLock: { current: false }, imagesUploading: false, validate: () => true,
     form: { id: 'L-014', title: 'Edited', status }, editing: true,
+    markClean: () => events.push('clean'),
     Store: { upsert }, t: s => s, navigate: () => events.push('navigate'),
     setSaving: value => events.push(['saving', value]), setSaved: value => events.push(['saved', value]),
     setSaveError: value => events.push(['error', value]),

@@ -4,6 +4,8 @@
   let current = 'bg';
   const normalize = value => value === 'en' ? 'en' : 'bg';
   const bg = {
+    'A save or upload is in progress. Please wait.': 'В момента се записват данни или се качват файлове. Моля, изчакайте.',
+    'You have unsaved changes. Leave this page and discard them?': 'Имате незапазени промени. Да напуснете ли страницата и да ги отхвърлите?',
     'Sign In': 'Вход', 'Signing In…': 'Влизане…', 'Sending…': 'Изпращане…', 'Forgot?': 'Забравена парола?',
     'Admin Console': 'Административен панел', 'Restricted Access': 'Ограничен достъп',
     'A quieter': 'Вашият', 'back': 'работен', 'office.': 'панел.', 'Welcome': 'Добре', 'back.': 'дошли.',

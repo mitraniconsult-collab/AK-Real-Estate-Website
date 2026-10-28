@@ -210,7 +210,7 @@ const EMPTY = {
   title: '', description: '',
   propertyType: 'House', listingType: 'Sale', status: 'Draft', featured: false,
   city: '', area: '', address: '',
-  price: '', currency: 'USD',
+  price: '', currency: 'EUR',
   bedrooms: '', bathrooms: '', areaSqm: '', floor: '', totalFloors: '', yearBuilt: '',
   parking: false, elevator: false, furnished: false,
   features: '',
@@ -233,6 +233,19 @@ function ListingFormPage({ mode, id }) {
   const saveLock = React.useRef(false);
   const [confirmDel, setConfirmDel] = React.useState(false);
   const [imagesUploading, setImagesUploading] = React.useState(false);
+  const dirtyOwner = React.useRef({});
+  const baseline = React.useRef(JSON.stringify(editing && original ? original : EMPTY));
+  const markClean = () => {
+    baseline.current = JSON.stringify(form);
+    window.AKUnsavedChanges?.clear(dirtyOwner.current);
+  };
+  React.useEffect(() => () => window.AKUnsavedChanges?.clear(dirtyOwner.current), []);
+  React.useEffect(() => {
+    window.AKUnsavedChanges?.setDirty(dirtyOwner.current, imagesUploading || JSON.stringify(form) !== baseline.current);
+  }, [form, imagesUploading]);
+  React.useEffect(() => {
+    window.AKUnsavedChanges?.setBusy(dirtyOwner.current, saving || imagesUploading);
+  }, [saving, imagesUploading]);
 
   // Responsive breakpoints — ≤860px stacks columns; ≤640px collapses grids
   const [isTablet, setIsTablet] = React.useState(false);
@@ -249,7 +262,11 @@ function ListingFormPage({ mode, id }) {
 
   // When editing record loads, reset form
   React.useEffect(() => {
-    if (editing && original) setForm(original);
+    if (editing && original) {
+      baseline.current = JSON.stringify(original);
+      window.AKUnsavedChanges?.clear(dirtyOwner.current);
+      setForm(original);
+    }
   }, [editing, original?.id]);
 
   const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
@@ -279,6 +296,7 @@ function ListingFormPage({ mode, id }) {
     try {
       const ok = await Store.upsert(payload);
       if (!ok) throw new Error('save_failed');
+      markClean();
       setSaved(true);
       navigate('/listings');
     } catch (_) {
@@ -554,7 +572,7 @@ function ListingFormPage({ mode, id }) {
           danger={t("Delete")}
           onCancel={() => setConfirmDel(false)}
           onConfirm={async () => {
-            if (await Store.remove(form.id)) { setConfirmDel(false); navigate('/listings'); }
+            if (await Store.remove(form.id)) { markClean(); setConfirmDel(false); navigate('/listings'); }
             else alert(t('Could not delete the listing. Please try again.'));
           }}
         />
