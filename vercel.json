@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/sell",
+      "destination": "/sell.html"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "/api/sitemap"
     },

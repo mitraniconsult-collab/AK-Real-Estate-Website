@@ -10,6 +10,7 @@
 <meta property="og:description" content="Подбрани имоти, кредитен консултант, интериорен дизайн и ремонт. Личен подход, подреден процес.">
 <meta property="og:type" content="website">
 <link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="/shared/home.css">
 <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
 <style>
   html { scroll-behavior: smooth; }
@@ -184,11 +185,12 @@
   <script type="text/babel" src="ui_kits/website/Listings.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Concierge.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Editorial.jsx"></script>
+  <script type="text/babel" src="ui_kits/website/PropertyJourney.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Contact.jsx"></script>
   <script type="text/babel" src="ui_kits/website/Footer.jsx"></script>
 
   <script type="text/babel">
-    const { Nav, Hero, QuickSearch, Listings, Concierge, Editorial, Contact, Footer } = window;
+    const { Nav, Hero, QuickSearch, Listings, Concierge, Editorial, PropertyJourney, Contact, Footer } = window;
     function App() {
       const [active, setActive] = React.useState('listings');
       const [lang, setLang] = React.useState(
@@ -208,9 +210,10 @@
             <Hero lang={lang} />
             <QuickSearch lang={lang} />
             <Listings featuredOnly={true} lang={lang} />
+            <PropertyJourney lang={lang} />
             <Concierge lang={lang} />
             <Editorial lang={lang} />
-            <Contact lang={lang} />
+            <Contact lang={lang} compact />
           </main>
           <Footer lang={lang} />
         </>

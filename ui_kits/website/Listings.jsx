@@ -58,7 +58,7 @@ function Listings({ featuredOnly = false, lang = 'bg' }) {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <section style={{ background: 'var(--ak-ink)', color: 'var(--fg)',
+    <section className={featuredOnly ? 'home-listings' : undefined} style={{ background: 'var(--ak-ink)', color: 'var(--fg)',
       padding: 'var(--section-y) var(--gutter)', position: 'relative' }}>
 
       {/* header */}
@@ -71,7 +71,7 @@ function Listings({ featuredOnly = false, lang = 'bg' }) {
             fontSize: 'clamp(40px, 6vw, 96px)', lineHeight: 0.96,
             letterSpacing: '0.06em', textTransform: 'uppercase', maxWidth: 900,
           }}>
-            {isBg
+            {featuredOnly ? (isBg ? 'Избрани имоти за вас.' : 'Selected properties for you.') : isBg
               ? <>Имоти, които<br/>намират своите <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>хора.</em></>
               : <>Houses that<br />find their <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>people.</em></>
             }
@@ -119,7 +119,7 @@ function Listings({ featuredOnly = false, lang = 'bg' }) {
 
       {/* Masonry grid — top 6 */}
       {top.length > 0 && (
-        <div className="r-masonry" style={{
+        <div className={featuredOnly ? "home-featured-grid" : "r-masonry"} style={featuredOnly ? undefined : {
           display: 'grid',
           gridTemplateColumns: 'repeat(12, 1fr)',
           gridAutoRows: '180px',

@@ -58,6 +58,7 @@ function Nav({ active = 'listings', onNav, onLang, lang: selectedLang }) {
   const isBg = lang !== 'en';
   const links = [
     { id: 'listings',  label: isBg ? 'Обяви'           : 'Listings',  href: '/listings' },
+    { id: 'sell', label: isBg ? 'За собственици' : 'For owners', href: '/sell' },
     { id: 'concierge', label: isBg ? 'Услуги'          : 'Services',  href: '/services' },
     { id: 'contact',   label: isBg ? 'Свържи се с нас' : 'Contact',   cta: true },
   ];

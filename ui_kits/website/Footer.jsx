@@ -7,12 +7,14 @@ function Footer({ lang = 'bg' }) {
     ? [
         { label: 'Начало',            href: '/' },
         { label: 'Обяви',             href: '/listings' },
+        { label: 'За собственици', href: '/sell' },
         { label: 'Услуги',            href: '/services' },
         { label: 'Свържи се с нас',   href: '/contact' },
       ]
     : [
         { label: 'Home',        href: '/' },
         { label: 'Listings',    href: '/listings' },
+        { label: 'For owners', href: '/sell' },
         { label: 'Services',    href: '/services' },
         { label: 'Contact us',  href: '/contact' },
       ];

@@ -32,7 +32,7 @@ function metadata(template, row, lang = 'bg') {
   return template.replace(/<html lang="[^"]*">/, `<html lang="${lang}">`).replace(/<title>[\s\S]*?<\/title>/, tags);
 }
 async function sitemap(fetcher = fetch) {
-  const paths = ['/', '/listings', '/services', '/contact', '/terms', '/privacy', '/cookies'];
+  const paths = ['/', '/listings', '/services', '/sell', '/contact', '/terms', '/privacy', '/cookies'];
   for (let offset = 0; ; offset += 1000) {
     const rows = await listings({ select: 'id,status', order: 'id.asc', limit: '1000', offset: String(offset) }, fetcher);
     paths.push(...rows.map(row => `/listing?id=${encodeURIComponent(row.id)}`));

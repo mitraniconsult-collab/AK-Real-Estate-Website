@@ -11,13 +11,13 @@ const INTEREST_OPTIONS = [
   { key: 'renovation', bg: 'Ремонт от А до Я',    en: 'Renovation' },
 ];
 
-function Contact({ lang = 'bg', initialMessage = '' }) {
+function Contact({ lang = 'bg', initialMessage = '', initialInterest = 'buy', compact = false }) {
   const isBg = lang !== 'en';
   const [sent, setSent] = React.useState(false);
   const [name, setName] = React.useState('');
   const [phone, setPhone] = React.useState('');
   const [budget, setBudget] = React.useState('');
-  const [interest, setInterest] = React.useState('buy'); // stores the stable key
+  const [interest, setInterest] = React.useState(() => INTEREST_OPTIONS.some(option => option.key === initialInterest) ? initialInterest : 'buy'); // stable key
   const [message, setMessage] = React.useState(initialMessage || '');
   const previousPrefill = React.useRef(initialMessage || '');
   React.useEffect(() => {
@@ -130,7 +130,7 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
   };
 
   return (
-    <section id="contact" style={{ position: 'relative', background: 'var(--ak-black)', color: 'var(--fg)',
+    <section id="contact" className={compact ? 'home-contact' : undefined} style={{ position: 'relative', background: 'var(--ak-black)', color: 'var(--fg)',
       overflow: 'hidden' }}>
       <img src={CONTACT_IMG} alt=""
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
@@ -153,8 +153,8 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
             fontSize: 'clamp(48px, 7vw, 140px)', lineHeight: 0.92,
             letterSpacing: '0.06em', textTransform: 'uppercase' }}>
             {isBg
-              ? <>Започнете<br/>с <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>разговор.</em></>
-              : <>Quietly.<br/>By <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>introduction.</em></>
+              ? <>Нека <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>поговорим.</em></>
+              : <>Let’s <em style={{ color: 'var(--ak-crimson)', fontStyle: 'italic', fontWeight: 400 }}>talk.</em></>
             }
           </h2>
           <p style={{ marginTop: 32, maxWidth: 460, fontSize: 16, lineHeight: 1.7,
@@ -220,7 +220,7 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
               placeholder={isBg ? 'Три имена' : 'Full name'} autoComplete="name" maxLength={150} required />
             <Field label={isBg ? 'Телефон' : 'Phone'} value={phone} onChange={setPhone}
               placeholder="+359 …" type="tel" autoComplete="tel" maxLength={40} required />
-            <Field label={isBg ? 'Бюджет (ориентировъчно)' : 'Budget (approx.)'} value={budget} onChange={setBudget}
+            {!compact && <><Field label={isBg ? 'Бюджет (ориентировъчно)' : 'Budget (approx.)'} value={budget} onChange={setBudget}
               placeholder={isBg ? 'напр. 150 000 €' : 'e.g. €150,000'} maxLength={100} />
 
             <div>
@@ -245,10 +245,12 @@ function Contact({ lang = 'bg', initialMessage = '' }) {
               </div>
             </div>
 
+            </>}
+
             <Field label={isBg ? 'Съобщение' : 'A note'} value={message} onChange={setMessage}
               placeholder={isBg
                 ? 'Разкажете ни за вашия проект или запитване...'
-                : 'A quiet street, a stone wall, a garden.'
+                : 'Tell us briefly what you are looking for or planning.'
               } textarea maxLength={5000} />
 
             {/* Honeypot — hidden from humans; only bots fill it. */}
