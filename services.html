@@ -768,7 +768,13 @@
       .service-card { padding: 28px 22px; }
       .faq-item p { margin: 0 0 24px; padding-left: 30px; }
     }
-  </style>
+  
+    .services-mobile-nav { display: none; margin-left: auto; }
+    .services-mobile-nav summary { cursor: pointer; padding: 10px; font-size: 13px; }
+    .services-mobile-nav nav { position: absolute; top: 100%; left: var(--gutter); right: var(--gutter); display: grid; gap: 20px; padding: 24px; background: #080808; border: 1px solid var(--hairline); }
+    .services-mobile-nav nav a { font-size: 15px; }
+    @media (max-width: 980px) { .header-nav { display: none; } .services-mobile-nav { display: block; } }
+</style>
 <link rel="canonical" href="https://www.akrealestatebg.com/services">
 </head>
 <body>
@@ -778,6 +784,7 @@
     </a>
     <nav class="header-nav">
       <a href="/listings" data-t="nav_listings">Обяви</a>
+        <a href="/sell" data-t="nav_sell">За собственици</a>
       <a href="/services" class="active" data-t="nav_services">Услуги</a>
       <div class="lang-switch">
         <button class="lang-btn active" data-lang="bg" type="button">BG</button>
@@ -786,6 +793,16 @@
       </div>
       <a href="/contact" class="header-cta" data-t="nav_contact">Свържи се с нас</a>
     </nav>
+    <details class="services-mobile-nav">
+      <summary data-t="nav_menu">Меню</summary>
+      <nav aria-label="Mobile navigation">
+        <a href="/listings" data-t="nav_listings">Обяви</a>
+        <a href="/sell" data-t="nav_sell">За собственици</a>
+        <a href="/services" data-t="nav_services">Услуги</a>
+        <a href="/contact" data-t="nav_contact">Свържи се с нас</a>
+        <div class="lang-switch"><button class="lang-btn active" data-lang="bg" type="button">BG</button><span>/</span><button class="lang-btn" data-lang="en" type="button">EN</button></div>
+      </nav>
+    </details>
   </header>
 
   <main>
@@ -1145,7 +1162,7 @@
   (function() {
     var T = {
       bg: {
-        nav_listings: 'Обяви', nav_services: 'Услуги', nav_contact: 'Свържи се с нас',
+        nav_menu: 'Меню', nav_listings: 'Обяви', nav_sell: 'За собственици', nav_services: 'Услуги', nav_contact: 'Свържи се с нас',
         hero_eyebrow: 'Services', hero_title: 'Услуги',
         hero_lead: 'Един партньор за целия процес — от финансиране и избор на имот до интериор, ремонт и финално предаване.',
         hero_sub: 'Работим лично, подредено и с внимание към детайла — за да знаете какво следва на всяка стъпка.',
@@ -1224,7 +1241,7 @@
         footer_desc: 'AK Real Estate е бутикова агенция за недвижими имоти, създадена през 2026 г. Работим с внимателно подбрани имоти и клиенти, като съчетаваме посредничество, финансиране, интериорен дизайн и ремонт в един подреден процес.',
       },
       en: {
-        nav_listings: 'Listings', nav_services: 'Services', nav_contact: 'Contact',
+        nav_menu: 'Menu', nav_listings: 'Listings', nav_sell: 'For owners', nav_services: 'Services', nav_contact: 'Contact',
         hero_eyebrow: 'Services', hero_title: 'Services',
         hero_lead: 'One partner for the whole process — from financing and property selection to interior design, renovation and final handover.',
         hero_sub: 'We work personally, in an orderly fashion and with attention to detail — so you know what comes next at every step.',

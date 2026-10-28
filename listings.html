@@ -264,7 +264,7 @@
     .mobile-lang-btn.active { color: var(--fg); }
     .mobile-lang-btn:hover { color: var(--fg-2); }
 
-    @media (max-width: 768px) {
+    @media (max-width: 980px) {
       .header-nav { display: none; }
       .hamburger-btn { display: flex; }
     }
@@ -737,6 +737,7 @@
       </a>
       <nav class="header-nav">
         <a href="/listings" class="active" data-t="nav_listings">Обяви</a>
+        <a href="/sell" data-t="nav_sell">За собственици</a>
         <a href="/services" data-t="nav_services">Услуги</a>
         <div class="lang-switch">
           <button class="lang-btn active" data-lang="bg" type="button">BG</button>
@@ -761,11 +762,12 @@
         <a href="/listings">
           <span class="num">01</span><span data-t="nav_listings">Обяви</span>
         </a>
+        <a href="/sell"><span class="num">02</span><span data-t="nav_sell">За собственици</span></a>
         <a href="/services">
-          <span class="num">02</span><span data-t="nav_services">Услуги</span>
+          <span class="num">03</span><span data-t="nav_services">Услуги</span>
         </a>
         <a href="/contact" class="cta">
-          <span class="num">03</span><span data-t="nav_contact">Свържи се с нас</span>
+          <span class="num">04</span><span data-t="nav_contact">Свържи се с нас</span>
         </a>
       </div>
       <div class="mobile-sheet-foot">
@@ -1087,7 +1089,7 @@
     var allLang = Array.from(document.querySelectorAll('.lang-btn, .mobile-lang-btn'));
     var T = {
       bg: {
-        nav_listings: 'Обяви', nav_services: 'Услуги', nav_contact: 'Свържи се с нас',
+        nav_listings: 'Обяви', nav_sell: 'За собственици', nav_services: 'Услуги', nav_contact: 'Свържи се с нас',
         nav_label: 'Навигация',
         hero_eyebrow: 'Portfolio', hero_title: 'Имоти',
         hero_intro: 'Открийте подбрани имоти за продажба и наем в София и страната — селекция с ясен контекст, реални детайли и лично съдействие при всяка следваща стъпка.',
@@ -1110,7 +1112,7 @@
         legal_entity_mark: 'АК РИЙЛ ЕСТЕЙТ · ЕИК 208779452',
       },
       en: {
-        nav_listings: 'Listings', nav_services: 'Services', nav_contact: 'Contact',
+        nav_listings: 'Listings', nav_sell: 'For owners', nav_services: 'Services', nav_contact: 'Contact',
         nav_label: 'Navigation',
         hero_eyebrow: 'Portfolio', hero_title: 'Properties',
         hero_intro: 'Explore selected properties for sale and rent in Sofia and across Bulgaria — a curated portfolio with clear context, real details, and personal guidance at every next step.',
