@@ -29,6 +29,8 @@ test('compiled admin entry renders its login and shared language switch in one s
  const React={
   createElement(type,props,...children){return typeof type==='function'?type({...props,children}):{type,props,children};},
   useState(value){return [value===true?false:typeof value==='function'?value():value,()=>{}];},
+  isValidElement:value=>!!value?.type,cloneElement:(value,props)=>({...value,props:{...value.props,...props}}),
+  createContext:value=>({_value:value}),useContext:context=>context._value,
   useEffect(){},useRef:value=>({current:value}),useId:()=> 'test-id',
  };
  const window={React,innerWidth:1365,AKStore:{listings:[]},AKAdminLocale:{use:()=>({lang:'bg',t:key=>key,setLang(){}})}};
