@@ -27,13 +27,15 @@ function htmlBuild(html, relative) {
       if (!filename.startsWith(root + path.sep)) throw Error('Invalid JSX path');
       code = fs.readFileSync(filename, 'utf8');
     }
-    chunks.push('(function(){' + babel.transform(code, { presets: ['react'], comments: false, minified: true }).code + '})();');
+    // Legacy scripts share declarations (including unexported UI helpers).
+    // Keep that scope inside one page closure; lower block declarations to var.
+    chunks.push(babel.transform(code, { presets: ['react'], plugins: ['transform-block-scoping'], comments: false, minified: true }).code);
     if (placeholder) return '';
     placeholder = true;
     return '<!-- AK_COMPILED_APP -->';
   });
   if (chunks.length) {
-    const bundle = chunks.join('\n');
+    const bundle = '(function(){\n' + chunks.join('\n') + '\n})();';
     const hash = crypto.createHash('sha256').update(bundle).digest('hex').slice(0, 16);
     const filename = `app-${hash}.js`;
     fs.writeFileSync(path.join(output, 'assets/compiled', filename), bundle);

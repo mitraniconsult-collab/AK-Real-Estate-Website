@@ -21,3 +21,20 @@ test('deployment HTML loads production React and valid compiled entries without 
  for(const name of ['server','tests','scripts','node_modules','supabase'])assert.equal(fs.existsSync(path.join(root,'dist',name)),false);
  assert.ok(fs.existsSync(path.join(root,'dist','robots.txt')));
 });
+
+test('compiled admin entry renders its login and shared language switch in one scope',()=>{
+ const html=fs.readFileSync(path.join(root,'dist/admin/index.html'),'utf8');
+ const src=html.match(/src="(\/assets\/compiled\/[^\"]+)"/)[1];
+ let rendered;
+ const React={
+  createElement(type,props,...children){return typeof type==='function'?type({...props,children}):{type,props,children};},
+  useState(value){return [value===true?false:typeof value==='function'?value():value,()=>{}];},
+  useEffect(){},useRef:value=>({current:value}),useId:()=> 'test-id',
+ };
+ const window={React,innerWidth:1365,AKStore:{listings:[]},AKAdminLocale:{use:()=>({lang:'bg',t:key=>key,setLang(){}})}};
+ const ctx={window,React,ReactDOM:{createRoot:()=>({render:tree=>rendered=tree})},document:{getElementById:()=>({})},location:{pathname:'/admin/login',search:'',hash:''},URLSearchParams,localStorage:{getItem:()=>null},console};
+ vm.runInNewContext(fs.readFileSync(path.join(root,'dist',src),'utf8'),ctx);
+ assert.match(JSON.stringify(rendered),/Sign In/);
+ assert.match(JSON.stringify(rendered),/"BG"/);
+ assert.match(JSON.stringify(rendered),/"EN"/);
+});
